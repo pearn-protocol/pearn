@@ -27,3 +27,26 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - name: Biome
         run: pnpm check:ci
+
+  contracts:
+    name: Contracts (fmt, build, test)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: contracts
+    env:
+      FOUNDRY_PROFILE: ci
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: v1.8.3
+      - name: forge fmt
+        run: forge fmt --check
+      - name: forge build
+        run: forge build --sizes
+      - name: forge test
+        run: forge test -vvv
