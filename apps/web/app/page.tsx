@@ -1,8 +1,14 @@
+import Hero from "@/components/markets/Hero";
+import MarketList from "@/components/markets/MarketList";
+import RateInfo from "@/components/ui/RateInfo";
+
 export default function Home() {
 	return (
 		<main className="page">
-			<h1>Pearn</h1>
-			<p>Bet the yield, keep the NEAR.</p>
+			<Hero />
+			<RateInfo />
+			<h2>Markets</h2>
+			<MarketList />
 		</main>
 	);
 }

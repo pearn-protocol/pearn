@@ -1,0 +1,71 @@
+.hero {
+	padding: 40px 0 32px;
+}
+
+.hero h1 {
+	font-size: clamp(32px, 6vw, 52px);
+	background: var(--gradient);
+	-webkit-background-clip: text;
+	background-clip: text;
+	color: transparent;
+}
+
+.hero p {
+	max-width: 640px;
+	font-size: 18px;
+	color: var(--muted);
+}
+
+.steps {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+	gap: var(--gap);
+	padding: 0;
+	margin: 24px 0 0;
+	list-style: none;
+	counter-reset: step;
+}
+
+.steps li {
+	padding: 16px;
+	border-radius: var(--radius);
+	background: var(--surface);
+	border: 1px solid var(--line);
+	counter-increment: step;
+}
+
+.steps li::before {
+	content: counter(step);
+	display: inline-grid;
+	place-items: center;
+	width: 24px;
+	height: 24px;
+	margin-right: 8px;
+	border-radius: 50%;
+	background: var(--gradient);
+	color: #fff;
+	font-size: 13px;
+	font-weight: 700;
+}
+
+.grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+	gap: var(--gap);
+}
+
+.market-card {
+	display: grid;
+	gap: 14px;
+	text-decoration: none;
+	transition: border-color 0.15s;
+}
+
+.market-card:hover {
+	border-color: var(--orange);
+}
+
+.market-card h3 {
+	font-size: 18px;
+	margin: 0;
+}
