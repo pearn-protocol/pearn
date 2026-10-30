@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.28;
 
-import {Outcome, Side, Stake} from "../src/types/Market.sol";
-import {PearnMarketsBase} from "./PearnMarketsBase.t.sol";
+import {Outcome, Side, Stake} from "../../src/types/Market.sol";
+import {MarketsFixture} from "../utils/MarketsFixture.sol";
 
 /// @notice Whole-lifecycle properties over random bets, sponsors, timings and rising rates.
-contract PearnMarketsPropertyTest is PearnMarketsBase {
+contract PearnMarketsPropertyTest is MarketsFixture {
     struct BetInput {
         uint8 bettor;
         bool yes;

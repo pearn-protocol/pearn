@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.28;
 
-import {PearnMarkets} from "../src/PearnMarkets.sol";
-import {IPearnMarkets} from "../src/interfaces/IPearnMarkets.sol";
-import {IRateOracle} from "../src/interfaces/IRateOracle.sol";
-import {Market, Outcome, Side, Stake} from "../src/types/Market.sol";
-import {PearnMarketsBase} from "./PearnMarketsBase.t.sol";
-import {MockRateOracle} from "./mocks/MockRateOracle.sol";
+import {PearnMarkets} from "../../src/PearnMarkets.sol";
+import {IPearnMarkets} from "../../src/interfaces/IPearnMarkets.sol";
+import {IRateOracle} from "../../src/interfaces/IRateOracle.sol";
+import {Market, Outcome, Side, Stake} from "../../src/types/Market.sol";
+import {MockRateOracle} from "../mocks/MockRateOracle.sol";
+import {MarketsFixture} from "../utils/MarketsFixture.sol";
 
-contract PearnMarketsTest is PearnMarketsBase {
+contract PearnMarketsTest is MarketsFixture {
     uint256 internal constant SETTLE_RATE = 1.53e24; // +2% over the market's life
 
     // ─── constructor & createMarket ──────────────────────────────────────────

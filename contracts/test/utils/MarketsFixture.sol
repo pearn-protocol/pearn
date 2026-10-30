@@ -3,13 +3,13 @@ pragma solidity 0.8.28;
 
 import {Test} from "forge-std/Test.sol";
 
-import {PearnMarkets} from "../src/PearnMarkets.sol";
-import {Outcome, Side} from "../src/types/Market.sol";
-import {MockRateOracle} from "./mocks/MockRateOracle.sol";
-import {MockToken} from "./mocks/MockToken.sol";
+import {PearnMarkets} from "../../src/PearnMarkets.sol";
+import {Outcome, Side} from "../../src/types/Market.sol";
+import {MockRateOracle} from "../mocks/MockRateOracle.sol";
+import {MockToken} from "../mocks/MockToken.sol";
 
 /// @dev Shared fixture: one market closing in 30 days at a 1.5 NEAR stNEAR rate.
-abstract contract PearnMarketsBase is Test {
+abstract contract MarketsFixture is Test {
     uint256 internal constant ONE = 1e24;
     uint256 internal constant RATE = 1.5e24;
     uint64 internal constant DURATION = 30 days;
