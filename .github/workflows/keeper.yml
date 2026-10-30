@@ -1,0 +1,50 @@
+name: Keeper
+
+# Asks StNearRateOracle for a fresh stNEAR rate. Bets need a reading younger than 2 days and
+# `resolve` needs one taken after close (DESIGN.md §5); twice a day keeps both satisfied.
+# After the oracle's first sync (script/SyncOracle.s.sol) a sync costs only gas.
+on:
+  schedule:
+    - cron: "17 */12 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: keeper
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    name: oracle.sync()
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: production
+    env:
+      ORACLE: ${{ vars.ORACLE }}
+      RPC_URL: ${{ vars.AURORA_RPC_URL || 'https://testnet.aurora.dev' }}
+      KEEPER_PK: ${{ secrets.KEEPER_PK }}
+    steps:
+      - uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: v1.8.3
+      - name: Sync
+        run: |
+          if [ -z "$ORACLE" ] || [ -z "$KEEPER_PK" ]; then
+            echo "::warning::ORACLE or KEEPER_PK is not set; skipping."
+            exit 0
+          fi
+          before=$(cast call "$ORACLE" "updatedAt()(uint64)" --rpc-url "$RPC_URL")
+          cast send "$ORACLE" "sync()" --legacy --private-key "$KEEPER_PK" --rpc-url "$RPC_URL" >/dev/null
+          # The answer arrives in a later NEAR block through the XCC callback.
+          for _ in $(seq 20); do
+            sleep 6
+            after=$(cast call "$ORACLE" "updatedAt()(uint64)" --rpc-url "$RPC_URL")
+            if [ "$after" != "$before" ]; then
+              echo "rate $(cast call "$ORACLE" "rate()(uint256)" --rpc-url "$RPC_URL"), updatedAt $after"
+              exit 0
+            fi
+          done
+          echo "::error::sync sent but updatedAt did not move in 2 minutes (SyncFailed or RateRejected?)"
+          exit 1
