@@ -212,3 +212,34 @@ a:focus-visible {
 	flex-basis: 100%;
 	margin: 0;
 }
+
+.small {
+	font-size: 13px;
+}
+
+.link {
+	padding: 0;
+	border: 0;
+	background: none;
+	color: var(--muted);
+	font: inherit;
+	font-size: 13px;
+	cursor: pointer;
+	text-decoration: underline dotted;
+}
+
+.sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip: rect(0 0 0 0);
+	white-space: nowrap;
+}
+
+fieldset {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	min-width: 0;
+}

@@ -1,0 +1,91 @@
+.detail {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) 360px;
+	gap: 24px;
+	align-items: start;
+}
+
+.detail-main,
+.detail-side {
+	display: grid;
+	gap: var(--gap);
+}
+
+.detail-head {
+	display: grid;
+	gap: 14px;
+	justify-items: start;
+}
+
+.detail-head > * {
+	justify-self: stretch;
+}
+
+.detail-head .chip {
+	justify-self: start;
+}
+
+.detail-head h1 {
+	font-size: clamp(24px, 4vw, 34px);
+	margin: 0;
+}
+
+.detail .rate {
+	margin: 0;
+}
+
+.form {
+	display: grid;
+	gap: 14px;
+}
+
+.form h2 {
+	font-size: 18px;
+	margin: 0;
+}
+
+.toggle {
+	display: grid;
+	grid-auto-columns: 1fr;
+	grid-auto-flow: column;
+	gap: 8px;
+}
+
+.projection {
+	display: grid;
+	gap: 8px;
+	margin: 0;
+	padding: 12px;
+	border-radius: 10px;
+	background: var(--bg);
+}
+
+.projection div {
+	display: flex;
+	justify-content: space-between;
+	gap: 8px;
+}
+
+.projection dt {
+	color: var(--muted);
+	font-size: 14px;
+}
+
+.projection dd {
+	margin: 0;
+	font-weight: 600;
+}
+
+.projection .win {
+	color: var(--yes);
+}
+
+.projection p {
+	margin: 0;
+}
+
+@media (max-width: 860px) {
+	.detail {
+		grid-template-columns: 1fr;
+	}
+}

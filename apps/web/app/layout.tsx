@@ -3,6 +3,7 @@ import "@/styles/base.css";
 import "@/styles/layout.css";
 import "@/styles/ui.css";
 import "@/styles/markets.css";
+import "@/styles/market.css";
 import type { Metadata, Viewport } from "next";
 import Footer from "@/components/layout/Footer";
 import Providers from "@/components/layout/Providers";
