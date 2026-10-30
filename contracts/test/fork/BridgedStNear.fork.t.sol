@@ -41,7 +41,7 @@ abstract contract BridgedStNearFork is Test {
     }
 
     function test_marketRoundTripsTheRealToken() public {
-        uint64 close = uint64(block.timestamp) + 7 days;
+        uint64 close = uint64(vm.getBlockTimestamp()) + 7 days;
         uint256 id = markets.createMarket("Fork round trip", close, resolver);
         _bet(alice, id, Side.Yes, 3 * ONE);
         _bet(bob, id, Side.No, 2 * ONE);
