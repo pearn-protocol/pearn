@@ -1,12 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.28;
 
-import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
-import {
-    CURRENT_ACCOUNT_ID_PRECOMPILE,
-    PROMISE_RESULT_PRECOMPILE,
-    XCC_PRECOMPILE
-} from "aurora-sdk/AuroraSdk.sol";
+import {XCC_PRECOMPILE} from "aurora-sdk/AuroraSdk.sol";
 import {Codec} from "aurora-sdk/Codec.sol";
 import {
     ExecutionMode,
@@ -14,14 +9,13 @@ import {
     PromiseResultStatus,
     PromiseWithCallback
 } from "aurora-sdk/Types.sol";
-import {Test} from "forge-std/Test.sol";
 
-import {StNearRateOracle} from "../src/StNearRateOracle.sol";
-import {MockToken} from "./mocks/MockToken.sol";
+import {StNearRateOracle} from "../../src/StNearRateOracle.sol";
+import {MockToken} from "../mocks/MockToken.sol";
+import {AuroraXcc} from "../utils/AuroraXcc.sol";
 
-contract StNearRateOracleTest is Test {
+contract StNearRateOracleTest is AuroraXcc {
     string internal constant META_POOL = "meta-pool.near";
-    string internal constant ENGINE = "aurora";
     uint256 internal constant STORAGE = 2e24;
     uint256 internal constant T0 = 1_800_000_000;
 
@@ -31,12 +25,7 @@ contract StNearRateOracleTest is Test {
 
     function setUp() public {
         vm.warp(T0);
-        // The precompiles exist only on Aurora: give them code and canned answers.
-        vm.etch(XCC_PRECOMPILE, hex"00");
-        vm.etch(CURRENT_ACCOUNT_ID_PRECOMPILE, hex"00");
-        vm.etch(PROMISE_RESULT_PRECOMPILE, hex"00");
-        vm.mockCall(XCC_PRECOMPILE, bytes(""), bytes(""));
-        vm.mockCall(CURRENT_ACCOUNT_ID_PRECOMPILE, bytes(""), bytes(ENGINE));
+        _mockAuroraPrecompiles();
 
         wNear = new MockToken("Wrapped NEAR", "wNEAR");
         oracle = new StNearRateOracle(wNear, META_POOL, ENGINE);
@@ -88,7 +77,7 @@ contract StNearRateOracleTest is Test {
     // ─── onRate ──────────────────────────────────────────────────────────────
 
     function test_onRate_storesReading() public {
-        _deliver(PromiseResultStatus.Successful, '"1512824781611009660067554"');
+        _deliver(oracle, PromiseResultStatus.Successful, '"1512824781611009660067554"');
         assertEq(oracle.rate(), 1_512_824_781_611_009_660_067_554);
         assertEq(oracle.updatedAt(), block.timestamp);
     }
@@ -99,30 +88,30 @@ contract StNearRateOracleTest is Test {
     }
 
     function test_onRate_neverDecreases() public {
-        _deliver(PromiseResultStatus.Successful, '"1500"');
+        _deliver(oracle, PromiseResultStatus.Successful, '"1500"');
         uint64 syncedAt = oracle.updatedAt();
         vm.warp(T0 + 1 days);
 
         vm.expectEmit(address(oracle));
         emit StNearRateOracle.RateRejected(1499, 1500);
-        _deliver(PromiseResultStatus.Successful, '"1499"');
+        _deliver(oracle, PromiseResultStatus.Successful, '"1499"');
         assertEq(oracle.rate(), 1500);
         assertEq(oracle.updatedAt(), syncedAt);
     }
 
     function test_onRate_equalReadingRefreshesTimestamp() public {
-        _deliver(PromiseResultStatus.Successful, '"1500"');
+        _deliver(oracle, PromiseResultStatus.Successful, '"1500"');
         uint256 later = T0 + 1 days;
         vm.warp(later);
-        _deliver(PromiseResultStatus.Successful, '"1500"');
+        _deliver(oracle, PromiseResultStatus.Successful, '"1500"');
         assertEq(oracle.updatedAt(), later);
     }
 
     function test_onRate_failedViewLeavesRate() public {
-        _deliver(PromiseResultStatus.Successful, '"1500"');
+        _deliver(oracle, PromiseResultStatus.Successful, '"1500"');
         vm.expectEmit(address(oracle));
         emit StNearRateOracle.SyncFailed();
-        _deliver(PromiseResultStatus.Failed, "");
+        _deliver(oracle, PromiseResultStatus.Failed, "");
         assertEq(oracle.rate(), 1500);
     }
 
@@ -132,17 +121,6 @@ contract StNearRateOracleTest is Test {
         wNear.mint(keeper, STORAGE);
         vm.prank(keeper);
         wNear.approve(address(oracle), STORAGE);
-    }
-
-    /// @dev Calls `onRate` as the XCC router would, with one promise result in Borsh.
-    function _deliver(PromiseResultStatus status, bytes memory output) internal {
-        bytes memory result = abi.encodePacked(bytes4(0x01000000), uint8(status));
-        if (status == PromiseResultStatus.Successful) {
-            result = abi.encodePacked(result, _u32le(output.length), output);
-        }
-        vm.mockCall(PROMISE_RESULT_PRECOMPILE, bytes(""), result);
-        vm.prank(oracle.callbackCaller());
-        oracle.onRate();
     }
 
     function _expectedXccInput() internal view returns (bytes memory) {
@@ -158,25 +136,6 @@ contract StNearRateOracleTest is Test {
         );
         return Codec.encodeCrossContractCallArgs(
             PromiseWithCallback(query, callback), ExecutionMode.Eager
-        );
-    }
-
-    /// @dev keccak of "<lowercase hex address>.aurora", last 20 bytes: Aurora's XCC account.
-    function _xccImplicitAddress(address account) internal pure returns (address) {
-        bytes memory hex0x = bytes(Strings.toHexString(account));
-        bytes memory hexNoPrefix = new bytes(40);
-        for (uint256 i; i < 40; ++i) {
-            hexNoPrefix[i] = hex0x[i + 2];
-        }
-        return address(uint160(uint256(keccak256(abi.encodePacked(hexNoPrefix, ".", ENGINE)))));
-    }
-
-    function _u32le(uint256 value) internal pure returns (bytes4) {
-        return bytes4(
-            uint32(
-                (value & 0xff) << 24 | (value >> 8 & 0xff) << 16 | (value >> 16 & 0xff) << 8
-                    | (value >> 24 & 0xff)
-            )
         );
     }
 }
