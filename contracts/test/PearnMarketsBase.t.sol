@@ -6,7 +6,7 @@ import {Test} from "forge-std/Test.sol";
 import {PearnMarkets} from "../src/PearnMarkets.sol";
 import {Outcome, Side} from "../src/types/Market.sol";
 import {MockRateOracle} from "./mocks/MockRateOracle.sol";
-import {MockStNear} from "./mocks/MockStNear.sol";
+import {MockToken} from "./mocks/MockToken.sol";
 
 /// @dev Shared fixture: one market closing in 30 days at a 1.5 NEAR stNEAR rate.
 abstract contract PearnMarketsBase is Test {
@@ -14,7 +14,7 @@ abstract contract PearnMarketsBase is Test {
     uint256 internal constant RATE = 1.5e24;
     uint64 internal constant DURATION = 30 days;
 
-    MockStNear internal stNear;
+    MockToken internal stNear;
     MockRateOracle internal oracle;
     PearnMarkets internal markets;
 
@@ -29,7 +29,7 @@ abstract contract PearnMarketsBase is Test {
 
     function setUp() public virtual {
         vm.warp(1_800_000_000);
-        stNear = new MockStNear();
+        stNear = new MockToken("Staked NEAR", "STNEAR");
         oracle = new MockRateOracle();
         oracle.set(RATE);
         markets = new PearnMarkets(stNear, oracle, guardian);
