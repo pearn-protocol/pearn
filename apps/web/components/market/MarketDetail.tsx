@@ -1,11 +1,11 @@
 "use client";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import Amount from "@/components/ui/Amount";
 import NotDeployed from "@/components/ui/NotDeployed";
 import OddsBar from "@/components/ui/OddsBar";
 import PhaseChip from "@/components/ui/PhaseChip";
 import RateInfo from "@/components/ui/RateInfo";
+import Stat from "@/components/ui/Stat";
 import { useChainData } from "@/hooks/useChainData";
 import { useNow } from "@/hooks/useNow";
 import { contracts, explorerAddress } from "@/lib/config";
@@ -72,17 +72,6 @@ export default function MarketDetail() {
 				<PositionPanel m={m} now={now} />
 				{m.outcome === Outcome.Unresolved && <SponsorForm m={m} />}
 			</aside>
-		</div>
-	);
-}
-
-function Stat({ label, value }: { label: string; value: bigint }) {
-	return (
-		<div>
-			<dt>{label}</dt>
-			<dd>
-				<Amount value={value} />
-			</dd>
 		</div>
 	);
 }

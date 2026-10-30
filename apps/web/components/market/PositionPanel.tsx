@@ -1,5 +1,6 @@
 "use client";
 import Amount from "@/components/ui/Amount";
+import Stat from "@/components/ui/Stat";
 import TxStatus from "@/components/ui/TxStatus";
 import { usePosition } from "@/hooks/usePosition";
 import { useTx } from "@/hooks/useTx";
@@ -26,11 +27,11 @@ export default function PositionPanel({ m, now }: { m: MarketWithId; now: number
 		<div className="card form">
 			<h2>Your position</h2>
 			<dl className="stats">
-				{yes.staked > 0n && <Row label="On Yes" value={yes.staked} />}
-				{no.staked > 0n && <Row label="On No" value={no.staked} />}
-				{sponsored > 0n && <Row label="Sponsored" value={sponsored} />}
+				{yes.staked > 0n && <Stat label="On Yes" value={yes.staked} />}
+				{no.staked > 0n && <Stat label="On No" value={no.staked} />}
+				{sponsored > 0n && <Stat label="Sponsored" value={sponsored} />}
 				{yes.principal + no.principal > 0n && (
-					<Row label="Principal (NEAR)" unit="NEAR" value={yes.principal + no.principal} />
+					<Stat label="Principal (NEAR)" unit="NEAR" value={yes.principal + no.principal} />
 				)}
 			</dl>
 			{phase === "challenge" && (
@@ -55,17 +56,6 @@ export default function PositionPanel({ m, now }: { m: MarketWithId; now: number
 					<p className="muted small">Nothing to claim.</p>
 				))}
 			<TxStatus {...tx} />
-		</div>
-	);
-}
-
-function Row({ label, value, unit }: { label: string; value: bigint; unit?: string }) {
-	return (
-		<div>
-			<dt>{label}</dt>
-			<dd>
-				<Amount unit={unit} value={value} />
-			</dd>
 		</div>
 	);
 }
