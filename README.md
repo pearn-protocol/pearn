@@ -52,6 +52,12 @@ cd contracts && FOUNDRY_PROFILE=fork forge test
 ```
 → the same market round-trips the **real bridged stNEAR** on Aurora testnet and mainnet forks.
 
+The app, against a local chain with sample markets:
+
+```sh
+cd apps/web && pnpm dev:local                  # http://localhost:3000
+```
+
 To read the story in code, start with `test/integration/MarketLifecycle.t.sol`. It runs a 30-day market:
 - the loser keeps 150 NEAR of value;
 - the early and late winners split the pot 2:1 by time weight.
@@ -70,7 +76,10 @@ Deploy: `pnpm rpc:testnet`, then `cd contracts && forge script script/Deploy.s.s
 |---|---|
 | `contracts/src` | `PearnMarkets`, `StNearRateOracle`, `libraries/` (PayoutMath, NearJson), `interfaces/`, `types/` |
 | `contracts/test` | `unit/`, `integration/`, `property/`, `fork/`, shared `utils/` and `mocks/` |
-| `contracts/script` | Deploy, SyncOracle, per-network addresses |
+| `contracts/script` | Deploy, SyncOracle, DevChain (local sample markets), per-network addresses |
+| `apps/web` | Next.js static app (viem, injected wallet): markets, bet, sponsor, resolve, claim, create, portfolio |
+| `packages/brand` | Logo and icons |
+| `scripts/abi.mjs` | Writes the web ABI from the contracts; CI fails on drift |
 | `scripts/aurora-rpc.mjs` | Local RPC proxy: Foundry sends a bare block hash that Aurora rejects; this rewrites it to EIP-1898 |
 | `REGRESSION.md` | One named test per fixed bug, checked in CI |
 
