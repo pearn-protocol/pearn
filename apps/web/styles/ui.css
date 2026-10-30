@@ -243,3 +243,26 @@ fieldset {
 	border: 0;
 	min-width: 0;
 }
+
+.table {
+	display: grid;
+	gap: 12px;
+}
+
+.portfolio-row {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	gap: 16px;
+	text-decoration: none;
+}
+
+.portfolio-row h3 {
+	margin: 8px 0 0;
+	font-size: 17px;
+}
+
+.page.narrow {
+	max-width: 640px;
+}
