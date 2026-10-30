@@ -1,3 +1,7 @@
+<p align="center">
+  <img alt="Pearn" width="96" src="packages/brand/android-chrome-192x192.png">
+</p>
+
 # Pearn
 
 [![CI](https://github.com/pearn-protocol/pearn/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/pearn-protocol/pearn/actions/workflows/ci.yml)
