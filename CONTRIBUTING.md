@@ -12,21 +12,22 @@
 
 CI (`.github/workflows/ci.yml`) runs on every PR and on `main`, and `main` requires it to pass. Deploys to Coolify follow once there is an app to deploy (#2).
 
-The Husky pre-commit hook runs Biome on staged files and `cargo fmt --check`. Before you open a PR:
+The Husky pre-commit hook runs Biome on staged files and `forge fmt --check`. Before you open a PR:
 
 ```sh
 pnpm check
-cargo fmt --all && cargo clippy --all-targets -- -D warnings && cargo test   # once the contract exists
+cd contracts && forge fmt --check && forge build --sizes && forge test
 ```
 
 ## Layout
 
-`contracts/` holds NEAR contracts, `apps/` anything that runs or deploys, `scripts/` the keeper and repo scripts.
+`contracts/` holds the Solidity contracts (Aurora), `apps/` anything that runs or deploys, `scripts/` the keeper and repo scripts.
 
-**Rust (`contracts/pearn`)**
-- `lib.rs` is the contract struct, constants and `mod` only.
-- One concept per module (`market.rs`, `vault.rs`, `payout.rs`, …); the error type goes in `error.rs`.
-- Unit tests sit next to the code; sandbox tests (near-workspaces) go in `tests/`.
+**Solidity (`contracts/`, Foundry)**
+- `src/` one contract per file; `interfaces/` hold events, errors and the external API; `libraries/` pure logic; `types/` structs and enums.
+- Custom errors, an event for every state change, NatSpec on external functions, immutables for addresses.
+- Checks-effects-interactions, `SafeERC20`, `Math.mulDiv` for products.
+- `test/` mirrors `src/` (`PearnMarkets.t.sol`, …); mocks in `test/mocks/`; fuzz and invariant tests for anything in DESIGN.md §5.
 
 **Next.js (`apps/web`)**
 - `app/` routes only compose.
@@ -41,6 +42,6 @@ cargo fmt --all && cargo clippy --all-targets -- -D warnings && cargo test   # o
 
 Principal is the promise, so every PR keeps to these:
 - Payouts never exceed what the market holds (DESIGN.md §4); rounding favours the vault.
-- State changes only after a cross-contract callback confirms success.
-- Every write that adds state takes a storage deposit.
+- Oracle state changes only in a callback from the oracle's own XCC account, and the rate never decreases.
+- No owner and no upgrade path over funds.
 - Never commit keys or seed phrases; they live in environment variables.
