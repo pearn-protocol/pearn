@@ -46,6 +46,8 @@ jobs:
           version: v1.8.3
       - name: forge fmt
         run: forge fmt --check
+      - name: forge lint
+        run: forge lint -D warnings
       - name: forge build
         run: forge build --sizes
       - name: forge test
