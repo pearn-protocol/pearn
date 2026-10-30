@@ -12,6 +12,7 @@ optimizer_runs = 10_000
 via_ir = false
 # Fork tests need the Aurora RPC proxy; run them with FOUNDRY_PROFILE=fork.
 no_match_path = "test/fork/*"
+fs_permissions = [{ access = "read-write", path = "./deployments" }]
 remappings = [
   "forge-std/=lib/forge-std/src/",
   "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/",
