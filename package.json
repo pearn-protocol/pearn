@@ -3,6 +3,7 @@
 	"private": true,
 	"packageManager": "pnpm@10.20.0",
 	"scripts": {
+		"abi": "node scripts/abi.mjs",
 		"check": "biome check .",
 		"check:ci": "biome ci .",
 		"format": "biome format --write .",

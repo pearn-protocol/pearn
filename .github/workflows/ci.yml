@@ -32,6 +32,37 @@ jobs:
       - name: Repo scripts
         run: pnpm test:scripts
 
+  web:
+    name: Web (types, unit, build, e2e)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: apps/web
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: v1.8.3
+      - run: pnpm install --frozen-lockfile
+      - name: Typecheck
+        run: pnpm typecheck
+      - name: Unit tests
+        run: pnpm test
+      - name: Build (Aurora testnet)
+        run: pnpm build
+      - name: End to end (anvil + headless Chrome)
+        env:
+          CHROME: /usr/bin/google-chrome
+        run: pnpm e2e
+
   contracts:
     name: Contracts (fmt, build, test)
     runs-on: ubuntu-latest
@@ -54,6 +85,8 @@ jobs:
         run: forge lint -D warnings
       - name: forge build
         run: forge build --sizes
+      - name: Web ABI matches the contracts
+        run: node ../scripts/abi.mjs && git diff --exit-code ../apps/web/lib/abi.ts
       - name: Unit tests
         run: forge test -vvv --match-path 'test/unit/*'
       - name: Integration tests

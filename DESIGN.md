@@ -49,7 +49,7 @@ There is no owner and no upgrade path: no one can move principal.
 ## 4. System
 
 ```
-Browser (Next.js, wagmi/viem, MetaMask on Aurora)
+Browser (Next.js static export, viem, MetaMask on Aurora)
    │ approve + bet / sponsor / claim / create            reads
    ▼                                                        │
 PearnMarkets.sol ─── rate() ──► StNearRateOracle.sol ◄──────┘
@@ -141,7 +141,7 @@ Best practice applied: Solidity 0.8.28, custom errors, events on every state cha
 
 ```
 contracts/   Foundry project (§7)
-apps/web/    Next.js + wagmi/viem
+apps/web/    Next.js static export + viem
 scripts/     keeper (oracle.sync), testnet stNEAR helper
 ```
 

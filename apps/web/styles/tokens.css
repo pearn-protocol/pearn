@@ -1,0 +1,39 @@
+/* Colours from the logo tile: orange top, pink middle, lavender bottom. */
+:root {
+	color-scheme: light dark;
+	--font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+	--mono: ui-monospace, "SF Mono", Menlo, monospace;
+
+	--orange: #fe835a;
+	--pink: #f26b8a;
+	--lavender: #9aa4e6;
+	--gradient: linear-gradient(160deg, var(--orange), var(--pink) 55%, var(--lavender));
+
+	--bg: #fbf8f6;
+	--surface: #ffffff;
+	--ink: #1d1a1f;
+	--muted: #6c6670;
+	--line: #1d1a1f1a;
+	--yes: #1f9d6b;
+	--no: #d6455d;
+	--accent: #e2603a;
+	--on-accent: #ffffff;
+
+	--radius: 14px;
+	--gap: 16px;
+	--max: 1040px;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--bg: #141216;
+		--surface: #1e1b21;
+		--ink: #f3eff5;
+		--muted: #a39ca8;
+		--line: #f3eff51f;
+		--yes: #3cc78f;
+		--no: #f0677d;
+		--accent: #fe835a;
+		--on-accent: #1d1a1f;
+	}
+}
