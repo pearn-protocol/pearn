@@ -1,2 +1,2 @@
 pnpm exec biome check --staged --no-errors-on-unmatched
-if [ -f Cargo.toml ]; then cargo fmt --all --check; fi
+if git diff --cached --name-only | grep -q "^contracts/.*\.sol$"; then (cd contracts && forge fmt --check); fi
