@@ -8,14 +8,7 @@
 	},
 	"files": {
 		"ignoreUnknown": true,
-		"includes": [
-			"**",
-			"!**/*.md",
-			"!**/dist",
-			"!**/.next",
-			"!**/out",
-			"!pnpm-lock.yaml"
-		]
+		"includes": ["**", "!**/*.md", "!**/dist", "!**/.next", "!**/out", "!pnpm-lock.yaml"]
 	},
 	"formatter": {
 		"enabled": true,
@@ -61,10 +54,7 @@
 				"noConsole": {
 					"level": "warn",
 					"options": {
-						"allow": [
-							"error",
-							"warn"
-						]
+						"allow": ["error", "warn"]
 					}
 				},
 				"noEmptyBlockStatements": "error"
@@ -104,11 +94,7 @@
 	},
 	"overrides": [
 		{
-			"includes": [
-				"**/*.test.ts",
-				"**/*.test.mjs",
-				"**/scripts/**"
-			],
+			"includes": ["**/*.test.ts", "**/*.test.mjs", "**/scripts/**"],
 			"linter": {
 				"rules": {
 					"suspicious": {
