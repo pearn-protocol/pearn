@@ -72,6 +72,18 @@ App: **https://pearn.103.150.190.91.sslip.io** (Aurora testnet; deployed from `m
 
 Deploy: `pnpm rpc:testnet`, then `cd contracts && forge script script/Deploy.s.sol --rpc-url aurora_testnet --legacy --broadcast` (env `WALLET_PK`). The first `script/SyncOracle.s.sol` run pays the oracle's one-time 2 wNEAR XCC storage.
 
+### Testnet stNEAR
+
+Everything goes through NEAR testnet with [near-cli-rs](https://github.com/near/near-cli-rs); bridging into Aurora needs no Aurora gas. `YOUR_ADDRESS` is your Aurora address, lowercase and without `0x`.
+
+```sh
+near account create-account sponsor-by-faucet-service you.testnet autogenerate-new-keypair save-to-legacy-keychain network-config testnet create   # 10 NEAR
+near contract call-function as-transaction meta-v2.pool.testnet deposit_and_stake json-args '{}' prepaid-gas '200 Tgas' attached-deposit '5 NEAR' sign-as you.testnet network-config testnet sign-with-legacy-keychain send
+near contract call-function as-transaction meta-v2.pool.testnet ft_transfer_call json-args '{"receiver_id":"aurora","amount":"<stNEAR yocto>","msg":"YOUR_ADDRESS"}' prepaid-gas '200 Tgas' attached-deposit '1 yoctoNEAR' sign-as you.testnet network-config testnet sign-with-legacy-keychain send
+```
+
+The stNEAR shows up at `0x2137…f144` on Aurora testnet. wNEAR (for the oracle's first sync) works the same way: `wrap.testnet` `storage_deposit` + `near_deposit`, then `ft_transfer_call` to `aurora`. Aurora gas (ETH) comes from the [Aurora faucet](https://aurora.dev/faucet).
+
 ## Repository
 
 | Path | What |
