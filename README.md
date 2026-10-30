@@ -64,6 +64,8 @@ To read the story in code, start with `test/integration/MarketLifecycle.t.sol`. 
 
 ## Deployments
 
+App: **https://pearn.103.150.190.91.sslip.io** (Aurora testnet; deployed from `main` by Coolify, see [deploy/](deploy/README.md)).
+
 | Network | PearnMarkets | StNearRateOracle |
 |---|---|---|
 | Aurora testnet (1313161555) | pending | pending |
@@ -79,6 +81,7 @@ Deploy: `pnpm rpc:testnet`, then `cd contracts && forge script script/Deploy.s.s
 | `contracts/script` | Deploy, SyncOracle, DevChain (local sample markets), per-network addresses |
 | `apps/web` | Next.js static app (viem, injected wallet): markets, bet, sponsor, resolve, claim, create, portfolio |
 | `packages/brand` | Logo and icons |
+| `deploy/` | Caddy static server, CSP build step, host nginx; CD via Coolify |
 | `scripts/abi.mjs` | Writes the web ABI from the contracts; CI fails on drift |
 | `scripts/aurora-rpc.mjs` | Local RPC proxy: Foundry sends a bare block hash that Aurora rejects; this rewrites it to EIP-1898 |
 | `REGRESSION.md` | One named test per fixed bug, checked in CI |
