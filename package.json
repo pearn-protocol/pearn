@@ -7,7 +7,10 @@
 		"check:ci": "biome ci .",
 		"format": "biome format --write .",
 		"fix": "biome check --write .",
-		"prepare": "husky"
+		"prepare": "husky",
+		"rpc:testnet": "node scripts/aurora-rpc.mjs testnet 8546",
+		"rpc:mainnet": "node scripts/aurora-rpc.mjs mainnet 8547",
+		"test:scripts": "node --test scripts/*.test.mjs"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.6.4",

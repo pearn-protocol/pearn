@@ -10,12 +10,18 @@ evm_version = "paris"
 optimizer = true
 optimizer_runs = 10_000
 via_ir = false
+# Fork tests need the Aurora RPC proxy; run them with FOUNDRY_PROFILE=fork.
+no_match_path = "test/fork/*"
 remappings = [
   "forge-std/=lib/forge-std/src/",
   "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/",
   "openzeppelin-contracts/=lib/openzeppelin-contracts/contracts/",
   "aurora-sdk/=lib/aurora-contracts-sdk/aurora-solidity-sdk/src/",
 ]
+
+[profile.fork]
+match_path = "test/fork/*"
+no_match_path = "none"
 
 [profile.default.fuzz]
 runs = 1_000
@@ -41,9 +47,11 @@ sort_imports = true
 # Windows here are hours to days; a validator's few seconds of timestamp drift cannot matter.
 exclude_lints = ["block-timestamp"]
 
+# Foundry's fork requests need the local proxy (scripts/aurora-rpc.mjs): Aurora rejects a bare
+# block hash. `pnpm rpc:testnet` / `pnpm rpc:mainnet` start it on these ports.
 [rpc_endpoints]
-aurora = "https://mainnet.aurora.dev"
-aurora_testnet = "https://testnet.aurora.dev"
+aurora = "http://127.0.0.1:8547"
+aurora_testnet = "http://127.0.0.1:8546"
 
 # Contracts are verified on Aurora's Blockscout explorers (Etherscan does not index Aurora):
 # forge verify-contract --verifier blockscout --verifier-url https://explorer.testnet.aurora.dev/api/ ...
