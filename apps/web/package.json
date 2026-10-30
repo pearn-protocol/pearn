@@ -10,7 +10,8 @@
 		"dev:local": "node scripts/dev-local.mjs",
 		"build": "next build",
 		"typecheck": "tsc --noEmit",
-		"test": "node --test 'lib/*.test.ts'"
+		"test": "node --test 'lib/*.test.ts'",
+		"e2e": "node --test --test-concurrency=1 'e2e/*.test.mjs'"
 	},
 	"devDependencies": {
 		"@types/node": "^26.6.6",
