@@ -1,0 +1,11 @@
+target/
+node_modules/
+dist/
+.next/
+out/
+.claude/
+.env
+.env.*
+*.tsbuildinfo
+coverage/
+neardev/
