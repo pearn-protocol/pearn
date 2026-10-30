@@ -69,6 +69,7 @@ interface IPearnMarkets {
     function overrideInvalid(uint256 id) external;
 
     /// @notice Pays the caller's principal plus any winnings once the outcome is final.
+    ///         If nobody bet, sponsors claim their sponsorship back instead.
     function claim(uint256 id) external returns (uint256 amount);
 
     /// @notice What `bettor` would receive from `claim` now (0 before finality or once claimed).
@@ -77,6 +78,11 @@ interface IPearnMarkets {
     function getMarket(uint256 id) external view returns (Market memory);
 
     function positionOf(uint256 id, address bettor, Side side) external view returns (Stake memory);
+
+    /// @notice stNEAR `sponsor` added to market `id`; refunded only if nobody ever bet.
+    function sponsorshipOf(uint256 id, address sponsor) external view returns (uint256);
+
+    function hasClaimed(uint256 id, address account) external view returns (bool);
 
     function marketCount() external view returns (uint256);
 }
