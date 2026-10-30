@@ -24,8 +24,12 @@ const network =
 	NETWORKS[Number(process.env.NEXT_PUBLIC_CHAIN_ID) as keyof typeof NETWORKS] ??
 	NETWORKS[auroraTestnet.id];
 
+/** NEXT_PUBLIC_RPC_URL overrides the network's public RPC. */
+const rpc = process.env.NEXT_PUBLIC_RPC_URL?.trim();
+
 export const chain = defineChain({
 	...network.base,
+	...(rpc && { rpcUrls: { default: { http: [rpc] } } }),
 	blockExplorers: { default: { name: "Blockscout", url: network.explorer } },
 });
 
