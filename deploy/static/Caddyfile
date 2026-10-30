@@ -1,0 +1,38 @@
+# Static server for apps/web. TLS ends at the host nginx (deploy/nginx.conf); this listens on
+# plain :8080 as an unprivileged user. No `log` directive, so no access logs or client IPs.
+{
+	admin off
+	auto_https off
+	persist_config off
+}
+
+:8080 {
+	root * /srv
+	# Content-Security-Policy, written by prepare.mjs.
+	import /etc/caddy/csp.caddy
+	header {
+		Referrer-Policy no-referrer
+		X-Content-Type-Options nosniff
+		X-Frame-Options DENY
+		Cross-Origin-Opener-Policy same-origin
+		Cross-Origin-Resource-Policy same-origin
+		Permissions-Policy "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=(), interest-cohort=(), browsing-topics=()"
+		Strict-Transport-Security "max-age=31536000"
+		-Server
+	}
+
+	# Content-hashed build output never changes.
+	@hashed path /_next/static/*
+	header @hashed Cache-Control "public, max-age=31536000, immutable"
+	@other not path /_next/static/*
+	header @other Cache-Control "public, max-age=300"
+
+	try_files {path} {path}/index.html {path}.html
+	file_server {
+		precompressed br gzip
+	}
+	handle_errors 404 {
+		rewrite * /404.html
+		file_server
+	}
+}
