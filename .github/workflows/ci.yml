@@ -29,6 +29,8 @@ jobs:
         run: pnpm check:ci
       - name: Regression index (REGRESSION.md)
         run: node scripts/regressions.mjs
+      - name: Repo scripts
+        run: pnpm test:scripts
 
   contracts:
     name: Contracts (fmt, build, test)
@@ -58,3 +60,11 @@ jobs:
         run: forge test -vvv --match-path 'test/integration/*'
       - name: Property tests (fuzz)
         run: forge test -vvv --match-path 'test/property/*'
+      - name: Fork tests (real stNEAR on Aurora testnet and mainnet)
+        env:
+          FOUNDRY_PROFILE: fork
+        run: |
+          node ../scripts/aurora-rpc.mjs testnet 8546 &
+          node ../scripts/aurora-rpc.mjs mainnet 8547 &
+          sleep 1
+          forge test -vvv
