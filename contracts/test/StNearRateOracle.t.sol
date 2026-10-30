@@ -111,9 +111,10 @@ contract StNearRateOracleTest is Test {
 
     function test_onRate_equalReadingRefreshesTimestamp() public {
         _deliver(PromiseResultStatus.Successful, '"1500"');
-        vm.warp(block.timestamp + 1 days);
+        uint256 later = block.timestamp + 1 days;
+        vm.warp(later);
         _deliver(PromiseResultStatus.Successful, '"1500"');
-        assertEq(oracle.updatedAt(), block.timestamp);
+        assertEq(oracle.updatedAt(), later);
     }
 
     function test_onRate_failedViewLeavesRate() public {
