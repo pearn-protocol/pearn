@@ -32,6 +32,15 @@ contract NearJsonTest is Test {
         }
     }
 
+    /// Regression #16: a byte below '0' (here '-') underflowed into a panic instead of reverting
+    /// with InvalidU128Json.
+    function test_regression_16_signIsInvalidNotPanic() public {
+        vm.expectRevert(NearJson.InvalidU128Json.selector);
+        harness.parseU128('"-1"');
+        vm.expectRevert(NearJson.InvalidU128Json.selector);
+        harness.parseU128('"1 2"');
+    }
+
     function test_parseU128_rejectsOverflow() public {
         vm.expectRevert(
             abi.encodeWithSelector(
