@@ -1,2 +1,2 @@
 pnpm exec biome check --staged --no-errors-on-unmatched
-if git diff --cached --name-only | grep -q "^contracts/.*\.sol$"; then (cd contracts && forge fmt --check); fi
+if git diff --cached --name-only | grep -q "^contracts/.*\.sol$"; then (cd contracts && forge fmt --check && forge lint -D warnings); fi
