@@ -22,7 +22,16 @@ after(() => {
 	stack?.stop();
 });
 
-const tabAs = async (account) => openTab(chrome.port, await walletScript(account));
+/**
+ * A tab whose wallet is already authorised for `account`, like a returning MetaMask user: the
+ * app connects on load (eth_accounts), so the test waits for the address instead of clicking.
+ */
+async function tabAs(account, path) {
+	const tab = await openTab(chrome.port, await walletScript(account));
+	await tab.goto(`${APP}${path}`);
+	await tab.waitForText(`${account.slice(0, 6)}…${account.slice(-4)}`);
+	return tab;
+}
 
 const position = (id, account, side) =>
 	client.readContract({
@@ -33,10 +42,7 @@ const position = (id, account, side) =>
 	});
 
 test("bet on YES from the market page", async () => {
-	const tab = await tabAs(ACCOUNTS[1]);
-	await tab.goto(`${APP}/market/?id=0`);
-	await tab.click("Connect wallet");
-	await tab.waitForText("0x7099");
+	const tab = await tabAs(ACCOUNTS[1], "/market/?id=0");
 	await tab.type("input[inputmode=decimal]", "5");
 	await tab.waitForText("Principal, returned in full");
 	await tab.click("Approve and bet");
@@ -60,18 +66,14 @@ test("resolve, wait out the challenge window, claim", async () => {
 		},
 	]);
 
-	const resolver = await tabAs(ACCOUNTS[0]);
-	await resolver.goto(`${APP}/market/?id=2`);
-	await resolver.click("Connect wallet");
+	const resolver = await tabAs(ACCOUNTS[0], "/market/?id=2");
 	await resolver.waitForText("Resolve this market");
 	await resolver.click("Yes");
 	await resolver.waitForText("Challenge window");
 	resolver.close();
 
 	await warp(86_400 + 60);
-	const bettor = await tabAs(ACCOUNTS[2]);
-	await bettor.goto(`${APP}/market/?id=2`);
-	await bettor.click("Connect wallet");
+	const bettor = await tabAs(ACCOUNTS[2], "/market/?id=2");
 	await bettor.click("Claim");
 	await bettor.waitForText("Claimed.");
 	bettor.close();
