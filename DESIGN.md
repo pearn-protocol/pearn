@@ -2,172 +2,166 @@
 
 No-loss prediction market on NEAR. You bet the **staking yield** of your NEAR, never the NEAR itself. Everyone gets their principal back; the winning side splits the yield of the whole market.
 
-Status: design, 2026-10-30. Nothing built yet.
+Contracts are Solidity (Foundry) on **Aurora**, the EVM on NEAR. The stake is **stNEAR**, Meta Pool's liquid-staked NEAR, bridged to Aurora as an ERC-20. Its NEAR value rises every epoch as staking rewards land; that rise is the yield.
 
 ## 1. Problem and pitch
 
-- In a normal prediction market the loser loses everything. That keeps most people out, and it is gambling in most jurisdictions' eyes.
-- Idle NEAR earns ~4.5% a year from staking anyway. Pearn turns that yield into the stake: "Bet the interest, keep the money."
-- Prior art exists on EVM (Aave-based hackathon projects: Unice, NoLoss Predict, ExtraLife). Pearn differs in three ways:
-  1. **Native NEAR staking as the yield source.** No lending protocol, no liquidation risk, and NEAR has no slashing today.
-  2. **Sponsored pots.** Projects, DAOs and validators top up the pot. Yield alone is too small to be fun (see §6); sponsors are the business model, not an afterthought.
-  3. **DAO resolvers.** Each market names a SputnikDAO/Trezu account as its oracle, so a community resolves its own markets.
+- In a normal prediction market the loser loses everything. That keeps most people out.
+- Staked NEAR earns ~4.5% a year anyway. Pearn turns that yield into the stake: "Bet the interest, keep the money."
+- Prior art exists on EVM chains (Aave-based hackathon projects: Unice, NoLoss Predict, ExtraLife). Pearn differs:
+  1. **NEAR staking as the yield source**, not a lending market: no borrowers, no liquidations, and NEAR has no slashing today.
+  2. **Instant claims.** Bets and payouts are in stNEAR, so nothing waits for NEAR's 4-epoch unstake.
+  3. **The rate comes from NEAR itself.** A Solidity oracle reads `get_st_near_price` from the Meta Pool contract on NEAR through Aurora's cross-contract-call (XCC) precompile. There is no off-chain price feed.
+  4. **Sponsored pots and DAO resolvers.** Projects top up pots; each market names its own resolver, ideally a DAO.
 
-## 2. Actors
+## 2. Why stNEAR and not XCC → staking pool
+
+The first design staked NEAR directly with a validator through XCC. Reading the XCC source rules it out:
+
+- The XCC precompile funds every NEAR deposit a promise attaches by pulling the **caller's wNEAR** (`engine-precompiles/src/xcc.rs`, `required_near`). The router then attaches that NEAR (`etc/xcc-router/src/lib.rs`).
+- After `unstake` → `withdraw_all`, the NEAR lands on the contract's XCC router account. Getting it back to Aurora means wrapping it with `near_deposit`, and that attaches NEAR, which the precompile charges to the contract **again**. The router's own NEAR can never leave; only a fixed 2 NEAR refund exists.
+
+So native staking via XCC is one-way. stNEAR keeps the staking yield and avoids the problem: it is an ERC-20 on Aurora already, and XCC is only needed for a free view call.
+
+Verified on chain (2026-10-30):
+
+| | Aurora mainnet (1313161554) | Aurora testnet (1313161555) |
+|---|---|---|
+| stNEAR ERC-20 | `0x07f9f7f963c5cd2bbffd30ccfb964be114332e30` (24 decimals) | `0x2137df2e54abd6bf1c1a8c1739f2ea6a8c15f144` |
+| Meta Pool on NEAR | `meta-pool.near` (rate 1.5128 NEAR) | `meta-v2.pool.testnet` |
+| XCC precompile | `0x516cded1d16af10cad47d6d49128e2eb7d27b372` | same |
+
+Testnet bridged tokens report empty metadata (`decimals() = 0`), so contracts never call `decimals()`. All amounts are raw units, 1e24 per token.
+
+## 3. Actors
 
 | Actor | Does |
 |---|---|
-| Bettor | Deposits NEAR on YES or NO, claims principal + winnings |
-| Sponsor | Adds NEAR to a market's pot; gets nothing back except attention |
-| Creator | Creates a market: question, close time, resolver |
-| Resolver | An account (ideally a DAO) that reports the outcome after close |
-| Keeper | Anyone. Calls permissionless maintenance methods (sync, stake, unstake, withdraw) |
+| Bettor | Bets stNEAR on YES or NO, claims principal + winnings |
+| Sponsor | Adds stNEAR to a market's pot; gets nothing back except attention |
+| Creator | Anyone. Creates a market: question, close time, resolver |
+| Resolver | Set per market (ideally a DAO). Reports the outcome after close |
+| Guardian | One account (a DAO) that can only turn an outcome into `Invalid` during the challenge window |
+| Keeper | Anyone. Calls `oracle.sync()` once per epoch |
 
-## 3. System
+There is no owner and no upgrade path: no one can move principal.
+
+## 4. System
 
 ```
-Browser (Next.js + wallet-selector)
-   │  bet / sponsor / claim / create          view calls
-   ▼                                              │
-pearn.near  (one Rust contract)  ◄────────────────┘
-   │  deposit_and_stake / unstake / withdraw_all / get_account_total_balance
-   ▼
-staking pool (one validator, e.g. *.poolv1.near)
+Browser (Next.js, wagmi/viem, MetaMask on Aurora)
+   │ approve + bet / sponsor / claim / create            reads
+   ▼                                                        │
+PearnMarkets.sol ─── rate() ──► StNearRateOracle.sol ◄──────┘
+   │ holds stNEAR ERC-20            │ XCC: get_st_near_price on meta-pool.near
+   ▼                                ▼ callback onRate(...)
+stNEAR (bridged NEP-141)        NEAR: Meta Pool contract
 
-keeper script (cron, Node) ──► pearn.sync / stake / unstake / withdraw
-resolver DAO (SputnikDAO)   ──► pearn.resolve(market, outcome)
+keeper (cron) ──► oracle.sync()
+resolver DAO  ──► markets.resolve(id, outcome)
 ```
 
-One contract holds every market. All deposits go into one shared **vault** staked with one pool. Markets don't stake separately; they own **vault shares**, ERC-4626 style. This keeps the cross-contract surface to one pool and four methods.
+## 5. Accounting
 
-## 4. Accounting (the core)
-
-### Vault
-- `assets = pool_total_balance (staked + unstaking) + liquid − owed`
-- `price = assets / total_shares`. It only rises (rewards are paid per epoch; no slashing).
-- `price` is refreshed by `sync()`, a cross-contract view of `get_account_total_balance` with a callback. Rewards land once per epoch (~12 h), so syncing once per epoch is exact, not an approximation.
+`rate` is yoctoNEAR per 1 stNEAR (1e24 scale). It only rises; the oracle ignores any lower reading, which is what keeps principal safe.
 
 ### Bet
-User attaches `a` NEAR on side `s` at time `t` (before `close`):
-- `shares = floor(a / price)` — rounding favours the vault, so principal is never over-promised.
-- `weight = a × (close − t)` — time-weighted stake. Known at bet time because bets are locked until close, so no running accumulators are needed.
-- The market adds `a`, `shares` and `weight` to side `s`.
+User sends `s` stNEAR on side `side` at time `t < close`:
+- `principal = s × rate / 1e24` — the bet's NEAR value, fixed now.
+- `weight = principal × (close − t)` — time-weighted. Known at bet time because bets are locked until close.
+- The market adds `s`, `principal` and `weight` to that side and to the user's position.
 
-**Why time weight:** without it a whale bets on the obvious side one minute before close and takes the yield that early bettors produced. With it, a late bet earns almost nothing.
+**Why time weight:** without it a whale bets on the obvious side just before close and takes the yield early bettors produced. With it, a late bet earns almost nothing.
+
+A stale rate is safe. An old, lower rate under-counts the bettor's own principal, and the difference goes into the pot. It never comes out of anyone else.
 
 ### Resolve
-After `close`, the resolver calls `resolve(id, Yes | No | Invalid)`. The contract then:
-1. Values the market at the current price: `V = market_shares × price`.
-2. `yield = max(0, V − total_principal)`. `pot = yield + sponsored`.
-3. Burns the market's shares and records `V + sponsored` as `owed` (a fixed NEAR liability). The market stops earning.
-4. Opens a 24 h **challenge window** in which the contract `guardian` (a DAO) may override the outcome to `Invalid`. After that the outcome is final.
+After `close`, once the oracle has synced after close, the resolver calls `resolve(id, Yes | No | Invalid)`. The market stores `rateR`:
+- `reserve = ceil(totalPrincipal × 1e24 / rateR)` — stNEAR needed to give everyone their NEAR back.
+- `pot = totalStaked − reserve + sponsored` — all the yield, plus sponsors.
 
-### Claim
-| Case | Bettor receives |
+Then a 24 h **challenge window** opens, in which the guardian may override to `Invalid`. If the resolver does nothing for 7 days after close, anyone can void the market (`Invalid`).
+
+### Claim (after the window)
+| Case | Bettor receives (stNEAR) |
 |---|---|
-| Lost | `a` |
-| Won | `a + pot × weight / W_winning_side` |
-| Invalid, or nobody on the winning side | `a + pot × weight / W_all` (everyone shares the pot) |
+| Lost | `floor(principal × 1e24 / rateR)` |
+| Won | refund + `pot × weight / W_winning` |
+| Invalid, or nobody on the winning side | refund + `pot × weight / W_all` |
 
-Rounding dust stays in the treasury. Sum of payouts ≤ `V + sponsored` by construction, so the market can never pay out more than it holds.
-
-**Protocol fee:** optional `fee_bps` on the pot only (never on principal). Defaults to 0 for the hackathon.
-
-## 5. Liquidity and the 4-epoch unstake delay
-
-The reference staking pool releases unstaked NEAR after 4 epochs (~2 days). Pearn handles this with a liquid buffer and netting, not a lockup UX:
-
-1. New bets stay **liquid** first. `claim` pays from liquid immediately when it can — new deposits fund old claims.
-2. `stake()` (keeper): stakes `liquid − owed` when positive.
-3. `unstake()` (keeper): when `owed > liquid + unstaking`, unstakes the gap. One unstake per epoch, because the pool resets the 4-epoch timer on every unstake call.
-4. `withdraw()` (keeper): `withdraw_all` once the pool says the balance is available.
-5. If liquid is short, `claim` returns `pending` with an ETA. The user claims again later. Nothing is lost; it just waits.
-
-Every keeper method is permissionless and idempotent, so anyone can run the keeper and a missed run only delays, never breaks.
+`Σ refund ≤ reserve` (floor vs ceil) and `Σ share ≤ pot` (floor). So the contract can never pay out more than it holds; dust stays in the contract. The principal is returned in stNEAR worth the bet's NEAR value at `rateR`. Users convert to NEAR at Meta Pool (instant with a fee, or delayed unstake).
 
 ## 6. Honest numbers
 
-APY ≈ 4.5% (after the 2025 inflation halving; pool fees vary).
+APY ≈ 4.5% (after the 2025 inflation halving; Meta Pool takes its fee).
 
 | TVL in market | Duration | Market yield | Winners at 50/50 earn on principal |
 |---|---|---|---|
 | 10,000 NEAR | 30 days | ≈ 37 NEAR | ≈ 0.74% in a month (2× normal staking) |
 | 10,000 NEAR | 1 year | ≈ 450 NEAR | ≈ 9% |
 
-Pure yield is a savings account with a twist. That is why the design leans on:
-- **Sponsored pots.** A project funding a 500 NEAR pot on "Will X ship mainnet by Q1?" gets engaged forecasters for a fraction of an ad budget.
-- **Validator sponsorship.** The vault stakes with the pool that sponsors; validators are already paying for delegation.
-- **Long markets.** Elections and year-end prices, where yield builds up.
+Pure yield is a savings account with a twist, so the design leans on **sponsored pots** and **long markets**. The UI always shows "principal: safe · projected winnings: X" with the real number.
 
-The UI always shows "your principal: safe · projected winnings: X NEAR" with the real number, never a hyped APY.
-
-## 7. Contract interface (draft)
+## 7. Contracts
 
 ```
-// write
-create_market(question, close_ts, resolver) -> id            // creator; storage deposit attached
-bet(id, side)                    #[payable]                   // min 1 NEAR, covers storage
-sponsor(id)                      #[payable]
-resolve(id, outcome)                                          // resolver, after close
-override_invalid(id)                                          // guardian, inside challenge window
-claim(id) -> Paid | Pending{eta}
-// keeper, permissionless
-sync()  stake()  unstake()  withdraw()
-// view
-get_market(id)  list_markets(from, limit)  get_position(id, account)  get_vault()
+contracts/
+  src/
+    PearnMarkets.sol            market lifecycle: create, bet, sponsor, resolve, void, override, claim
+    StNearRateOracle.sol        XCC view of get_st_near_price; monotonic rate
+    interfaces/IPearnMarkets.sol  events, errors, external API
+    interfaces/IRateOracle.sol
+    libraries/PayoutMath.sol    pure §5 math
+    types/Market.sol            Market, Side, Outcome, Position
+  test/                         unit, fuzz and invariant tests (mocks under test/mocks)
+  script/Deploy.s.sol
 ```
 
-Verify the staking pool's method names (`deposit_and_stake`, `unstake`, `withdraw_all`, `get_account_total_balance`, `is_account_unstaked_balance_available`) against `near/core-contracts/staking-pool` before writing the code.
+Best practice applied: Solidity 0.8.28, custom errors, events on every state change, checks-effects-interactions plus `ReentrancyGuard`, `SafeERC20`, `Math.mulDiv` for all products, immutables for every address, NatSpec on the external API.
 
-## 8. Risks and how we handle them
+## 8. Risks
 
 | Risk | Mitigation |
 |---|---|
-| Cross-contract call fails mid-flow | State changes after the callback confirms success; a `busy` flag blocks overlapping pool calls; failed callbacks roll back |
-| Resolver lies | Resolver is a DAO; 24 h challenge window with a guardian DAO that can only force `Invalid` (everyone keeps principal + own share) |
-| Pool goes offline / fee rises | Owner (DAO) can switch pool via unstake → withdraw → restake; principal still intact |
-| Slashing introduced in the future | README states the assumption; then `price` could drop and principal would no longer be guaranteed — revisit |
-| Storage abuse | Every write that adds state requires attached storage deposit |
-| Contract bug | Small surface, unit tests on the math, sandbox tests on the pool flow, testnet only for the hackathon |
+| Oracle callback spoofed | Only `nearRepresentitiveImplicitAddress(oracle)` may call `onRate`; the rate never decreases |
+| Resolver lies | DAO resolver; 24 h window where the guardian can force `Invalid` (everyone keeps principal plus their share of the yield) |
+| Resolver disappears | Anyone voids after 7 days |
+| stNEAR depeg or bug | Principal is a NEAR value paid in stNEAR; Meta Pool risk is stated in the README |
+| Slashing introduced on NEAR | The rate could fall; the oracle would stop updating (monotonic) and the README states the assumption |
+| Contract bug | Small surface, no admin, fuzz + invariant tests on "payouts ≤ holdings" |
 
 ## 9. User flows
 
-**Bettor:** connect wallet → open market → see odds, pot, "projected winnings" calculator → bet 5 NEAR on YES → after resolution: claim → 5 NEAR + winnings (or 5 NEAR back).
-
-**Sponsor:** open market → "Add to pot" → 100 NEAR → pot grows, sponsor named on the market page.
-
-**Creator:** create market → question, close date, resolver account (DAO).
-
-**Resolver DAO:** a proposal "resolve market 7 = YES" → vote → the DAO calls `pearn.resolve`. Optional: a keeper script that mirrors Polymarket outcomes into DAO proposals (adapted from zPredict's `polymarket-catalog.mjs`, disclosed as baseline).
+- **Bettor:** connect MetaMask (Aurora) → open market → see odds, pot and the projected-winnings calculator → approve + bet 5 stNEAR on YES → after resolution and the window: claim → refund + winnings.
+- **Sponsor:** "Add to pot" → 100 stNEAR → the pot grows and the sponsor is listed.
+- **Resolver DAO:** a proposal "resolve market 7 = YES" → vote → the DAO calls `resolve`.
+- **Getting stNEAR:** stake NEAR at Meta Pool and bridge it to Aurora. `scripts/` documents the testnet path.
 
 ## 10. Repository
 
 ```
-contracts/pearn/    Rust, near-sdk; unit tests for §4 math, near-workspaces sandbox tests for §5
-apps/web/           Next.js + @near-wallet-selector
-scripts/keeper.mjs  cron: sync, stake, unstake, withdraw
-README.md           what / why / "do X → see Y" steps for judges (Claude Code screens it)
-DESIGN.md  LICENSE (MIT)
+contracts/   Foundry project (§7)
+apps/web/    Next.js + wagmi/viem
+scripts/     keeper (oracle.sync), testnet stNEAR helper
 ```
 
 ## 11. Timeline (hackathon ends 2026-11-14 23:59 UTC)
 
 | Dates | Work |
 |---|---|
-| Oct 30 – Nov 2 | Contract: markets, bets, resolve, claim math + unit tests |
-| Nov 3 – 6 | Vault ↔ staking pool, keeper methods, sandbox tests with fast-forwarded epochs |
-| Nov 7 – 10 | Web app: market list, detail, portfolio, create |
-| Nov 11 – 12 | Testnet deploy, keeper on cron, seed markets with a sponsored pot, end-to-end run |
-| Nov 13 | README, demo video, X post draft (human posts) |
-| Nov 14 | Repo public, submission — payload confirmed by the human first |
+| Oct 30 – Nov 3 | Contracts: math, markets, oracle, tests; Deploy script |
+| Nov 4 – 5 | Testnet deploy, keeper, testnet stNEAR path |
+| Nov 6 – 10 | Web app: markets, detail, portfolio, create; Coolify deploy |
+| Nov 11 – 12 | Seed markets with a sponsored pot, end-to-end run |
+| Nov 13 | README, demo video, X post draft (the human posts) |
+| Nov 14 | Repo public, submission — the human confirms the payload first |
 
 ## 12. Tracks
 
 `defi` (yield-backed market), `social` (DAO-resolved, community-sponsored markets), `open`.
 
-## 13. Later (not in the hackathon scope)
+## 13. Later
 
-- Any-chain deposits via NEAR Intents 1Click (mainnet only; no Intents testnet).
-- Early exit before close: get principal back, leave your yield in the pot.
-- Liquid staking token as the yield source for instant withdrawals.
-- Social login / meta transactions so bettors never see a wallet.
+- Zap: bet with wNEAR, and the contract stakes it into stNEAR via XCC `deposit_and_stake` + bridge back.
+- Any-chain deposits via NEAR Intents 1Click (mainnet only).
+- Early exit before close: principal back, your yield stays in the pot.
