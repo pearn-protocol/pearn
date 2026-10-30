@@ -37,6 +37,10 @@ quote_style = "double"
 number_underscore = "thousands"
 sort_imports = true
 
+[lint]
+# Windows here are hours to days; a validator's few seconds of timestamp drift cannot matter.
+exclude_lints = ["block-timestamp"]
+
 [rpc_endpoints]
 aurora = "https://mainnet.aurora.dev"
 aurora_testnet = "https://testnet.aurora.dev"
