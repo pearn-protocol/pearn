@@ -23,13 +23,14 @@ contract StNearRateOracleTest is Test {
     string internal constant META_POOL = "meta-pool.near";
     string internal constant ENGINE = "aurora";
     uint256 internal constant STORAGE = 2e24;
+    uint256 internal constant T0 = 1_800_000_000;
 
     MockToken internal wNear;
     StNearRateOracle internal oracle;
     address internal keeper = makeAddr("keeper");
 
     function setUp() public {
-        vm.warp(1_800_000_000);
+        vm.warp(T0);
         // The precompiles exist only on Aurora: give them code and canned answers.
         vm.etch(XCC_PRECOMPILE, hex"00");
         vm.etch(CURRENT_ACCOUNT_ID_PRECOMPILE, hex"00");
@@ -100,7 +101,7 @@ contract StNearRateOracleTest is Test {
     function test_onRate_neverDecreases() public {
         _deliver(PromiseResultStatus.Successful, '"1500"');
         uint64 syncedAt = oracle.updatedAt();
-        vm.warp(block.timestamp + 1 days);
+        vm.warp(T0 + 1 days);
 
         vm.expectEmit(address(oracle));
         emit StNearRateOracle.RateRejected(1499, 1500);
@@ -111,7 +112,7 @@ contract StNearRateOracleTest is Test {
 
     function test_onRate_equalReadingRefreshesTimestamp() public {
         _deliver(PromiseResultStatus.Successful, '"1500"');
-        uint256 later = block.timestamp + 1 days;
+        uint256 later = T0 + 1 days;
         vm.warp(later);
         _deliver(PromiseResultStatus.Successful, '"1500"');
         assertEq(oracle.updatedAt(), later);
