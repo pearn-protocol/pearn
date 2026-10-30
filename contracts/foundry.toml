@@ -1,0 +1,45 @@
+[profile.default]
+src = "src"
+test = "test"
+script = "script"
+out = "out"
+libs = ["lib"]
+solc_version = "0.8.28"
+# paris: no PUSH0/MCOPY opcodes, the safe target for Aurora's engine.
+evm_version = "paris"
+optimizer = true
+optimizer_runs = 10_000
+via_ir = false
+remappings = [
+  "forge-std/=lib/forge-std/src/",
+  "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/",
+  "openzeppelin-contracts/=lib/openzeppelin-contracts/contracts/",
+  "aurora-sdk/=lib/aurora-contracts-sdk/aurora-solidity-sdk/src/",
+]
+
+[profile.default.fuzz]
+runs = 1_000
+
+[profile.default.invariant]
+runs = 256
+depth = 64
+fail_on_revert = false
+
+[profile.ci.fuzz]
+runs = 5_000
+
+[fmt]
+line_length = 100
+tab_width = 4
+bracket_spacing = false
+int_types = "long"
+quote_style = "double"
+number_underscore = "thousands"
+sort_imports = true
+
+[rpc_endpoints]
+aurora = "https://mainnet.aurora.dev"
+aurora_testnet = "https://testnet.aurora.dev"
+
+# Contracts are verified on Aurora's Blockscout explorers (Etherscan does not index Aurora):
+# forge verify-contract --verifier blockscout --verifier-url https://explorer.testnet.aurora.dev/api/ ...
