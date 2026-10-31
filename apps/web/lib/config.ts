@@ -53,6 +53,8 @@ export const INDEXER_URL = process.env.NEXT_PUBLIC_INDEXER_URL?.trim().replace(/
 export const explorerAddress = (a: Address) => `${chain.blockExplorers.default.url}/address/${a}`;
 export const explorerTx = (hash: string) => `${chain.blockExplorers.default.url}/tx/${hash}`;
 
+export const DOCS_URL = "https://docs.pearn.103.150.190.91.sslip.io/docs/";
+
 /** Where users get stNEAR: stake NEAR at Meta Pool, then bridge it to Aurora. */
 export const GET_STNEAR_URL = "https://www.metapool.app/stake/?token=near";
 

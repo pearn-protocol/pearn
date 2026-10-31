@@ -1,10 +1,11 @@
-import { chain, contracts, explorerAddress } from "@/lib/config";
+import { chain, contracts, DOCS_URL, explorerAddress } from "@/lib/config";
 
 export default function Footer() {
 	const links = [
 		contracts.markets && { href: explorerAddress(contracts.markets), label: "Markets contract" },
 		contracts.oracle && { href: explorerAddress(contracts.oracle), label: "Rate oracle" },
 		{ href: explorerAddress(contracts.stNear), label: "stNEAR" },
+		{ href: DOCS_URL, label: "Docs" },
 		{ href: "https://github.com/pearn-protocol/pearn", label: "GitHub" },
 	].filter((l) => l !== null);
 	return (
