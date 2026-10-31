@@ -2,7 +2,9 @@ name: Keeper
 
 # Asks StNearRateOracle for a fresh stNEAR rate. Bets need a reading younger than 2 days and
 # `resolve` needs one taken after close (DESIGN.md §5); twice a day keeps both satisfied.
-# After the oracle's first sync (script/SyncOracle.s.sol) a sync costs only gas.
+# The sync is signed at gas price 0 and submitted to the Aurora engine through NEAR
+# (scripts/aurora-submit.mjs), so the keeper needs no Aurora ETH: NEAR_KEEPER_ACCOUNT pays
+# NEAR gas with a function-call key that can only call aurora.submit.
 on:
   schedule:
     - cron: "17 */12 * * *"
@@ -23,28 +25,39 @@ jobs:
     environment: production
     env:
       ORACLE: ${{ vars.ORACLE }}
-      RPC_URL: ${{ vars.AURORA_RPC_URL || 'https://testnet.aurora.dev' }}
-      KEEPER_PK: ${{ secrets.KEEPER_PK }}
+      AURORA_RPC: ${{ vars.AURORA_RPC_URL || 'https://testnet.aurora.dev' }}
+      NEAR_SIGNER: ${{ vars.NEAR_KEEPER_ACCOUNT }}
+      NEAR_PRIVATE_KEY: ${{ secrets.NEAR_KEEPER_KEY }}
+      WALLET_PK: ${{ secrets.KEEPER_PK }}
     steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
       - uses: foundry-rs/foundry-toolchain@v1
         with:
           version: v1.8.3
       - name: Sync
         run: |
-          if [ -z "$ORACLE" ] || [ -z "$KEEPER_PK" ]; then
-            echo "::warning::ORACLE or KEEPER_PK is not set; skipping."
+          if [ -z "$ORACLE" ] || [ -z "$WALLET_PK" ] || [ -z "$NEAR_SIGNER" ] || [ -z "$NEAR_PRIVATE_KEY" ]; then
+            echo "::warning::ORACLE, KEEPER_PK, NEAR_KEEPER_ACCOUNT or NEAR_KEEPER_KEY is not set; skipping."
             exit 0
           fi
-          before=$(cast call "$ORACLE" "updatedAt()(uint64)" --rpc-url "$RPC_URL")
-          cast send "$ORACLE" "sync()" --legacy --private-key "$KEEPER_PK" --rpc-url "$RPC_URL" >/dev/null
+          npm install -g near-cli-rs@0.30.1 >/dev/null
+          keeper=$(cast wallet address "$WALLET_PK")
+          nonce=$(cast to-hex "$(cast nonce "$keeper" --rpc-url "$AURORA_RPC")")
+          printf '{"transactions":[{"function":"StNearRateOracle.sync()","transaction":{"from":"%s","to":"%s","gas":"0x2dc6c0","input":"%s","nonce":"%s"}}]}' \
+            "$keeper" "$ORACLE" "$(cast calldata 'sync()')" "$nonce" > run.json
+          before=$(cast call "$ORACLE" "updatedAt()(uint64)" --rpc-url "$AURORA_RPC")
+          node scripts/aurora-submit.mjs run.json
           # The answer arrives in a later NEAR block through the XCC callback.
           for _ in $(seq 20); do
             sleep 6
-            after=$(cast call "$ORACLE" "updatedAt()(uint64)" --rpc-url "$RPC_URL")
+            after=$(cast call "$ORACLE" "updatedAt()(uint64)" --rpc-url "$AURORA_RPC")
             if [ "$after" != "$before" ]; then
-              echo "rate $(cast call "$ORACLE" "rate()(uint256)" --rpc-url "$RPC_URL"), updatedAt $after"
+              echo "rate $(cast call "$ORACLE" "rate()(uint256)" --rpc-url "$AURORA_RPC"), updatedAt $after"
               exit 0
             fi
           done
-          echo "::error::sync sent but updatedAt did not move in 2 minutes (SyncFailed or RateRejected?)"
+          echo "::error::sync landed but updatedAt did not move in 2 minutes (SyncFailed or RateRejected?)"
           exit 1

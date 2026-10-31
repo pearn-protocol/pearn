@@ -16,7 +16,7 @@ Browser → host nginx on the VPS (TLS) → Caddy in the container on `127.0.0.1
 
 **CD:** every push to `main` runs CI (`.github/workflows/deploy.yml` calls `ci.yml`), then asks Coolify to rebuild `web` if the push touched the image's inputs. The GitHub environment `production` holds `COOLIFY_TOKEN` (a deploy-only token: it cannot read or change resources), `COOLIFY_URL` and `COOLIFY_WEB_UUID`.
 
-**Contract addresses** are build args. After a deploy (`contracts/deployments/<chainId>.json`), set `NEXT_PUBLIC_MARKETS` and `NEXT_PUBLIC_ORACLE` as build variables on the Coolify resource and redeploy. Until then the app says the contracts are not deployed yet.
+**Contract addresses** are build args: `NEXT_PUBLIC_MARKETS` and `NEXT_PUBLIC_ORACLE` are build variables on the Coolify resource, set from `contracts/deployments/1313161555.json`. A new deployment means updating both and redeploying.
 
 **Host nginx:** edit `nginx.conf`, then on the VPS `sudo tee /etc/nginx/sites-available/pearn.103.150.190.91.sslip.io < nginx.conf && sudo nginx -t && sudo systemctl reload nginx`. TLS: `certbot certonly --webroot -w ~/acme --config-dir ~/le/config … --cert-name pearn.103.150.190.91.sslip.io` (user-level certbot; the existing cron renews it).
 
