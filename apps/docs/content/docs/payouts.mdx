@@ -1,0 +1,39 @@
+---
+title: Payout math
+description: How principal is protected and how the pot is split. Source of truth is PayoutMath.sol.
+---
+
+`rate` is yoctoNEAR per 1 stNEAR (1e24 scale). It only rises: the oracle ignores any lower reading.
+
+## At bet time
+
+```
+principal = staked × rate / 1e24          // the bet's NEAR value
+weight    = principal × (closeTime − now)
+```
+
+A stale, lower rate only under-counts your own principal; the difference ends up in the pot, never in anyone else's pocket.
+
+## At settlement (rate R)
+
+```
+reserve = ceil(Σ principal × 1e24 / R)    // stNEAR needed to give everyone their NEAR back
+pot     = Σ staked − reserve + sponsored  // all the yield, plus sponsors
+```
+
+## Claims
+
+| Case | You receive (stNEAR) |
+|---|---|
+| Lost | `floor(principal × 1e24 / R)` |
+| Won | refund + `pot × weight / W_winning` |
+| Invalid, or nobody on the winning side | refund + `pot × weight / W_all` |
+| Nobody bet at all | sponsors get their sponsorship back |
+
+Refunds and shares round down, the reserve rounds up, and the rate never falls. So `Σ refunds ≤ reserve` and `Σ shares ≤ pot`: the contract can never owe more than it holds. A fuzz test (`testFuzz_noLossAndSolvent`) checks exactly that.
+
+## Example
+
+Ten thousand NEAR in a market for 30 days at 4.5% APY earns about 37 NEAR. With bettors split 50/50, winners make about 0.74% on their principal in a month, twice normal staking, and losers lose nothing. Sponsored pots and long markets make it worth more.
+
+The app's projection uses a TypeScript port of the same math (`apps/web/lib/payout.ts`), tested against the Solidity unit-test numbers.

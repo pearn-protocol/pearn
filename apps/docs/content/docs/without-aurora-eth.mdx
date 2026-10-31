@@ -1,0 +1,26 @@
+---
+title: Without Aurora ETH
+description: How the contracts were deployed and the keeper runs with only NEAR.
+---
+
+The Aurora relayer rejects transactions with gas price 0. The Aurora **engine** accepts them when its `submit` method is called directly on NEAR, and then the NEAR account pays NEAR gas. `scripts/aurora-submit.mjs` builds on that:
+
+1. Forge simulates a script against Aurora (no `--broadcast`).
+2. The script signs each transaction from the dry run at gas price 0.
+3. It hands the raw transaction to `aurora.submit` through near-cli-rs, waits for the receipt, and fails on a revert. Nonces already used are skipped, so a run can resume.
+
+```sh
+pnpm rpc:testnet &
+cd contracts && forge script script/Deploy.s.sol --rpc-url aurora_testnet --legacy
+WALLET_PK=… NEAR_SIGNER=you.testnet node ../scripts/aurora-submit.mjs broadcast/Deploy.s.sol/1313161555/dry-run/run-latest.json
+```
+
+That is how Pearn's testnet contracts, the oracle's first sync and the demo markets went live.
+
+## The keeper
+
+`.github/workflows/keeper.yml` calls `oracle.sync()` every 12 hours the same way. The NEAR account `pearn-sync.testnet` signs with a **function-call key that can only call `aurora.submit`** (5 NEAR allowance). The Aurora signer is a separate keeper wallet holding no ETH.
+
+<Callout title="Why a local RPC proxy">
+Foundry sends a bare block hash in some requests, and Aurora's RPC rejects that. `pnpm rpc:testnet` (`scripts/aurora-rpc.mjs`) rewrites it to the EIP-1898 form.
+</Callout>

@@ -1,0 +1,38 @@
+---
+title: The XCC oracle
+description: StNearRateOracle reads stNEAR's NEAR value from Meta Pool on NEAR, from Solidity.
+---
+
+Aurora contracts can schedule calls to NEAR contracts through the cross-contract-call (XCC) precompile at `0x516Cded1D16af10CAd47D6D49128E2eB7d27b372`. `StNearRateOracle` uses it for a view call:
+
+```solidity
+function sync() external {
+    PromiseCreateArgs memory query = near.call(metaPool, "get_st_near_price", "{}", 0, VIEW_GAS);
+    PromiseCreateArgs memory callback =
+        near.auroraCall(address(this), abi.encodeCall(this.onRate, ()), 0, CALLBACK_GAS);
+    query.then(callback).transact();
+}
+```
+
+A few NEAR blocks later the engine calls `onRate()` back. It:
+
+1. Accepts only the contract's own XCC account as the caller (its implicit Aurora address).
+2. Reads the promise result. A failed view emits `SyncFailed`.
+3. Parses the quoted u128 strictly (`NearJson.parseU128`).
+4. Ignores a lower reading (`RateRejected`). Otherwise it stores `rate` and `updatedAt`.
+
+Check it on testnet:
+
+```sh
+cast call 0xA8adEFE2C8f0F71a585a73c1259997f593F9e463 "rate()(uint256)" -r https://testnet.aurora.dev
+```
+
+The answer equals `get_st_near_price` on `meta-v2.pool.testnet`.
+
+<Callout title="First sync costs 2 NEAR">
+The first XCC call creates the contract's account on NEAR, which needs 2 NEAR of storage. The precompile pulls it as wNEAR from the caller, so approve 2 wNEAR to the oracle first. Later syncs are free view calls.
+</Callout>
+
+## Why stNEAR and not native staking
+
+Staking NEAR directly through XCC turns out to be one way. The precompile charges the caller wNEAR for every NEAR a promise attaches, so NEAR withdrawn to the contract's NEAR account could never come back to Aurora. stNEAR keeps the staking yield, is already an ERC-20 on Aurora, and needs XCC only for a free view.

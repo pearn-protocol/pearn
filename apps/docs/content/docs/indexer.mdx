@@ -1,0 +1,41 @@
+---
+title: Indexer API
+description: Markets, positions and activity over GraphQL and SQL.
+---
+
+A [Ponder](https://ponder.sh) indexer follows every PearnMarkets event:
+
+- GraphQL: `https://indexer.pearn.103.150.190.91.sslip.io/graphql`
+- SQL over HTTP: `/sql`
+
+| Table | Rows |
+|---|---|
+| `market` | One per market, kept in step with every event: stakes, sponsorship, bets, outcome, pot |
+| `participant` | Per account and market: YES and NO stakes, sponsorship, claimed amount |
+| `activity` | Every event: kind, account, side, amount, time, tx hash |
+
+## Examples
+
+A market's recent activity:
+
+```graphql
+{
+  activitys(where: { marketId: "2" }, orderBy: "timestamp", orderDirection: "desc", limit: 10) {
+    items { kind account side amount timestamp txHash }
+  }
+}
+```
+
+The markets an account touched:
+
+```graphql
+{
+  participants(where: { account: "0x3b4f0135465d444a5bd06ab90fc59b73916c85f5" }) {
+    items { marketId yesStaked noStaked sponsored claimed }
+  }
+}
+```
+
+Addresses are lowercase in queries. Amounts are strings of raw units.
+
+The web app uses the indexer for history and lookups only. Balances and payouts always come from the chain, and the app still works if the indexer is down.
