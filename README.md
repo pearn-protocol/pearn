@@ -109,7 +109,8 @@ The stNEAR shows up at `0x2137…f144` on Aurora testnet. wNEAR (for the oracle'
 | `packages/brand` | Logo and icons |
 | `deploy/` | Caddy static server, CSP build step, host nginx; CD via Coolify |
 | `.github/workflows/keeper.yml` | Keeper: `oracle.sync()` every 12 h through NEAR, from a dedicated wallet |
-| `scripts/abi.mjs` | Writes the web ABI from the contracts; CI fails on drift |
+| `packages/abi` | `@pearn/abi`: contract ABIs for the web app and the indexer |
+| `scripts/abi.mjs` | Writes `packages/abi` from the contracts; CI fails on drift |
 | `scripts/aurora-submit.mjs` | Replays a Forge run on Aurora through NEAR (`aurora.submit`, gas price 0): no Aurora ETH needed |
 | `scripts/aurora-rpc.mjs` | Local RPC proxy: Foundry sends a bare block hash that Aurora rejects; this rewrites it to EIP-1898 |
 | `REGRESSION.md` | One named test per fixed bug, checked in CI |

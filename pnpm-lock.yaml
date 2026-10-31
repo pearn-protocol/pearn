@@ -17,6 +17,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@pearn/abi':
+        specifier: workspace:*
+        version: link:../../packages/abi
       '@pearn/brand':
         specifier: workspace:*
         version: link:../../packages/brand
@@ -45,6 +48,8 @@ importers:
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
+
+  packages/abi: {}
 
   packages/brand: {}
 

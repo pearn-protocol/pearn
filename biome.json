@@ -19,7 +19,7 @@
 			"!contracts/out",
 			"!contracts/cache",
 			"!contracts/broadcast",
-			"!apps/web/lib/abi.ts"
+			"!packages/abi/index.ts"
 		]
 	},
 	"formatter": {

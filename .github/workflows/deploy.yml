@@ -39,7 +39,7 @@ jobs:
           if [ "${{ github.event_name }}" != push ] || ! git cat-file -e "$BEFORE^{commit}" 2>/dev/null; then
             web=true
           elif git diff --name-only "$BEFORE" "$GITHUB_SHA" \
-            | grep -qE '^(apps/web/|packages/brand/|deploy/static/|package\.json$|pnpm-lock\.yaml$|pnpm-workspace\.yaml$|\.dockerignore$)'; then
+            | grep -qE '^(apps/web/|packages/(brand|abi)/|deploy/static/|package\.json$|pnpm-lock\.yaml$|pnpm-workspace\.yaml$|\.dockerignore$)'; then
             web=true
           else
             web=false

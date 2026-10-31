@@ -2,9 +2,9 @@
 // Usage: pnpm e2e (needs Foundry and Chrome).
 import assert from "node:assert/strict";
 import { after, before, test } from "node:test";
+import { pearnMarketsAbi } from "@pearn/abi";
 import { createPublicClient, erc20Abi, http, parseUnits } from "viem";
 import { foundry } from "viem/chains";
-import { pearnMarketsAbi } from "../lib/abi.ts";
 import { launchChrome, openTab } from "./cdp.mjs";
 import { ACCOUNTS, APP, RPC, rpc, startStack, walletScript, warp } from "./stack.mjs";
 

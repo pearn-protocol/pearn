@@ -1,5 +1,5 @@
+import { pearnMarketsAbi, rateOracleAbi } from "@pearn/abi";
 import { type Address, erc20Abi, getContract, type Hash } from "viem";
-import { pearnMarketsAbi, rateOracleAbi } from "./abi.ts";
 import { publicClient } from "./chain.ts";
 import { contracts } from "./config.ts";
 import { ensureChain, type Wallet } from "./wallet.ts";

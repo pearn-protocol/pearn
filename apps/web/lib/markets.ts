@@ -1,5 +1,5 @@
+import type { pearnMarketsAbi } from "@pearn/abi";
 import type { ContractFunctionReturnType } from "viem";
-import type { pearnMarketsAbi } from "./abi.ts";
 import { percent } from "./format.ts";
 import { potOf, reserveOf } from "./payout.ts";
 
