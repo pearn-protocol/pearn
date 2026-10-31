@@ -1,0 +1,14 @@
+@import "tailwindcss";
+@import "fumadocs-ui/css/neutral.css";
+@import "fumadocs-ui/css/preset.css";
+
+@source "../../**/*.{ts,tsx,mdx}";
+
+/* The logo tile's orange (packages/brand) as the accent, in both themes. */
+:root {
+	--color-fd-primary: #e2603a;
+}
+
+.dark {
+	--color-fd-primary: #fe835a;
+}
