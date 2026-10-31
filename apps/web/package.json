@@ -20,6 +20,7 @@
 		"typescript": "^5.9.3"
 	},
 	"dependencies": {
+		"@pearn/abi": "workspace:*",
 		"@pearn/brand": "workspace:*",
 		"next": "^16.4.3",
 		"react": "^19.3.1",

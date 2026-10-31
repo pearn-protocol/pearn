@@ -64,7 +64,7 @@ To read the story in code, start with `test/integration/MarketLifecycle.t.sol`. 
 
 ## Deployments
 
-App: **https://pearn.103.150.190.91.sslip.io** (Aurora testnet; deployed from `main` by Coolify, see [deploy/](deploy/README.md)).
+App: **https://pearn.103.150.190.91.sslip.io**, indexer: https://indexer.pearn.103.150.190.91.sslip.io/graphql (Aurora testnet; deployed from `main` by Coolify, see [deploy/](deploy/README.md)).
 
 Aurora testnet (1313161555), all verified on Blockscout:
 
@@ -109,7 +109,9 @@ The stNEAR shows up at `0x2137…f144` on Aurora testnet. wNEAR (for the oracle'
 | `packages/brand` | Logo and icons |
 | `deploy/` | Caddy static server, CSP build step, host nginx; CD via Coolify |
 | `.github/workflows/keeper.yml` | Keeper: `oracle.sync()` every 12 h through NEAR, from a dedicated wallet |
-| `scripts/abi.mjs` | Writes the web ABI from the contracts; CI fails on drift |
+| `apps/indexer` | Ponder indexer: markets, positions and activity over GraphQL/SQL |
+| `packages/abi` | `@pearn/abi`: contract ABIs for the web app and the indexer |
+| `scripts/abi.mjs` | Writes `packages/abi` from the contracts; CI fails on drift |
 | `scripts/aurora-submit.mjs` | Replays a Forge run on Aurora through NEAR (`aurora.submit`, gas price 0): no Aurora ETH needed |
 | `scripts/aurora-rpc.mjs` | Local RPC proxy: Foundry sends a bare block hash that Aurora rejects; this rewrites it to EIP-1898 |
 | `REGRESSION.md` | One named test per fixed bug, checked in CI |

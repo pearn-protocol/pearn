@@ -19,7 +19,9 @@
 			"!contracts/out",
 			"!contracts/cache",
 			"!contracts/broadcast",
-			"!apps/web/lib/abi.ts"
+			"!packages/abi/index.ts",
+			"!apps/indexer/ponder-env.d.ts",
+			"!apps/indexer/generated"
 		]
 	},
 	"formatter": {

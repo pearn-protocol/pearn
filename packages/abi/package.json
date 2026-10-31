@@ -1,0 +1,10 @@
+{
+	"name": "@pearn/abi",
+	"private": true,
+	"version": "0.1.0",
+	"type": "module",
+	"description": "Contract ABIs for the apps, generated from contracts/ by `pnpm abi`",
+	"exports": {
+		".": "./index.ts"
+	}
+}

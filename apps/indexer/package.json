@@ -1,0 +1,24 @@
+{
+	"name": "@pearn/indexer",
+	"private": true,
+	"version": "0.1.0",
+	"type": "module",
+	"description": "Ponder indexer for PearnMarkets events on Aurora",
+	"scripts": {
+		"dev": "ponder dev",
+		"start": "ponder start",
+		"codegen": "ponder codegen",
+		"typecheck": "tsc --noEmit",
+		"test": "node --test --test-force-exit --test-timeout=240000 test/*.test.mjs"
+	},
+	"dependencies": {
+		"@pearn/abi": "workspace:*",
+		"hono": "^4.13.14",
+		"ponder": "0.18.2",
+		"viem": "^2.57.13"
+	},
+	"devDependencies": {
+		"@types/node": "^26.6.6",
+		"typescript": "^5.9.3"
+	}
+}

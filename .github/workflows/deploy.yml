@@ -17,7 +17,7 @@ jobs:
     uses: ./.github/workflows/ci.yml
 
   coolify:
-    name: Coolify (web)
+    name: Coolify (web, indexer)
     needs: ci
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -26,38 +26,48 @@ jobs:
       COOLIFY_URL: ${{ vars.COOLIFY_URL }}
       COOLIFY_TOKEN: ${{ secrets.COOLIFY_TOKEN }}
       COOLIFY_WEB_UUID: ${{ vars.COOLIFY_WEB_UUID }}
+      COOLIFY_INDEXER_UUID: ${{ vars.COOLIFY_INDEXER_UUID }}
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Did the web image change?
+      - name: Which images changed?
         id: pick
         env:
           BEFORE: ${{ github.event.before }}
         run: |
-          # A manual run, a new branch or a force-push past history always rebuilds.
+          shared='package\.json$|pnpm-lock\.yaml$|pnpm-workspace\.yaml$|\.dockerignore$|packages/abi/'
+          # A manual run, a new branch or a force-push past history rebuilds everything.
           if [ "${{ github.event_name }}" != push ] || ! git cat-file -e "$BEFORE^{commit}" 2>/dev/null; then
-            web=true
-          elif git diff --name-only "$BEFORE" "$GITHUB_SHA" \
-            | grep -qE '^(apps/web/|packages/brand/|deploy/static/|package\.json$|pnpm-lock\.yaml$|pnpm-workspace\.yaml$|\.dockerignore$)'; then
-            web=true
+            web=true indexer=true
           else
-            web=false
+            files=$(git diff --name-only "$BEFORE" "$GITHUB_SHA")
+            web=false indexer=false
+            echo "$files" | grep -qE "^(apps/web/|packages/brand/|deploy/static/|$shared)" && web=true
+            echo "$files" | grep -qE "^(apps/indexer/|contracts/deployments/|$shared)" && indexer=true
           fi
           echo "web=$web" >>"$GITHUB_OUTPUT"
-          echo "rebuild web: $web"
-      - name: Trigger the deploy
-        if: steps.pick.outputs.web == 'true'
+          echo "indexer=$indexer" >>"$GITHUB_OUTPUT"
+          echo "rebuild web: $web, indexer: $indexer"
+      - name: Trigger the deploys
+        env:
+          WEB: ${{ steps.pick.outputs.web }}
+          INDEXER: ${{ steps.pick.outputs.indexer }}
         run: |
-          if [ -z "$COOLIFY_TOKEN" ] || [ -z "$COOLIFY_URL" ] || [ -z "$COOLIFY_WEB_UUID" ]; then
-            echo "::warning::COOLIFY_URL, COOLIFY_TOKEN or COOLIFY_WEB_UUID is not set; skipping deploy."
+          if [ -z "$COOLIFY_TOKEN" ] || [ -z "$COOLIFY_URL" ]; then
+            echo "::warning::COOLIFY_URL or COOLIFY_TOKEN is not set; skipping deploy."
             exit 0
           fi
-          code=$(curl -s -o /tmp/deploy.json -w '%{http_code}' -X POST \
-            -H "Authorization: Bearer $COOLIFY_TOKEN" \
-            "$COOLIFY_URL/api/v1/deploy?uuid=$COOLIFY_WEB_UUID")
-          if [ "$code" != "200" ]; then
-            echo "::error::deploy failed with HTTP $code"
-            exit 1
-          fi
-          echo "queued web"
+          deploy() {
+            if [ -z "$2" ]; then echo "::warning::no Coolify uuid for $1; skipping."; return; fi
+            code=$(curl -s -o /tmp/deploy.json -w '%{http_code}' -X POST \
+              -H "Authorization: Bearer $COOLIFY_TOKEN" "$COOLIFY_URL/api/v1/deploy?uuid=$2")
+            if [ "$code" != "200" ]; then
+              echo "::error::deploy $1 failed with HTTP $code"
+              exit 1
+            fi
+            echo "queued $1"
+          }
+          [ "$WEB" = true ] && deploy web "$COOLIFY_WEB_UUID"
+          [ "$INDEXER" = true ] && deploy indexer "$COOLIFY_INDEXER_UUID"
+          exit 0

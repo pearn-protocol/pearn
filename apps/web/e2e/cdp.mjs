@@ -117,6 +117,8 @@ export async function openTab(port, script) {
 			await evaluate(`document.querySelector(${JSON.stringify(selector)}).focus()`);
 			await send("Input.insertText", { text });
 		},
+		/** Raw CDP command, for anything the helpers above don't cover. */
+		send,
 		close: () => ws.close(),
 	};
 }

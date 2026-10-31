@@ -9,10 +9,25 @@ import { useNow } from "@/hooks/useNow";
 import { usePoll } from "@/hooks/usePoll";
 import { useWallet } from "@/hooks/useWallet";
 import { type MarketWithId, type Position, readPosition } from "@/lib/chain";
-import { contracts, POLL_MS } from "@/lib/config";
+import { contracts, INDEXER_URL, POLL_MS } from "@/lib/config";
+import { readAccountMarkets } from "@/lib/indexer";
 import { phaseOf } from "@/lib/markets";
 
 type Row = { m: MarketWithId; p: Position };
+
+/**
+ * The markets an account touched: the indexer says which, so only those positions are read
+ * from the chain. Without an indexer (or if it fails) every market is checked.
+ */
+async function candidates(markets: MarketWithId[], account: `0x${string}`) {
+	if (!INDEXER_URL) return markets;
+	try {
+		const ids = new Set(await readAccountMarkets(INDEXER_URL, account));
+		return markets.filter((m) => ids.has(m.id));
+	} catch {
+		return markets;
+	}
+}
 
 /** Every market the connected account bet on or sponsored. */
 export default function PortfolioList() {
@@ -25,8 +40,9 @@ export default function PortfolioList() {
 		async () => {
 			const pearn = contracts.markets;
 			if (!pearn || !address || !markets) return;
+			const touched = await candidates(markets, address);
 			const all = await Promise.all(
-				markets.map(async (m) => ({ m, p: await readPosition(pearn, m.id, address) })),
+				touched.map(async (m) => ({ m, p: await readPosition(pearn, m.id, address) })),
 			);
 			setRows(all.filter(({ p }) => p.yes.staked + p.no.staked + p.sponsored > 0n));
 		},
