@@ -47,6 +47,9 @@ export const contracts = {
 	stNear,
 };
 
+/** The Ponder indexer (apps/indexer); null means the app reads the chain only. */
+export const INDEXER_URL = process.env.NEXT_PUBLIC_INDEXER_URL?.trim().replace(/\/$/, "") || null;
+
 export const explorerAddress = (a: Address) => `${chain.blockExplorers.default.url}/address/${a}`;
 export const explorerTx = (hash: string) => `${chain.blockExplorers.default.url}/tx/${hash}`;
 
