@@ -5,17 +5,19 @@ ARG NEXT_PUBLIC_CHAIN_ID=1313161555
 # From contracts/deployments/<chainId>.json; empty means "contracts not deployed yet".
 ARG NEXT_PUBLIC_MARKETS=
 ARG NEXT_PUBLIC_ORACLE=
-# The only origin the CSP lets the app connect to besides itself.
+# The only origins the CSP lets the app connect to besides itself: the RPC and the indexer.
 ARG NEXT_PUBLIC_RPC_URL=https://testnet.aurora.dev
+ARG NEXT_PUBLIC_INDEXER_URL=https://indexer.pearn.103.150.190.91.sslip.io
 ENV HUSKY=0 NEXT_TELEMETRY_DISABLED=1 NEXT_PUBLIC_CHAIN_ID=$NEXT_PUBLIC_CHAIN_ID \
 	NEXT_PUBLIC_MARKETS=$NEXT_PUBLIC_MARKETS NEXT_PUBLIC_ORACLE=$NEXT_PUBLIC_ORACLE \
-	NEXT_PUBLIC_RPC_URL=$NEXT_PUBLIC_RPC_URL
+	NEXT_PUBLIC_RPC_URL=$NEXT_PUBLIC_RPC_URL NEXT_PUBLIC_INDEXER_URL=$NEXT_PUBLIC_INDEXER_URL
 RUN corepack enable
 WORKDIR /repo
 COPY . .
 RUN pnpm install --frozen-lockfile --filter @pearn/web... \
 	&& pnpm --filter @pearn/web build \
-	&& node deploy/static/prepare.mjs apps/web/out /csp.caddy "$(node -p 'new URL(process.argv[1]).origin' "$NEXT_PUBLIC_RPC_URL")"
+	&& node deploy/static/prepare.mjs apps/web/out /csp.caddy \
+		"$(node -p 'process.argv.slice(1).filter(Boolean).map((u) => new URL(u).origin).join()' "$NEXT_PUBLIC_RPC_URL" "$NEXT_PUBLIC_INDEXER_URL")"
 
 FROM caddy:2.11.7-alpine@sha256:24ec7b05bc532c7bb57f727030c5056e257ff7138b4b50460306819ff79362bd
 COPY deploy/static/Caddyfile /etc/caddy/Caddyfile
