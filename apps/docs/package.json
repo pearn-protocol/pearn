@@ -1,0 +1,35 @@
+{
+	"name": "@pearn/docs",
+	"private": true,
+	"version": "0.1.0",
+	"type": "module",
+	"description": "Pearn documentation (Fumadocs, static export)",
+	"scripts": {
+		"postinstall": "fumadocs-mdx",
+		"predev": "node scripts/brand.mjs",
+		"prebuild": "node scripts/brand.mjs",
+		"dev": "next dev -p 3002",
+		"build": "next build",
+		"typecheck": "fumadocs-mdx && tsc --noEmit",
+		"test": "node --test test/*.test.mjs"
+	},
+	"dependencies": {
+		"@pearn/brand": "workspace:*",
+		"fumadocs-core": "16.17.7",
+		"fumadocs-mdx": "15.4.9",
+		"fumadocs-ui": "16.17.7",
+		"next": "^16.4.3",
+		"react": "^19.3.1",
+		"react-dom": "^19.3.1"
+	},
+	"devDependencies": {
+		"@tailwindcss/postcss": "4.3.3",
+		"@types/mdx": "2.0.14",
+		"@types/node": "^26.6.6",
+		"@types/react": "^19.3.0",
+		"@types/react-dom": "^19.3.0",
+		"postcss": "8.5.25",
+		"tailwindcss": "4.3.3",
+		"typescript": "^5.9.3"
+	}
+}

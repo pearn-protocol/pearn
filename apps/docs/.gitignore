@@ -1,0 +1,9 @@
+# Copied from packages/brand by scripts/brand.mjs
+/public/*.png
+/public/*.ico
+/public/site.webmanifest
+# Written by fumadocs-mdx and next
+/.source/
+/next-env.d.ts
+/AGENTS.md
+/CLAUDE.md

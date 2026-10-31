@@ -119,6 +119,10 @@
 					}
 				}
 			}
+		},
+		{
+			"includes": ["apps/docs/src/app/global.css"],
+			"css": { "parser": { "tailwindDirectives": true } }
 		}
 	],
 	"assist": {
