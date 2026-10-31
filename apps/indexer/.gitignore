@@ -1,0 +1,3 @@
+# Ponder's local database and build output
+/.ponder/
+/generated/
