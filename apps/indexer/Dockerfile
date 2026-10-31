@@ -6,11 +6,12 @@ RUN corepack enable
 WORKDIR /repo
 COPY . .
 RUN pnpm install --frozen-lockfile --filter @pearn/indexer... \
-	&& mkdir -p apps/indexer/.ponder && chown -R node:node apps/indexer/.ponder
+	&& chown -R node:node apps/indexer
 USER node
 WORKDIR /repo/apps/indexer
 EXPOSE 8080
 # ponder: PGlite inside the container, rebuilt from the chain on every deploy (about a minute
 # for testnet). Point DATABASE_URL at Postgres if the history ever grows large.
 HEALTHCHECK --interval=30s --timeout=3s --start-period=120s CMD node -e "fetch('http://127.0.0.1:8080/health').then(r=>process.exit(r.ok?0:1),()=>process.exit(1))"
-CMD ["pnpm", "exec", "ponder", "start", "--schema", "pearn", "--port", "8080", "--log-level", "warn"]
+# Ponder rewrites ponder-env.d.ts and generated/ at start, hence the chown above.
+CMD ["./node_modules/.bin/ponder", "start", "--schema", "pearn", "--port", "8080", "--log-level", "warn"]
