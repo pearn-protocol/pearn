@@ -59,6 +59,7 @@ jobs:
       - name: Build (Aurora testnet)
         run: pnpm build
       - name: End to end (anvil + headless Chrome)
+        timeout-minutes: 5
         env:
           CHROME: /usr/bin/google-chrome
         run: pnpm e2e

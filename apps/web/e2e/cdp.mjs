@@ -14,23 +14,37 @@ const CHROMES = [
 export async function launchChrome(port = 9333) {
 	const bin = CHROMES.find((c) => c && existsSync(c));
 	if (!bin) throw new Error("No Chrome found; set CHROME");
-	const proc = spawn(bin, [
-		"--headless=new",
-		"--disable-gpu",
-		"--no-first-run",
-		"--no-sandbox",
-		`--remote-debugging-port=${port}`,
-		`--user-data-dir=${mkdtempSync(join(tmpdir(), "pearn-e2e-"))}`,
-		"about:blank",
-	]);
+	// Own process group: on Linux `google-chrome` is a wrapper script, so killing only its pid
+	// would leave the browser (and its CDP socket) alive.
+	const proc = spawn(
+		bin,
+		[
+			"--headless=new",
+			"--disable-gpu",
+			"--no-first-run",
+			"--no-sandbox",
+			`--remote-debugging-port=${port}`,
+			`--user-data-dir=${mkdtempSync(join(tmpdir(), "pearn-e2e-"))}`,
+			"about:blank",
+		],
+		{ detached: true, stdio: "ignore" },
+	);
+	const close = () => {
+		try {
+			process.kill(-proc.pid, "SIGKILL");
+		} catch {
+			// already gone
+		}
+	};
 	for (let i = 0; i < 50; i++) {
 		try {
 			await fetch(`http://127.0.0.1:${port}/json/version`);
-			return { port, close: () => proc.kill() };
+			return { port, close };
 		} catch {
 			await sleep(200);
 		}
 	}
+	close();
 	throw new Error("Chrome did not start");
 }
 
