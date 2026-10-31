@@ -19,6 +19,7 @@ Point MetaMask at `http://127.0.0.1:8545` (chain 31337) and import an anvil test
 | `NEXT_PUBLIC_MARKETS`, `NEXT_PUBLIC_ORACLE` | none | From `contracts/deployments/<chainId>.json`; without them the app says the contracts are not deployed |
 | `NEXT_PUBLIC_STNEAR` | bridged stNEAR | Only needed on anvil |
 | `NEXT_PUBLIC_RPC_URL` | the network's public RPC | |
+| `NEXT_PUBLIC_INDEXER_URL` | none (Docker: the hosted indexer) | Activity feed and portfolio lookup; optional |
 
 ## Layout
 
