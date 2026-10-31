@@ -1,0 +1,32 @@
+---
+title: Run it locally
+description: The whole stack on one machine, and every test suite.
+---
+
+Requirements: [Foundry](https://getfoundry.sh) 1.8+, Node 24, pnpm 10.
+
+```sh
+git clone --recursive https://github.com/pearn-protocol/pearn && cd pearn
+pnpm install
+```
+
+## The app on a local chain
+
+```sh
+cd apps/web && pnpm dev:local
+```
+
+This starts anvil, runs `DevChain.s.sol` (mock stNEAR, a mock oracle, three markets with bets), and serves the app at `http://localhost:3000`. To click through it by hand, point MetaMask at `http://127.0.0.1:8545` (chain 31337) and import an anvil test key.
+
+## Tests
+
+| Command | What |
+|---|---|
+| `cd contracts && forge test` | Unit, integration and property (fuzz) tests for the contracts |
+| `pnpm rpc:testnet & pnpm rpc:mainnet &` then `FOUNDRY_PROFILE=fork forge test` | Forks of real bridged stNEAR on Aurora testnet and mainnet |
+| `cd apps/web && pnpm test` | PayoutMath port, formatting, phases, create checks |
+| `cd apps/web && pnpm e2e` | Bet → resolve → claim in headless Chrome against anvil |
+| `cd apps/indexer && pnpm test` | Ponder against anvil: seed, resolve, claim |
+| `pnpm test:scripts` | Repo scripts |
+
+CI runs all of them on every pull request.

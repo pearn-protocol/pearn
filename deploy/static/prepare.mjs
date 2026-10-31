@@ -2,13 +2,17 @@
 // 1. Writes csp.caddy (imported by the Caddyfile): a self-only CSP that allows the build's inline
 //    scripts and styles by sha256 hash, never 'unsafe-inline', and connects only to the RPC.
 // 2. Precompresses text assets to .br and .gz so Caddy serves them without CPU per request.
-// Usage: node prepare.mjs <site dir> <csp.caddy out> <connect-src origins, comma separated>
+//    --inline-styles (the docs image only) allows runtime inline styles, which Fumadocs sets;
+//    scripts stay hash-only either way.
+// Usage: node prepare.mjs [--inline-styles] <site dir> <csp.caddy out> [connect-src origins, comma separated]
 import { createHash } from "node:crypto";
 import { readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { brotliCompressSync, constants, gzipSync } from "node:zlib";
 
-const [dir, out, connect = ""] = process.argv.slice(2);
+const argv = process.argv.slice(2);
+const inlineStyles = argv.includes("--inline-styles");
+const [dir, out, connect = ""] = argv.filter((a) => a !== "--inline-styles");
 if (!dir || !out) throw new Error("usage: prepare.mjs <site dir> <csp.caddy out> [origins]");
 
 const files = readdirSync(dir, { recursive: true, withFileTypes: true })
@@ -42,7 +46,10 @@ for (const o of origins) if (new URL(o).origin !== o) throw new Error(`not an or
 const policy = [
 	"default-src 'none'",
 	`script-src 'self' ${[...scripts].join(" ")}`,
-	`style-src 'self' ${[...styles, ...attrs].join(" ")}${attrs.size ? " 'unsafe-hashes'" : ""}`,
+	// A hash in the list would make browsers ignore 'unsafe-inline', so it is one or the other.
+	inlineStyles
+		? "style-src 'self' 'unsafe-inline'"
+		: `style-src 'self' ${[...styles, ...attrs].join(" ")}${attrs.size ? " 'unsafe-hashes'" : ""}`,
 	"img-src 'self'",
 	"font-src 'self'",
 	"manifest-src 'self'",

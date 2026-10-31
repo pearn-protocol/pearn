@@ -1,0 +1,17 @@
+{
+	"title": "Pearn",
+	"pages": [
+		"index",
+		"how-it-works",
+		"payouts",
+		"oracle",
+		"---Build---",
+		"contracts",
+		"indexer",
+		"run-locally",
+		"testnet-stnear",
+		"without-aurora-eth",
+		"---Reference---",
+		"risks"
+	]
+}

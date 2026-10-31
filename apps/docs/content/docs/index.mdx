@@ -1,0 +1,26 @@
+---
+title: Introduction
+description: A no-loss prediction market on NEAR. Bet the staking yield, keep the principal.
+---
+
+In a normal prediction market the loser loses everything, which keeps most people out. Staked NEAR earns about 4.5% a year anyway. Pearn makes that yield the stake.
+
+You bet **stNEAR** (Meta Pool's liquid-staked NEAR) on YES or NO. When the market settles, everyone gets their principal's NEAR value back, and the winning side splits the staking yield the whole market earned, plus anything sponsors added.
+
+<Cards>
+  <Card title="Try it on testnet" href="https://pearn.103.150.190.91.sslip.io" description="Three demo markets on Aurora testnet." />
+  <Card title="How it works" href="/docs/how-it-works/" description="Bet, accrue, resolve, claim." />
+  <Card title="Payout math" href="/docs/payouts/" description="Why nobody can lose principal." />
+  <Card title="The XCC oracle" href="/docs/oracle/" description="A Solidity contract reading Meta Pool on NEAR." />
+</Cards>
+
+## What makes it NEAR
+
+- Contracts are Solidity on **Aurora**, NEAR's EVM.
+- The yield is **NEAR staking**: stNEAR's NEAR value rises every epoch.
+- The rate comes **from NEAR itself**: `StNearRateOracle` calls `get_st_near_price` on the Meta Pool contract through Aurora's cross-contract-call precompile and receives the answer in a Solidity callback. There is no off-chain feed.
+- Everything was deployed, and the keeper runs, **without Aurora ETH**: transactions go to the Aurora engine's `submit` method from a NEAR account.
+
+## Status
+
+Live on Aurora testnet and verified on Blockscout ([contracts](/docs/contracts/)). There is no owner, no upgrade path, and no admin access to funds.

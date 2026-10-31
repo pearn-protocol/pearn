@@ -1,0 +1,44 @@
+---
+title: How it works
+description: The life of a market, from creation to the last claim.
+---
+
+## Actors
+
+| Actor | Does |
+|---|---|
+| Creator | Anyone. Picks the question, the close time and a resolver |
+| Bettor | Bets stNEAR on YES or NO, claims principal plus winnings |
+| Sponsor | Adds stNEAR to a market's pot. Gets it back only if nobody bets |
+| Resolver | Set per market, ideally a DAO. Reports the outcome after close |
+| Guardian | Can only turn an outcome into `Invalid`, and only during the 24 h challenge window |
+| Keeper | Anyone. Calls `oracle.sync()`; ours runs every 12 h |
+
+## Lifecycle
+
+<Steps>
+<Step>
+### Create
+`createMarket(question, closeTime, resolver)`. The close is at least an hour away; the question is at most 280 bytes.
+</Step>
+<Step>
+### Bet
+`bet(id, side, amount)` takes stNEAR. Your **principal** is fixed in NEAR at the current rate, and your **weight** is principal × seconds until close. Bets need an oracle reading younger than 2 days.
+</Step>
+<Step>
+### Resolve
+After close, once the oracle has synced again, the resolver calls `resolve(id, Yes | No | Invalid)`. That fixes the settlement rate and the pot. If nobody resolves within 7 days, anyone can call `voidExpired(id)`.
+</Step>
+<Step>
+### Challenge window
+For 24 h the guardian may call `overrideInvalid(id)`. It changes who shares the pot, never its size.
+</Step>
+<Step>
+### Claim
+`claim(id)` pays your principal back in stNEAR at the settlement rate, plus your share of the pot. See [payouts](/docs/payouts/).
+</Step>
+</Steps>
+
+## Why time weight
+
+Without it, a whale could bet on the obvious side just before close and take the yield that early bettors produced. With weight = principal × time left, a late bet earns almost nothing.

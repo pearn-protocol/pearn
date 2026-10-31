@@ -1,0 +1,30 @@
+---
+title: Get testnet stNEAR
+description: From the NEAR faucet to stNEAR on Aurora testnet, no captcha.
+---
+
+Everything goes through NEAR testnet with [near-cli-rs](https://github.com/near/near-cli-rs). `YOUR_ADDRESS` is your Aurora address, lowercase and without `0x`.
+
+<Steps>
+<Step>
+### A funded NEAR testnet account (10 NEAR)
+```sh
+near account create-account sponsor-by-faucet-service you.testnet autogenerate-new-keypair save-to-legacy-keychain network-config testnet create
+```
+</Step>
+<Step>
+### Stake at Meta Pool
+```sh
+near contract call-function as-transaction meta-v2.pool.testnet deposit_and_stake json-args '{}' prepaid-gas '200 Tgas' attached-deposit '5 NEAR' sign-as you.testnet network-config testnet sign-with-legacy-keychain send
+```
+</Step>
+<Step>
+### Bridge to Aurora
+```sh
+near contract call-function as-transaction meta-v2.pool.testnet ft_transfer_call json-args '{"receiver_id":"aurora","amount":"<stNEAR yocto>","msg":"YOUR_ADDRESS"}' prepaid-gas '200 Tgas' attached-deposit '1 yoctoNEAR' sign-as you.testnet network-config testnet sign-with-legacy-keychain send
+```
+The stNEAR shows up at `0x2137…f144` on Aurora testnet.
+</Step>
+</Steps>
+
+Betting from MetaMask still needs a little Aurora testnet ETH for gas, from the [Aurora faucet](https://aurora.dev/faucet). Scripts can skip that; see [without Aurora ETH](/docs/without-aurora-eth/).

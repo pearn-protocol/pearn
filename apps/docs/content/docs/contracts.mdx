@@ -1,0 +1,37 @@
+---
+title: Contracts
+description: Addresses, API and events.
+---
+
+## Aurora testnet (1313161555)
+
+All verified on [Blockscout](https://explorer.testnet.aurora.dev).
+
+| Contract | Address |
+|---|---|
+| PearnMarkets | `0x4659f0d99587D4fA396840d982a4215FcFe8a557` |
+| StNearRateOracle | `0xA8adEFE2C8f0F71a585a73c1259997f593F9e463` |
+| stNEAR (bridged) | `0x2137df2e54abd6bF1c1a8c1739f2EA6A8C15F144` |
+| wNEAR (bridged) | `0x4861825E75ab14553E5aF711EbbE6873d369d146` |
+
+Amounts are raw units, 1e24 per token. Contracts never call `decimals()`: bridged tokens on testnet report empty metadata.
+
+## PearnMarkets
+
+| Function | Who |
+|---|---|
+| `createMarket(string question, uint64 closeTime, address resolver) → id` | anyone |
+| `bet(uint256 id, Side side, uint128 amount)` | anyone, before close (approve stNEAR first) |
+| `sponsor(uint256 id, uint128 amount)` | anyone, until resolved |
+| `resolve(uint256 id, Outcome outcome)` | the market's resolver, after close and a post-close sync |
+| `voidExpired(uint256 id)` | anyone, 7 days after close |
+| `overrideInvalid(uint256 id)` | the guardian, within 24 h of resolution |
+| `claim(uint256 id) → amount` | bettors and sponsors, after the window |
+
+Views: `getMarket`, `positionOf`, `sponsorshipOf`, `claimable`, `hasClaimed`, `marketCount`.
+
+Events: `MarketCreated`, `BetPlaced`, `Sponsored`, `MarketResolved`, `OutcomeOverridden`, `Claimed`. Every revert is a custom error with context, for example `RateStale(updatedAt)` or `ChallengeWindowOpen(id)`.
+
+## Source
+
+`contracts/src`: `PearnMarkets.sol`, `StNearRateOracle.sol`, `libraries/PayoutMath.sol`, `libraries/NearJson.sol`, `interfaces/`, `types/Market.sol`. Solidity 0.8.28, OpenZeppelin 5.1, Aurora contracts SDK.

@@ -27,8 +27,12 @@ export async function launchChrome(port = 9333) {
 			`--user-data-dir=${mkdtempSync(join(tmpdir(), "pearn-e2e-"))}`,
 			"about:blank",
 		],
-		{ detached: true, stdio: "ignore" },
+		{ detached: true, stdio: ["ignore", "ignore", "pipe"] },
 	);
+	let stderr = "";
+	proc.stderr.on("data", (d) => {
+		stderr = (stderr + d).slice(-2000);
+	});
 	const close = () => {
 		try {
 			process.kill(-proc.pid, "SIGKILL");
@@ -36,7 +40,8 @@ export async function launchChrome(port = 9333) {
 			// already gone
 		}
 	};
-	for (let i = 0; i < 50; i++) {
+	// A cold Chrome on a CI runner, right after a Next build, can take well over 10 s.
+	for (let i = 0; i < 150; i++) {
 		try {
 			await fetch(`http://127.0.0.1:${port}/json/version`);
 			return { port, close };
@@ -45,7 +50,7 @@ export async function launchChrome(port = 9333) {
 		}
 	}
 	close();
-	throw new Error("Chrome did not start");
+	throw new Error(`Chrome did not start in 30 s. Its stderr:\n${stderr}`);
 }
 
 export const sleep = (ms) => new Promise((r) => setTimeout(r, ms));

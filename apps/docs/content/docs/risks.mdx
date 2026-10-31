@@ -1,0 +1,25 @@
+---
+title: Risks and FAQ
+description: What can go wrong, and what is assumed.
+---
+
+## Risks
+
+| Risk | Mitigation |
+|---|---|
+| Oracle callback spoofed | Only the oracle's own XCC account may call `onRate`; the rate never decreases |
+| Resolver lies | Ideally a DAO; for 24 h the guardian can force `Invalid` (everyone keeps principal plus a share of the yield) |
+| Resolver disappears | Anyone voids after 7 days |
+| stNEAR depeg or Meta Pool bug | Principal is a NEAR value paid in stNEAR, so Meta Pool risk is yours |
+| Slashing introduced on NEAR | The rate could fall; the oracle would stop updating (monotonic) |
+| Contract bug | Small surface, no admin, fuzz and invariant tests on "payouts ≤ holdings" |
+
+## FAQ
+
+**Do I get NEAR or stNEAR back?** stNEAR worth your principal's NEAR value at settlement. Convert at Meta Pool: instantly with a fee, or through a delayed unstake.
+
+**Can I exit before close?** Not yet. Bets are locked until close; that is what makes the time weight fair.
+
+**Who resolves the testnet demo markets?** The deployer, `0x3B4f…85F5`. On mainnet each market should name a DAO.
+
+**Is the yield worth it?** Pure yield is modest (about 4.5% a year, split between winners). Sponsored pots and long markets are what make it interesting; the app always shows the real projection.
