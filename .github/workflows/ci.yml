@@ -90,6 +90,28 @@ jobs:
         timeout-minutes: 5
         run: pnpm test
 
+  docs:
+    name: Docs (types, links, build)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: apps/docs
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Typecheck
+        run: pnpm typecheck
+      - name: Links
+        run: pnpm test
+      - name: Build
+        run: pnpm build
+
   contracts:
     name: Contracts (fmt, build, test)
     runs-on: ubuntu-latest
