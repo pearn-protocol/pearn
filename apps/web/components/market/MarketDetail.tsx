@@ -11,6 +11,7 @@ import { useNow } from "@/hooks/useNow";
 import { contracts, explorerAddress } from "@/lib/config";
 import { dateTime, duration, short } from "@/lib/format";
 import { Outcome, phaseOf, potAt } from "@/lib/markets";
+import ActivityFeed from "./ActivityFeed";
 import BetForm from "./BetForm";
 import PositionPanel from "./PositionPanel";
 import ResolvePanel from "./ResolvePanel";
@@ -66,6 +67,7 @@ export default function MarketDetail() {
 				</div>
 				<RateInfo />
 				<ResolvePanel m={m} now={now} />
+				<ActivityFeed id={m.id} now={now} />
 			</section>
 			<aside className="detail-side">
 				{phase === "open" && <BetForm m={m} now={now} />}
