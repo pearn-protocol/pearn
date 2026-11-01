@@ -23,7 +23,7 @@ How NEAR fits in:
 
 Design: principal is fixed in NEAR at bet time; winnings are weighted by principal × time left, so late whales can't take early bettors' yield. Each market names its resolver (ideally a DAO); a guardian can only turn an outcome into Invalid within 24 h; anyone can void after 7 days. No owner, no upgrades, rounding can never pay out more than the contract holds.
 
-Live on Aurora testnet, verified on Blockscout: PearnMarkets 0x4659f0d99587D4fA396840d982a4215FcFe8a557, oracle 0xA8adEFE2C8f0F71a585a73c1259997f593F9e463. App: https://pearn.103.150.190.91.sslip.io. Tests: unit, integration, fuzz, forks of real stNEAR, and browser end-to-end bet → resolve → claim.
+Live on Aurora testnet, verified on Blockscout: PearnMarkets 0x4659f0d99587D4fA396840d982a4215FcFe8a557, oracle 0xA8adEFE2C8f0F71a585a73c1259997f593F9e463. App: https://pearn.103.150.190.91.sslip.io, docs: https://docs.pearn.103.150.190.91.sslip.io, plus a Ponder indexer for activity. Tests: unit, integration, fuzz, forks of real stNEAR, indexer integration, browser end-to-end bet → resolve → claim.
 <!-- IDEA END -->
 
 ## Demo post draft (the human posts it)
