@@ -1,0 +1,65 @@
+name: Health
+
+# Checks the hosted demo every 30 minutes: the app, the docs, the indexer, and that the keeper
+# keeps the oracle fresh (bets need a reading younger than 2 days). On failure it opens one
+# issue labelled `incident` (while it is open, failing runs only fail), so an outage reaches
+# everyone who watches the repo. Close the issue when it is fixed. Public endpoints only.
+on:
+  schedule:
+    - cron: "11,41 * * * *"
+  workflow_dispatch:
+
+permissions:
+  issues: write
+
+concurrency:
+  group: health
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      APP: https://pearn.103.150.190.91.sslip.io/
+      DOCS: https://docs.pearn.103.150.190.91.sslip.io/docs/
+      INDEXER: https://indexer.pearn.103.150.190.91.sslip.io/ready
+      ORACLE: "0xA8adEFE2C8f0F71a585a73c1259997f593F9e463"
+      RPC: https://testnet.aurora.dev
+      # Two keeper runs missed in a row, with margin; bets stop at 48 h.
+      MAX_RATE_AGE: 108000
+    steps:
+      - uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: v1.8.3
+      - name: Check
+        id: check
+        run: |
+          down=""
+          for target in APP DOCS INDEXER; do
+            # Two tries a minute apart, so a redeploy blip doesn't page.
+            ok=""
+            for _ in 1 2; do
+              curl -sf -m 20 -o /dev/null "${!target}" && { ok=1; break; }
+              sleep 60
+            done
+            [ -n "$ok" ] || down="$down $target"
+          done
+          updated=$(cast call "$ORACLE" "updatedAt()(uint64)" --rpc-url "$RPC" | cut -d' ' -f1 || echo 0)
+          age=$(( $(date +%s) - updated ))
+          echo "oracle age ${age}s"
+          [ "$age" -le "$MAX_RATE_AGE" ] || down="$down oracle-stale(${age}s)"
+          echo "down=${down# }" >>"$GITHUB_OUTPUT"
+      - name: Open the incident issue
+        if: steps.check.outputs.down != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DOWN: ${{ steps.check.outputs.down }}
+          RUN: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          gh label create incident --color B60205 --description "Hosted demo down" -R "$GITHUB_REPOSITORY" 2>/dev/null || true
+          msg="Health check failed at $(date -u +%FT%TZ): $DOWN. Run: $RUN"
+          open=$(gh issue list -R "$GITHUB_REPOSITORY" -l incident -s open --json number -q '.[0].number')
+          if [ -z "$open" ]; then
+            gh issue create -R "$GITHUB_REPOSITORY" -l incident -t "Hosted demo down: $DOWN" -b "$msg"
+          fi
+          exit 1

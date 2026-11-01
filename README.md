@@ -108,6 +108,7 @@ The stNEAR shows up at `0x2137…f144` on Aurora testnet. wNEAR (for the oracle'
 | `apps/web` | Next.js static app (viem, injected wallet): markets, bet, sponsor, resolve, claim, create, portfolio |
 | `packages/brand` | Logo and icons |
 | `deploy/` | Caddy static server, CSP build step, host nginx; CD via Coolify |
+| `.github/workflows/health.yml` | Checks app, docs, indexer and oracle freshness every 30 min; opens an `incident` issue |
 | `.github/workflows/keeper.yml` | Keeper: `oracle.sync()` every 12 h through NEAR, from a dedicated wallet |
 | `apps/docs` | Documentation site (Fumadocs, static), also as `llms.txt` |
 | `apps/indexer` | Ponder indexer: markets, positions and activity over GraphQL/SQL |
