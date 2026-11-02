@@ -74,7 +74,17 @@ Aurora testnet (1313161555), all verified on Blockscout:
 | StNearRateOracle (reads `meta-v2.pool.testnet`) | [`0xA8adEFE2C8f0F71a585a73c1259997f593F9e463`](https://explorer.testnet.aurora.dev/address/0xA8adEFE2C8f0F71a585a73c1259997f593F9e463) |
 | stNEAR (bridged, Meta Pool) | [`0x2137df2e54abd6bF1c1a8c1739f2EA6A8C15F144`](https://explorer.testnet.aurora.dev/address/0x2137df2e54abd6bF1c1a8c1739f2EA6A8C15F144) |
 
-Check the XCC oracle yourself: `cast call 0xA8adEFE2C8f0F71a585a73c1259997f593F9e463 "rate()(uint256)" -r https://testnet.aurora.dev` → Meta Pool testnet's `get_st_near_price`, read from NEAR by Solidity. Three demo markets are open with bets from the deployer.
+Check the XCC oracle yourself: `cast call 0xA8adEFE2C8f0F71a585a73c1259997f593F9e463 "rate()(uint256)" -r https://testnet.aurora.dev` → Meta Pool testnet's `get_st_near_price`, read from NEAR by Solidity. Market 2 went through the whole lifecycle on testnet, every transaction submitted through NEAR:
+
+| Step | Tx | |
+|---|---|---|
+| create | [`0x2e46…6084`](https://explorer.testnet.aurora.dev/tx/0x2e46a0bfbbb832c6b2aaabad42d99628f0c18dc893c08e91006114a4b05c6084) | `createMarket` |
+| bet YES 0.1, bet NO 0.1 | [`0xb0bd…a057`](https://explorer.testnet.aurora.dev/tx/0xb0bd1c0c2ba448a1b3feef7d175627e86ef77d3bba2803c0c8a7f1ffa974a057) | `bet` (the NO bet: [`0x28f0…d079`](https://explorer.testnet.aurora.dev/tx/0x28f051a41f857e32be12388fe98700a2dc064a2fb8cba507bae984401d0da079)) |
+| sponsor 0.2 | [`0x6b43…fa22`](https://explorer.testnet.aurora.dev/tx/0x6b43c969af2447405228ed6b06272a7d241ca03b6684c19092f4ff105d7dfa22) | `sponsor` |
+| resolve YES | [`0x5231…dc48`](https://explorer.testnet.aurora.dev/tx/0x523112c3cbc9eaad96669e861d69a62788c8e24c79064d09ad42fdc1cf89dc48) | `resolve`, then the 24 h challenge window |
+| claim 0.4 | [`0xc8ef…af53`](https://explorer.testnet.aurora.dev/tx/0xc8ef84622bcb243e2095dbb23bbdf3ccaa3579a4d317a71fc7d2bfc13c9eaf53) | `claim`: principal 0.2 + pot 0.2, less 1 wei of rounding |
+
+Markets 0 and 1 are still open.
 
 **Deploying without Aurora ETH.** Forge simulates, then `scripts/aurora-submit.mjs` signs each transaction at gas price 0 and hands it to the Aurora engine's `submit` method on NEAR, so a NEAR account pays NEAR gas. That is how these contracts went live:
 
