@@ -1,39 +1,50 @@
-/* Colours from the logo tile: orange top, pink middle, lavender bottom. */
+/*
+ * Pearn design tokens, one source for the landing and the app. The "ASCII Studio" language
+ * zPredict uses (black, one accent, JetBrains Mono, square corners), with the logo's orange
+ * as the accent. Dark only. The font is self-hosted by each app (@fontsource/jetbrains-mono).
+ */
 :root {
-	color-scheme: light dark;
-	--font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-	--mono: ui-monospace, "SF Mono", Menlo, monospace;
+	color-scheme: dark;
+	--font: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+	--mono: var(--font);
+	--weight: 500;
 
+	/* The logo tile: orange top, pink middle, lavender bottom. */
 	--orange: #fe835a;
 	--pink: #f26b8a;
 	--lavender: #9aa4e6;
 	--gradient: linear-gradient(160deg, var(--orange), var(--pink) 55%, var(--lavender));
 
-	--bg: #fbf8f6;
-	--surface: #ffffff;
-	--ink: #1d1a1f;
-	--muted: #6c6670;
-	--line: #1d1a1f1a;
-	--yes: #1f9d6b;
-	--no: #d6455d;
-	--accent: #e2603a;
-	--on-accent: #ffffff;
+	--bg: #050505;
+	--surface: #0b0b0a;
+	--panel: #1c1c1b;
+	--ink: #deded6;
+	--muted: #a4a69e;
+	--glyph: #8f8f8f;
+	--line: rgb(255 255 255 / 0.12);
+	--accent: var(--orange);
+	--on-accent: #0b0806;
+	/* YES is the accent block, NO stays plain, as in zPredict. */
+	--yes: var(--accent);
+	--no: #8f8f8f;
 
-	--radius: 14px;
+	/* Light surfaces: accent sections and paper. */
+	--paper: #f1ece5;
+	--on-light: #0b0806;
+	--on-light-muted: #4b413a;
+	--rule-on-light: rgb(11 8 6 / 0.14);
+
+	--ease: cubic-bezier(0.83, 0, 0.17, 1);
+	--radius: 0;
 	--gap: 16px;
-	--max: 1040px;
+	--max: 1344px;
+	--gutter: 48px;
+	--control-h: 56px;
 }
 
-@media (prefers-color-scheme: dark) {
+@media (max-width: 900px) {
 	:root {
-		--bg: #141216;
-		--surface: #1e1b21;
-		--ink: #f3eff5;
-		--muted: #a39ca8;
-		--line: #f3eff51f;
-		--yes: #3cc78f;
-		--no: #f0677d;
-		--accent: #fe835a;
-		--on-accent: #1d1a1f;
+		--gutter: 20px;
+		--control-h: 44px;
 	}
 }
