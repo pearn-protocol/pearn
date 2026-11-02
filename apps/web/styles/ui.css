@@ -17,8 +17,7 @@
 .card {
 	background: var(--surface);
 	border: 1px solid var(--line);
-	border-radius: var(--radius);
-	padding: 20px;
+	padding: 24px;
 }
 
 .notice {
@@ -31,16 +30,22 @@
 	align-items: center;
 	justify-content: center;
 	gap: 6px;
-	min-height: 40px;
-	padding: 0 18px;
-	border: 0;
-	border-radius: 999px;
+	min-height: 44px;
+	padding: 0 20px;
+	border: 1px solid transparent;
 	background: var(--accent);
 	color: var(--on-accent);
 	font: inherit;
-	font-weight: 600;
 	text-decoration: none;
 	cursor: pointer;
+	transition:
+		background-color 250ms ease,
+		border-color 250ms ease,
+		color 250ms ease;
+}
+
+.button:hover:not(:disabled) {
+	background: var(--ink);
 }
 
 .button:disabled {
@@ -51,49 +56,60 @@
 .button.ghost {
 	background: transparent;
 	color: var(--ink);
-	border: 1px solid var(--line);
+	border-color: var(--line);
+}
+
+.button.ghost:hover:not(:disabled) {
+	background: transparent;
+	border-color: var(--accent);
+	color: var(--accent);
 }
 
 .button.small {
 	min-height: 32px;
 	padding: 0 12px;
-	font-size: 14px;
+	font-size: 13px;
 }
 
 .button.yes {
 	background: var(--yes);
-	color: #fff;
+	color: var(--on-accent);
 }
 
 .button.no {
-	background: var(--no);
-	color: #fff;
+	background: var(--ink);
+	color: var(--bg);
 }
 
 .pill {
-	padding: 8px 14px;
-	border-radius: 999px;
-	background: var(--line);
-	font-size: 14px;
+	display: inline-grid;
+	place-items: center;
+	height: var(--control-h);
+	padding: 0 16px;
+	background: var(--panel);
+	color: var(--accent);
 }
 
+/* "■ Open", like zPredict's status tags. */
 .chip {
-	display: inline-block;
-	padding: 2px 10px;
-	border-radius: 999px;
-	font-size: 13px;
-	font-weight: 600;
-	background: var(--line);
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	font-size: 12px;
+	letter-spacing: 0.04em;
+	color: var(--muted);
 }
 
-.chip.open {
-	background: color-mix(in srgb, var(--yes) 18%, transparent);
-	color: var(--yes);
+.chip::before {
+	content: "";
+	width: 8px;
+	height: 8px;
+	background: currentColor;
 }
 
+.chip.open,
 .chip.challenge,
 .chip.voidable {
-	background: color-mix(in srgb, var(--orange) 22%, transparent);
 	color: var(--accent);
 }
 
@@ -129,7 +145,7 @@ select {
 	width: 100%;
 	padding: 10px 12px;
 	border: 1px solid var(--line);
-	border-radius: 10px;
+	border-radius: 0;
 	background: var(--bg);
 	color: var(--ink);
 	font: inherit;
@@ -147,9 +163,8 @@ a:focus-visible {
 .odds-bar {
 	display: flex;
 	height: 8px;
-	border-radius: 999px;
 	overflow: hidden;
-	background: var(--line);
+	background: var(--panel);
 }
 
 .odds-bar .yes {
@@ -157,13 +172,12 @@ a:focus-visible {
 }
 
 .odds-bar .no {
-	background: var(--no);
+	background: var(--panel);
 }
 
 .odds .row {
 	margin-top: 6px;
-	font-size: 14px;
-	font-weight: 600;
+	font-size: 13px;
 }
 
 .yes-text {
@@ -183,12 +197,12 @@ a:focus-visible {
 
 .stats dt {
 	color: var(--muted);
-	font-size: 13px;
+	font-size: 12px;
 }
 
 .stats dd {
 	margin: 0;
-	font-weight: 600;
+	font-size: 16px;
 }
 
 .rate {
@@ -198,7 +212,6 @@ a:focus-visible {
 	gap: 12px;
 	margin: 0 0 32px;
 	padding: 12px 16px;
-	border-radius: var(--radius);
 	background: var(--surface);
 	border: 1px solid var(--line);
 	font-size: 14px;

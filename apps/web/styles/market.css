@@ -55,8 +55,8 @@
 	display: grid;
 	gap: 8px;
 	margin: 0;
-	padding: 12px;
-	border-radius: 10px;
+	padding: 16px;
+	border: 1px solid var(--line);
 	background: var(--bg);
 }
 
@@ -73,7 +73,6 @@
 
 .projection dd {
 	margin: 0;
-	font-weight: 600;
 }
 
 .projection .win {
