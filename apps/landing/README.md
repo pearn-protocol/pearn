@@ -8,6 +8,7 @@ pnpm --filter @pearn/landing build      # build + smoke test of dist/
 pnpm --filter @pearn/landing test       # market card logic
 ```
 
+- Design: zPredict's ASCII Studio language with Pearn's orange (`packages/brand/tokens.css`); the hero is `packages/brand/mark.txt`, sized so its 2:3 glyph cells match the font.
 - Copy lives in `src/data/` (`content.ts`, `site.ts`), so it is reviewable in one place and must stay true of `main` and the live deployment.
 - The "Newest markets" cards are fetched in the browser from the indexer (`src/scripts/markets.ts`); without it the section links to the app. That fetch is the page's only cross-origin request, and the CSP allows only the indexer origin.
 - `PUBLIC_APP_URL`, `PUBLIC_DOCS_URL`, `PUBLIC_INDEXER_URL` override the production origins (build args in `Dockerfile`).

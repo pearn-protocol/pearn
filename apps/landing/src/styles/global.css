@@ -1,3 +1,4 @@
+@import "@fontsource/jetbrains-mono/latin-500.css";
 @import "@pearn/brand/tokens.css";
 
 *,
@@ -7,8 +8,8 @@
 }
 
 html {
+	background: var(--bg);
 	scroll-behavior: smooth;
-	scroll-padding-top: 72px;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -19,9 +20,10 @@ html {
 
 body {
 	margin: 0;
+	overflow-x: hidden;
 	background: var(--bg);
 	color: var(--ink);
-	font: 17px / 1.6 var(--font);
+	font: var(--weight) 14px / 1.6 var(--font);
 	-webkit-font-smoothing: antialiased;
 }
 
@@ -32,97 +34,47 @@ a {
 h1,
 h2,
 h3,
-p {
+p,
+pre,
+ol,
+ul,
+dl,
+dd {
 	margin: 0;
 }
 
 h1,
 h2,
 h3 {
-	line-height: 1.15;
-	letter-spacing: -0.02em;
+	font-weight: var(--weight);
+	letter-spacing: -0.04em;
+	line-height: 1.25;
 }
 
-.wrap {
-	max-width: var(--max);
-	margin: 0 auto;
-	padding: 0 16px;
+ol,
+ul {
+	padding: 0;
+	list-style: none;
 }
 
-.section {
-	padding: 88px 0;
-	border-top: 1px solid var(--line);
-}
-
-.eyebrow {
-	font: 600 13px / 1 var(--mono);
-	letter-spacing: 0.08em;
-	text-transform: uppercase;
-	color: var(--accent);
-	margin-bottom: 12px;
-}
-
-.section h2 {
-	font-size: clamp(28px, 4vw, 40px);
-	margin-bottom: 12px;
-}
-
-.lead {
-	color: var(--muted);
-	max-width: 620px;
-	margin-bottom: 40px;
-}
-
-.grid {
-	display: grid;
-	gap: var(--gap);
-	grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-}
-
-.card {
-	background: var(--surface);
-	border: 1px solid var(--line);
-	border-radius: var(--radius);
-	padding: 24px;
-}
-
-.card h3 {
-	font-size: 18px;
-	margin-bottom: 8px;
-}
-
-.card p {
-	color: var(--muted);
-	font-size: 15px;
-}
-
-.button {
-	display: inline-flex;
-	align-items: center;
-	gap: 8px;
-	padding: 12px 22px;
-	border-radius: 999px;
-	font-weight: 600;
-	text-decoration: none;
-	border: 1px solid var(--line);
-	background: var(--surface);
-}
-
-.button.primary {
-	background: var(--accent);
-	border-color: transparent;
-	color: var(--on-accent);
-}
-
-.button:focus-visible,
 a:focus-visible,
+button:focus-visible,
 summary:focus-visible {
 	outline: 2px solid var(--accent);
 	outline-offset: 3px;
 }
 
-.actions {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 12px;
+.label {
+	font-size: 12px;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+}
+
+.sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	clip: rect(0 0 0 0);
+	white-space: nowrap;
 }

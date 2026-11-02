@@ -1,0 +1,92 @@
+---
+/**
+ * A content section on one of three surfaces, laid out like zPredict's: the title and lead on
+ * the left, the section's own content (default slot) on the right.
+ */
+interface Props {
+	id?: string;
+	tone: "dark" | "accent" | "paper";
+	eyebrow: string;
+	/** Heading lines; each sits on its own line. */
+	title: string[];
+}
+
+const { id, tone, eyebrow, title } = Astro.props;
+---
+
+<section id={id} class:list={["section", tone]}>
+	<div class="wrap">
+		<header class="head">
+			<p class="label eyebrow">{eyebrow}</p>
+			<h2>{title.map((line) => <span>{line}</span>)}</h2>
+			<div class="lead"><slot name="lead" /></div>
+		</header>
+		<div class="body"><slot /></div>
+	</div>
+</section>
+
+<style>
+	.section {
+		--sub: var(--muted);
+		--rule: var(--line);
+		padding: 140px 0;
+	}
+	.dark {
+		background: var(--bg);
+		color: var(--ink);
+	}
+	.accent,
+	.paper {
+		--sub: var(--on-light-muted);
+		--rule: var(--rule-on-light);
+		color: var(--on-light);
+	}
+	.accent {
+		background: var(--accent);
+	}
+	.paper {
+		background: var(--paper);
+	}
+	.wrap {
+		display: grid;
+		grid-template-columns: 4fr 7fr;
+		gap: 96px;
+		max-width: var(--max);
+		margin: 0 auto;
+		padding: 0 var(--gutter);
+	}
+	.eyebrow {
+		color: var(--sub);
+		margin-bottom: 16px;
+	}
+	h2 {
+		font-size: 32px;
+		margin-bottom: 24px;
+	}
+	h2 span {
+		display: block;
+	}
+	.lead {
+		color: var(--sub);
+		max-width: 420px;
+	}
+	.lead :global(a) {
+		color: inherit;
+	}
+	.body {
+		min-width: 0;
+	}
+	@media (max-width: 900px) {
+		.section {
+			padding: 72px 0;
+			font-size: 15px;
+		}
+		.wrap {
+			grid-template-columns: 1fr;
+			gap: 40px;
+		}
+		h2 {
+			font-size: 28px;
+		}
+	}
+</style>

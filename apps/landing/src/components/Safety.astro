@@ -1,37 +1,48 @@
 ---
 import { safety } from "../data/content";
 import { site } from "../data/site";
+import Section from "./ui/Section.astro";
 ---
 
-<section class="section" id="safety">
-	<div class="wrap">
-		<p class="eyebrow">Safety</p>
-		<h2>Small surface, no owner.</h2>
-		<p class="lead">
-			No admin, no upgrades. The only special role is a guardian that can mark an outcome Invalid,
-			and only for a day. <a href={`${site.docsUrl}/docs/risks/`}>Risks, in full.</a>
-		</p>
-		<ul class="grid">
-			{
-				safety.map((s) => (
-					<li class="card">
-						<h3>{s.title}</h3>
-						<p>{s.text}</p>
-					</li>
-				))
-			}
-		</ul>
-	</div>
-</section>
+<Section id="safety" tone="accent" eyebrow="Safety / threat model" title={["Small surface.", "No owner."]}>
+	<Fragment slot="lead">
+		No admin, no upgrades. The only special role is a guardian that can mark an outcome Invalid,
+		and only for a day. <a href={`${site.docsUrl}/docs/risks/`}>Risks, in full →</a>
+	</Fragment>
+	<dl class="rows">
+		{
+			safety.map((s) => (
+				<div>
+					<dt>{s.title}</dt>
+					<dd>{s.text}</dd>
+				</div>
+			))
+		}
+	</dl>
+</Section>
 
 <style>
-	ul {
-		grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-		list-style: none;
-		padding: 0;
-		margin: 0;
+	.rows div {
+		display: grid;
+		grid-template-columns: 2fr 3fr;
+		gap: 24px;
+		padding: 22px 0;
+		border-bottom: 1px solid var(--rule);
 	}
-	.lead a {
-		color: var(--accent);
+	.rows div:first-child {
+		border-top: 1px solid var(--rule);
+	}
+	dt {
+		font-size: 20px;
+		letter-spacing: -0.04em;
+	}
+	dd {
+		color: var(--on-light-muted);
+	}
+	@media (max-width: 600px) {
+		.rows div {
+			grid-template-columns: 1fr;
+			gap: 6px;
+		}
 	}
 </style>

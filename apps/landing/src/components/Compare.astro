@@ -1,0 +1,59 @@
+---
+import { compare } from "../data/content";
+import Section from "./ui/Section.astro";
+---
+
+<Section id="compare" tone="paper" eyebrow="Why no-loss" title={["Classic markets", "vs Pearn."]}>
+	<Fragment slot="lead">Same question, same odds. What changes is what you can lose.</Fragment>
+	<div class="table">
+		<table>
+			<thead>
+				<tr><th scope="col">Classic prediction market</th><th scope="col">Pearn</th></tr>
+			</thead>
+			<tbody>
+				{
+					compare.map(([them, us]) => (
+						<tr>
+							<td>{them}</td>
+							<td>{us}</td>
+						</tr>
+					))
+				}
+			</tbody>
+		</table>
+	</div>
+</Section>
+
+<style>
+	.table {
+		background: var(--bg);
+		color: var(--ink);
+		padding: 24px;
+	}
+	table {
+		width: 100%;
+		border-collapse: collapse;
+	}
+	th,
+	td {
+		text-align: left;
+		vertical-align: top;
+		padding: 14px 12px;
+		border-bottom: 1px solid var(--line);
+	}
+	th {
+		color: var(--muted);
+		font-size: 12px;
+		font-weight: var(--weight);
+		text-transform: uppercase;
+	}
+	th:last-child {
+		color: var(--accent);
+	}
+	td:first-child {
+		color: var(--muted);
+	}
+	tr:last-child td {
+		border-bottom: 0;
+	}
+</style>

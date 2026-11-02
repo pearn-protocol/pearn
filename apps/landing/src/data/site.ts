@@ -13,7 +13,8 @@ export const site = {
 
 export const nav = [
 	{ label: "How it works", href: "/#how" },
-	{ label: "Markets", href: "/#markets" },
+	{ label: "Live markets", href: "/#markets" },
+	{ label: "Why no-loss", href: "/#compare" },
 	{ label: "On NEAR", href: "/#near" },
 	{ label: "Safety", href: "/#safety" },
 	{ label: "FAQ", href: "/#faq" },

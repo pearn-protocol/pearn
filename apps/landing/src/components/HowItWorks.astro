@@ -1,82 +1,48 @@
 ---
-import { compare, steps } from "../data/content";
+import { steps } from "../data/content";
+import Section from "./ui/Section.astro";
 ---
 
-<section class="section" id="how">
-	<div class="wrap">
-		<p class="eyebrow">How it works</p>
-		<h2>Bet the interest, keep the money.</h2>
-		<p class="lead">
-			In a normal prediction market the loser loses everything. On Pearn you only put the staking
-			yield on the line.
-		</p>
-		<ol class="grid steps">
-			{
-				steps.map((s, i) => (
-					<li class="card">
-						<span class="n">{i + 1}</span>
+<Section id="how" tone="accent" eyebrow="How it works / no-loss" title={["Bet the interest.", "Keep the money."]}>
+	<Fragment slot="lead">
+		In a normal prediction market the loser loses everything. On Pearn you only put the staking
+		yield on the line.
+	</Fragment>
+	<ol class="steps">
+		{
+			steps.map((s, i) => (
+				<li>
+					<span class="n">0{i + 1}</span>
+					<div>
 						<h3>{s.title}</h3>
 						<p>{s.text}</p>
-					</li>
-				))
-			}
-		</ol>
-		<table>
-			<thead>
-				<tr><th scope="col">A classic prediction market</th><th scope="col">Pearn</th></tr>
-			</thead>
-			<tbody>
-				{
-					compare.map(([them, us]) => (
-						<tr>
-							<td>{them}</td>
-							<td>{us}</td>
-						</tr>
-					))
-				}
-			</tbody>
-		</table>
-	</div>
-</section>
+					</div>
+				</li>
+			))
+		}
+	</ol>
+</Section>
 
 <style>
-	.steps {
-		list-style: none;
-		padding: 0;
-		margin: 0 0 48px;
+	.steps li {
+		display: grid;
+		grid-template-columns: 56px 1fr;
+		padding: 28px 0;
+		border-bottom: 1px solid var(--rule);
+	}
+	.steps li:first-child {
+		border-top: 1px solid var(--rule);
 	}
 	.n {
-		display: inline-grid;
-		place-items: center;
-		width: 32px;
-		height: 32px;
-		margin-bottom: 16px;
-		border-radius: 50%;
-		background: var(--gradient);
-		color: #fff;
-		font-weight: 700;
+		font-size: 12px;
+		padding-top: 6px;
 	}
-	table {
-		width: 100%;
-		border-collapse: collapse;
-		font-size: 15px;
+	h3 {
+		font-size: 22px;
+		margin-bottom: 8px;
 	}
-	th,
-	td {
-		text-align: left;
-		padding: 14px 16px;
-		border-bottom: 1px solid var(--line);
-		vertical-align: top;
-	}
-	th {
-		font-size: 13px;
-		color: var(--muted);
-		font-weight: 600;
-	}
-	td:first-child {
-		color: var(--muted);
-	}
-	td:last-child {
-		font-weight: 600;
+	p {
+		color: var(--on-light-muted);
+		max-width: 560px;
 	}
 </style>

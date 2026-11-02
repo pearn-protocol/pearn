@@ -1,77 +1,117 @@
 ---
+/** Full-screen opener: the Pearn mark in ASCII glyphs, the pitch as highlighter strips, a marquee. */
+import mark from "@pearn/brand/mark.txt?raw";
+import { heroLines, marquee } from "../data/content";
 import { site } from "../data/site";
+import Cta from "./ui/Cta.astro";
 ---
 
 <section class="hero">
-	<div class="wrap inner">
-		<p class="eyebrow">No-loss prediction market · Live on Aurora testnet</p>
-		<h1>Bet the yield.<br /><span>Keep the NEAR.</span></h1>
-		<p class="pitch">
-			Stake stNEAR on YES or NO. When the market settles, everyone gets their principal back, and
-			the winning side splits the staking yield the whole market earned.
-		</p>
-		<div class="actions">
-			<a class="button primary" href={site.appUrl}>Open the app</a>
-			<a class="button" href={`${site.docsUrl}/docs/how-it-works/`}>How it works</a>
-		</div>
-		<dl class="facts">
-			<div><dt>Principal at risk</dt><dd>0</dd></div>
-			<div><dt>Price feeds</dt><dd>None, rate from NEAR</dd></div>
-			<div><dt>Admin keys</dt><dd>None</dd></div>
-		</dl>
+	<pre class="mark" aria-hidden="true">{mark}</pre>
+	<h1 class="strips">
+		{heroLines.map((line) => <span>{line}</span>)}
+	</h1>
+	<div class="actions">
+		<Cta href={site.appUrl} label="Open the app" />
+	</div>
+	<div class="marquee" aria-label="Built with">
+		<ul>
+			{[0, 1].map((copy) => marquee.map((item) => <li aria-hidden={copy === 1 ? "true" : undefined}>{item}</li>))}
+		</ul>
 	</div>
 </section>
 
 <style>
 	.hero {
 		position: relative;
+		display: grid;
+		place-items: center;
+		min-height: max(100svh, 720px);
+		padding: 140px var(--gutter) 160px;
 		overflow: hidden;
-		padding: 112px 0 96px;
 	}
-	.hero::before {
-		content: "";
+	.mark {
 		position: absolute;
-		inset: -40% -10% auto auto;
-		width: 720px;
-		height: 720px;
-		background: var(--gradient);
-		filter: blur(120px);
-		opacity: 0.35;
-		border-radius: 50%;
-		pointer-events: none;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -47%);
+		color: var(--glyph);
+		/* JetBrains Mono advances 0.6em, so line-height 0.9 makes the 2:3 cells mark.txt was drawn on. */
+		font: 500 min(1.4vh, 1.1vw) / 0.9 var(--font);
+		letter-spacing: 0;
+		user-select: none;
 	}
-	.inner {
+	.strips {
 		position: relative;
+		display: grid;
+		justify-items: center;
+		gap: 2px;
+		font-size: clamp(20px, 2vw, 26px);
+		letter-spacing: 0;
+		text-align: center;
 	}
-	h1 {
-		font-size: clamp(44px, 8vw, 88px);
-		margin-bottom: 24px;
+	.strips span {
+		padding: 2px 8px;
+		background: var(--accent);
+		color: var(--on-accent);
 	}
-	h1 span {
-		background: var(--gradient);
-		-webkit-background-clip: text;
-		background-clip: text;
-		color: transparent;
+	.actions {
+		position: absolute;
+		bottom: 120px;
+		display: none;
 	}
-	.pitch {
-		font-size: clamp(18px, 2.2vw, 21px);
-		color: var(--muted);
-		max-width: 620px;
-		margin-bottom: 32px;
-	}
-	.facts {
+	.marquee {
+		position: absolute;
+		inset: auto 0 0;
+		height: 80px;
 		display: flex;
-		flex-wrap: wrap;
-		gap: 40px;
-		margin: 56px 0 0;
+		align-items: center;
+		overflow: hidden;
+		background: #000;
+		color: #a3a3a3;
+		font-size: 15px;
 	}
-	.facts dt {
-		color: var(--muted);
-		font-size: 14px;
+	.marquee ul {
+		display: flex;
+		flex: none;
+		animation: scroll 40s linear infinite;
 	}
-	.facts dd {
-		margin: 4px 0 0;
-		font-size: 22px;
-		font-weight: 700;
+	.marquee li {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		padding: 0 40px 0 20px;
+		white-space: nowrap;
+	}
+	.marquee li::before {
+		content: "";
+		width: 10px;
+		height: 10px;
+		background: #4a4a4a;
+	}
+	@keyframes scroll {
+		to {
+			transform: translateX(-50%);
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.marquee ul {
+			animation: none;
+		}
+	}
+	@media (max-width: 900px) {
+		.mark {
+			font-size: min(1.6vw, 1.2vh);
+		}
+		.strips {
+			font-size: 17px;
+		}
+		.actions {
+			display: block;
+		}
+		.marquee {
+			height: 56px;
+			font-size: 13px;
+		}
 	}
 </style>
