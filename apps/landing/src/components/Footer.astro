@@ -1,0 +1,53 @@
+---
+import { site } from "../data/site";
+---
+
+<section class="section cta">
+	<div class="wrap">
+		<h2>Which market would you bet your yield on?</h2>
+		<p class="lead">Testnet stNEAR, real contracts, nothing to lose.</p>
+		<div class="actions">
+			<a class="button primary" href={site.appUrl}>Open the app</a>
+			<a class="button" href={`${site.docsUrl}/docs/testnet-stnear/`}>Get testnet stNEAR</a>
+		</div>
+	</div>
+</section>
+
+<footer>
+	<div class="wrap row">
+		<span>Pearn · built for NEAR HACKATHON 2026 · MIT</span>
+		<nav aria-label="Elsewhere">
+			<a href={site.appUrl}>App</a>
+			<a href={site.docsUrl}>Docs</a>
+			<a href={site.repoUrl}>GitHub</a>
+		</nav>
+	</div>
+</footer>
+
+<style>
+	.cta {
+		text-align: center;
+	}
+	.cta .lead {
+		margin: 0 auto 32px;
+	}
+	.cta .actions {
+		justify-content: center;
+	}
+	footer {
+		border-top: 1px solid var(--line);
+		padding: 28px 0;
+		font-size: 14px;
+		color: var(--muted);
+	}
+	.row {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
+		gap: 16px;
+	}
+	nav {
+		display: flex;
+		gap: 20px;
+	}
+</style>

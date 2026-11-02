@@ -1,0 +1,94 @@
+---
+/** The three newest markets, fetched from the indexer in the browser. Without it: a link to the app. */
+import { site } from "../data/site";
+---
+
+<section class="section" id="markets">
+	<div class="wrap">
+		<p class="eyebrow">Live on testnet</p>
+		<h2>Newest markets.</h2>
+		<p class="lead">Read from the Pearn indexer as you open this page.</p>
+		<div class="grid" data-markets data-indexer={site.indexerUrl} data-app={site.appUrl}>
+			<p class="card empty">
+				<span class="msg">Loading markets… If they do not show,</span>
+				<a href={site.appUrl}>open the app</a>.
+			</p>
+		</div>
+		<template id="market-card">
+			<a class="card market">
+				<span class="status"></span>
+				<h3></h3>
+				<div class="bar" aria-hidden="true"><span></span></div>
+				<p class="meta"></p>
+			</a>
+		</template>
+	</div>
+</section>
+
+<script>
+	import { fetchCards } from "../scripts/markets";
+
+	const root = document.querySelector<HTMLElement>("[data-markets]");
+	const tpl = document.querySelector<HTMLTemplateElement>("#market-card");
+	if (root && tpl) {
+		const { indexer = "", app = "" } = root.dataset;
+		fetchCards(indexer)
+			.then((cards) => {
+				if (!cards.length) return;
+				root.replaceChildren(
+					...cards.map((c) => {
+						const node = tpl.content.cloneNode(true) as DocumentFragment;
+						const a = node.querySelector("a") as HTMLAnchorElement;
+						a.href = `${app}/market/?id=${c.id}`;
+						(node.querySelector(".status") as HTMLElement).textContent = c.status;
+						(node.querySelector("h3") as HTMLElement).textContent = c.question;
+						const bar = node.querySelector(".bar span") as HTMLElement;
+						bar.style.width = `${c.yes ?? 50}%`;
+						(node.querySelector(".meta") as HTMLElement).textContent =
+							`${c.yes === null ? "No bets yet" : `${c.yes}% YES`} · ${c.staked} stNEAR in play · ${c.bets} bet${c.bets === 1 ? "" : "s"}`;
+						return node;
+					}),
+				);
+			})
+			.catch(() => {
+				root.querySelector(".msg")?.replaceChildren("The indexer is not answering right now;");
+			});
+	}
+</script>
+
+<style>
+	.empty {
+		grid-column: 1 / -1;
+	}
+	:global(.market) {
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		text-decoration: none;
+		transition: border-color 150ms ease;
+	}
+	:global(.market:hover) {
+		border-color: var(--accent);
+	}
+	:global(.market .status) {
+		font: 600 12px / 1 var(--mono);
+		text-transform: uppercase;
+		letter-spacing: 0.06em;
+		color: var(--accent);
+	}
+	:global(.market .bar) {
+		height: 6px;
+		border-radius: 3px;
+		background: var(--no);
+		overflow: hidden;
+		margin-top: auto;
+	}
+	:global(.market .bar span) {
+		display: block;
+		height: 100%;
+		background: var(--yes);
+	}
+	:global(.market .meta) {
+		font-size: 14px;
+	}
+</style>

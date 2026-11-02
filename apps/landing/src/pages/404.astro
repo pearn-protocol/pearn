@@ -1,0 +1,28 @@
+---
+import Header from "../components/Header.astro";
+import { site } from "../data/site";
+import Base from "../layouts/Base.astro";
+---
+
+<Base title="Not found | Pearn">
+	<Header />
+	<main class="wrap missing">
+		<h1>Nothing here.</h1>
+		<p class="lead">Looking for a market? Markets live in the app.</p>
+		<div class="actions">
+			<a class="button primary" href={site.appUrl}>Open the app</a>
+			<a class="button" href="/">Home</a>
+		</div>
+	</main>
+</Base>
+
+<style>
+	.missing {
+		padding-top: 120px;
+		padding-bottom: 120px;
+	}
+	h1 {
+		font-size: 48px;
+		margin-bottom: 12px;
+	}
+</style>

@@ -1,0 +1,77 @@
+---
+import { site } from "../data/site";
+---
+
+<section class="hero">
+	<div class="wrap inner">
+		<p class="eyebrow">No-loss prediction market · Live on Aurora testnet</p>
+		<h1>Bet the yield.<br /><span>Keep the NEAR.</span></h1>
+		<p class="pitch">
+			Stake stNEAR on YES or NO. When the market settles, everyone gets their principal back, and
+			the winning side splits the staking yield the whole market earned.
+		</p>
+		<div class="actions">
+			<a class="button primary" href={site.appUrl}>Open the app</a>
+			<a class="button" href={`${site.docsUrl}/docs/how-it-works/`}>How it works</a>
+		</div>
+		<dl class="facts">
+			<div><dt>Principal at risk</dt><dd>0</dd></div>
+			<div><dt>Price feeds</dt><dd>None, rate from NEAR</dd></div>
+			<div><dt>Admin keys</dt><dd>None</dd></div>
+		</dl>
+	</div>
+</section>
+
+<style>
+	.hero {
+		position: relative;
+		overflow: hidden;
+		padding: 112px 0 96px;
+	}
+	.hero::before {
+		content: "";
+		position: absolute;
+		inset: -40% -10% auto auto;
+		width: 720px;
+		height: 720px;
+		background: var(--gradient);
+		filter: blur(120px);
+		opacity: 0.35;
+		border-radius: 50%;
+		pointer-events: none;
+	}
+	.inner {
+		position: relative;
+	}
+	h1 {
+		font-size: clamp(44px, 8vw, 88px);
+		margin-bottom: 24px;
+	}
+	h1 span {
+		background: var(--gradient);
+		-webkit-background-clip: text;
+		background-clip: text;
+		color: transparent;
+	}
+	.pitch {
+		font-size: clamp(18px, 2.2vw, 21px);
+		color: var(--muted);
+		max-width: 620px;
+		margin-bottom: 32px;
+	}
+	.facts {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 40px;
+		margin: 56px 0 0;
+	}
+	.facts dt {
+		color: var(--muted);
+		font-size: 14px;
+	}
+	.facts dd {
+		margin: 4px 0 0;
+		font-size: 22px;
+		font-weight: 700;
+	}
+</style>
