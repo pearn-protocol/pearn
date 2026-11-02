@@ -1,29 +1,29 @@
 ---
-/** The three newest markets, fetched from the indexer in the browser. Without it: a link to the app. */
+/** The newest markets, fetched from the indexer in the browser. Without it: a link to the app. */
 import { site } from "../data/site";
+import Section from "./ui/Section.astro";
 ---
 
-<section class="section" id="markets">
-	<div class="wrap">
-		<p class="eyebrow">Live on testnet</p>
-		<h2>Newest markets.</h2>
-		<p class="lead">Read from the Pearn indexer as you open this page.</p>
-		<div class="grid" data-markets data-indexer={site.indexerUrl} data-app={site.appUrl}>
-			<p class="card empty">
-				<span class="msg">Loading markets… If they do not show,</span>
-				<a href={site.appUrl}>open the app</a>.
-			</p>
-		</div>
-		<template id="market-card">
-			<a class="card market">
-				<span class="status"></span>
-				<h3></h3>
-				<div class="bar" aria-hidden="true"><span></span></div>
-				<p class="meta"></p>
-			</a>
-		</template>
+<Section id="markets" tone="dark" eyebrow="Live on Aurora testnet" title={["Live", "markets."]}>
+	<Fragment slot="lead">
+		The newest markets, read from the Pearn indexer as you open this page. Testnet stNEAR, real
+		contracts.
+	</Fragment>
+	<div class="cards" data-markets data-indexer={site.indexerUrl} data-app={site.appUrl}>
+		<p class="empty">
+			<span class="msg">Loading markets… If they do not show,</span>
+			<a href={site.appUrl}>open the app</a>.
+		</p>
 	</div>
-</section>
+	<template id="market-card">
+		<a class="market">
+			<span class="status label"></span>
+			<h3></h3>
+			<div class="bar" aria-hidden="true"><span></span></div>
+			<p class="meta label"></p>
+		</a>
+	</template>
+</Section>
 
 <script>
 	import { fetchCards } from "../scripts/markets";
@@ -40,12 +40,12 @@ import { site } from "../data/site";
 						const node = tpl.content.cloneNode(true) as DocumentFragment;
 						const a = node.querySelector("a") as HTMLAnchorElement;
 						a.href = `${app}/market/?id=${c.id}`;
-						(node.querySelector(".status") as HTMLElement).textContent = c.status;
+						(node.querySelector(".status") as HTMLElement).textContent = `■ ${c.status}`;
 						(node.querySelector("h3") as HTMLElement).textContent = c.question;
 						const bar = node.querySelector(".bar span") as HTMLElement;
-						bar.style.width = `${c.yes ?? 50}%`;
+						bar.style.width = `${c.yes ?? 0}%`;
 						(node.querySelector(".meta") as HTMLElement).textContent =
-							`${c.yes === null ? "No bets yet" : `${c.yes}% YES`} · ${c.staked} stNEAR in play · ${c.bets} bet${c.bets === 1 ? "" : "s"}`;
+							`${c.yes === null ? "No bets yet" : `${c.yes}% YES`} · ${c.staked} stNEAR · ${c.bets} bet${c.bets === 1 ? "" : "s"}`;
 						return node;
 					}),
 				);
@@ -57,38 +57,46 @@ import { site } from "../data/site";
 </script>
 
 <style>
+	.cards {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+		gap: 16px;
+	}
 	.empty {
 		grid-column: 1 / -1;
+		color: var(--muted);
 	}
-	:global(.market) {
+	.cards :global(.market) {
 		display: flex;
 		flex-direction: column;
-		gap: 10px;
+		gap: 16px;
+		min-height: 220px;
+		padding: 24px;
+		border: 1px solid var(--line);
+		background: var(--surface);
 		text-decoration: none;
-		transition: border-color 150ms ease;
+		transition: border-color 250ms ease;
 	}
-	:global(.market:hover) {
+	.cards :global(.market:hover) {
 		border-color: var(--accent);
 	}
-	:global(.market .status) {
-		font: 600 12px / 1 var(--mono);
-		text-transform: uppercase;
-		letter-spacing: 0.06em;
+	.cards :global(.status) {
 		color: var(--accent);
 	}
-	:global(.market .bar) {
-		height: 6px;
-		border-radius: 3px;
-		background: var(--no);
-		overflow: hidden;
-		margin-top: auto;
+	.cards :global(h3) {
+		font-size: 18px;
 	}
-	:global(.market .bar span) {
+	.cards :global(.bar) {
+		height: 8px;
+		margin-top: auto;
+		background: var(--panel);
+	}
+	.cards :global(.bar span) {
 		display: block;
 		height: 100%;
-		background: var(--yes);
+		background: var(--accent);
 	}
-	:global(.market .meta) {
-		font-size: 14px;
+	.cards :global(.meta) {
+		color: var(--muted);
 	}
 </style>

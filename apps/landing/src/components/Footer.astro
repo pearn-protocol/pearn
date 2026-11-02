@@ -1,53 +1,79 @@
 ---
 import { site } from "../data/site";
+import Cta from "./ui/Cta.astro";
 ---
 
-<section class="section cta">
-	<div class="wrap">
-		<h2>Which market would you bet your yield on?</h2>
-		<p class="lead">Testnet stNEAR, real contracts, nothing to lose.</p>
-		<div class="actions">
-			<a class="button primary" href={site.appUrl}>Open the app</a>
-			<a class="button" href={`${site.docsUrl}/docs/testnet-stnear/`}>Get testnet stNEAR</a>
-		</div>
+<section class="cta-band">
+	<h2>Which market would you<br />bet your yield on?</h2>
+	<p>Testnet stNEAR, real contracts, nothing to lose.</p>
+	<div class="actions">
+		<Cta href={site.appUrl} label="Open the app" />
+		<a class="ghost" href={`${site.docsUrl}/docs/testnet-stnear/`}>Get testnet stNEAR</a>
 	</div>
 </section>
 
 <footer>
-	<div class="wrap row">
-		<span>Pearn · built for NEAR HACKATHON 2026 · MIT</span>
-		<nav aria-label="Elsewhere">
-			<a href={site.appUrl}>App</a>
-			<a href={site.docsUrl}>Docs</a>
-			<a href={site.repoUrl}>GitHub</a>
-		</nav>
-	</div>
+	<span class="label">Pearn · NEAR HACKATHON 2026 · MIT</span>
+	<nav aria-label="Elsewhere" class="label">
+		<a href={site.appUrl}>App</a>
+		<a href={site.docsUrl}>Docs</a>
+		<a href={site.repoUrl}>GitHub</a>
+	</nav>
 </footer>
 
 <style>
-	.cta {
+	.cta-band {
+		display: grid;
+		justify-items: center;
+		gap: 20px;
+		padding: 160px var(--gutter);
 		text-align: center;
 	}
-	.cta .lead {
-		margin: 0 auto 32px;
+	h2 {
+		font-size: clamp(28px, 4vw, 48px);
 	}
-	.cta .actions {
-		justify-content: center;
-	}
-	footer {
-		border-top: 1px solid var(--line);
-		padding: 28px 0;
-		font-size: 14px;
+	p {
 		color: var(--muted);
 	}
-	.row {
+	.actions {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: 12px;
+		margin-top: 12px;
+	}
+	.ghost {
+		display: grid;
+		place-items: center;
+		height: var(--control-h);
+		padding: 0 20px;
+		border: 1px solid var(--line);
+		text-decoration: none;
+		text-transform: uppercase;
+	}
+	.ghost:hover {
+		border-color: var(--accent);
+		color: var(--accent);
+	}
+	footer {
 		display: flex;
 		flex-wrap: wrap;
 		justify-content: space-between;
 		gap: 16px;
+		max-width: var(--max);
+		margin: 0 auto;
+		padding: 32px var(--gutter) 48px;
+		border-top: 1px solid var(--line);
+		color: var(--muted);
 	}
 	nav {
 		display: flex;
-		gap: 20px;
+		gap: 24px;
+	}
+	nav a {
+		text-decoration: none;
+	}
+	nav a:hover {
+		color: var(--accent);
 	}
 </style>

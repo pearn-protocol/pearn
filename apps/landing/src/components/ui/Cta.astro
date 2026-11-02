@@ -1,0 +1,90 @@
+---
+/**
+ * zPredict's block CTA: the label and a plus square as two accent blocks. On hover or focus a
+ * plus square grows in on the left, the label slides over and the right square folds away.
+ */
+interface Props {
+	href: string;
+	label: string;
+	/** Dark blocks, for accent surfaces. */
+	inverse?: boolean;
+}
+
+const { href, label, inverse = false } = Astro.props;
+---
+
+<a class:list={["cta", { inverse }]} href={href}>
+	<span class="sq in" aria-hidden="true"><svg viewBox="0 0 12 12"><path d="M6 1v10M1 6h10"></path></svg></span>
+	<span class="text">{label}</span>
+	<span class="sq out" aria-hidden="true"><svg viewBox="0 0 12 12"><path d="M6 1v10M1 6h10"></path></svg></span>
+</a>
+
+<style>
+	.cta {
+		--h: var(--control-h);
+		--block: var(--accent);
+		--fg: var(--on-accent);
+		position: relative;
+		display: inline-flex;
+		gap: 6px;
+		height: var(--h);
+		color: var(--fg);
+		font-size: 14px;
+		text-decoration: none;
+		text-transform: uppercase;
+		white-space: nowrap;
+	}
+	.inverse {
+		--block: var(--on-light);
+		--fg: var(--accent);
+	}
+	.sq,
+	.text {
+		display: grid;
+		place-items: center;
+		height: var(--h);
+		background: var(--block);
+		transition: transform 700ms var(--ease);
+	}
+	.sq {
+		width: var(--h);
+	}
+	.sq svg {
+		width: 0.75em;
+		height: 0.75em;
+		fill: none;
+		stroke: currentColor;
+		stroke-width: 1.5;
+		stroke-linecap: square;
+	}
+	.text {
+		padding: 0 16px;
+		transform: translateX(calc(-1 * (var(--h) + 6px)));
+	}
+	.in {
+		transform: rotate(-45deg) scale(0);
+		transform-origin: left center;
+	}
+	.out {
+		position: absolute;
+		top: 0;
+		right: 0;
+		transform-origin: right center;
+	}
+	.cta:hover .in,
+	.cta:focus-visible .in,
+	.cta:hover .text,
+	.cta:focus-visible .text {
+		transform: none;
+	}
+	.cta:hover .out,
+	.cta:focus-visible .out {
+		transform: rotate(-45deg) scale(0);
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.sq,
+		.text {
+			transition: none;
+		}
+	}
+</style>

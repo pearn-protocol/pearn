@@ -1,41 +1,39 @@
 ---
 /** Native exclusive `<details name>` rows: one answer open at a time, no script. */
 import { faq } from "../data/content";
+import Section from "./ui/Section.astro";
 ---
 
-<section class="section" id="faq">
-	<div class="wrap">
-		<p class="eyebrow">FAQ</p>
-		<h2>Common questions.</h2>
-		<div class="list">
-			{
-				faq.map((item) => (
-					<details name="faq">
-						<summary>
-							<h3>{item.q}</h3>
-							<span aria-hidden="true">+</span>
-						</summary>
-						<p>{item.a}</p>
-					</details>
-				))
-			}
-		</div>
+<Section id="faq" tone="paper" eyebrow="FAQ" title={["Common", "questions."]}>
+	<Fragment slot="lead">Anything else is in the docs.</Fragment>
+	<div>
+		{
+			faq.map((item) => (
+				<details name="faq">
+					<summary>
+						<h3>{item.q}</h3>
+						<span aria-hidden="true">+</span>
+					</summary>
+					<p>{item.a}</p>
+				</details>
+			))
+		}
 	</div>
-</section>
+</Section>
 
 <style>
-	.list {
-		max-width: 760px;
-		margin-top: 32px;
-	}
 	details {
-		border-bottom: 1px solid var(--line);
+		border-bottom: 1px solid var(--rule-on-light);
+	}
+	details:first-child {
+		border-top: 1px solid var(--rule-on-light);
 	}
 	summary {
 		display: flex;
 		justify-content: space-between;
+		align-items: center;
 		gap: 24px;
-		padding: 20px 0;
+		padding: 24px 0;
 		cursor: pointer;
 		list-style: none;
 	}
@@ -43,18 +41,19 @@ import { faq } from "../data/content";
 		display: none;
 	}
 	h3 {
-		font-size: 18px;
+		font-size: 20px;
 	}
 	summary span {
-		font-size: 22px;
+		font-size: 24px;
 		line-height: 1;
-		transition: transform 200ms ease;
+		transition: transform 300ms var(--ease);
 	}
 	details[open] summary span {
 		transform: rotate(45deg);
 	}
 	details p {
-		color: var(--muted);
-		padding-bottom: 20px;
+		color: var(--on-light-muted);
+		padding-bottom: 24px;
+		max-width: 640px;
 	}
 </style>

@@ -81,3 +81,25 @@ export const faq = [
 		a: "No. It is a hackathon build on testnet, with unit, integration, fuzz and fork tests against real stNEAR.",
 	},
 ];
+
+/** Hero highlighter strips. */
+export const heroLines = [
+	"Bet the yield.",
+	"Keep the NEAR.",
+	"Principal back, win or lose.",
+	"Winners split the staking yield.",
+	"Rate read from NEAR itself.",
+];
+
+/** What Pearn is built from, for the hero marquee. */
+export const marquee = [
+	"Aurora EVM",
+	"stNEAR",
+	"Meta Pool",
+	"XCC precompile",
+	"No price feed",
+	"Gas price 0",
+	"No owner",
+	"Ponder indexer",
+	"Foundry",
+];
