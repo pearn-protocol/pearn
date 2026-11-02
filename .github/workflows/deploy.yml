@@ -17,7 +17,7 @@ jobs:
     uses: ./.github/workflows/ci.yml
 
   coolify:
-    name: Coolify (web, indexer, docs)
+    name: Coolify (landing, web, indexer, docs)
     needs: ci
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -28,6 +28,7 @@ jobs:
       COOLIFY_WEB_UUID: ${{ vars.COOLIFY_WEB_UUID }}
       COOLIFY_INDEXER_UUID: ${{ vars.COOLIFY_INDEXER_UUID }}
       COOLIFY_DOCS_UUID: ${{ vars.COOLIFY_DOCS_UUID }}
+      COOLIFY_LANDING_UUID: ${{ vars.COOLIFY_LANDING_UUID }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -40,23 +41,26 @@ jobs:
           shared='package\.json$|pnpm-lock\.yaml$|pnpm-workspace\.yaml$|\.dockerignore$|packages/abi/'
           # A manual run, a new branch or a force-push past history rebuilds everything.
           if [ "${{ github.event_name }}" != push ] || ! git cat-file -e "$BEFORE^{commit}" 2>/dev/null; then
-            web=true indexer=true docs=true
+            web=true indexer=true docs=true landing=true
           else
             files=$(git diff --name-only "$BEFORE" "$GITHUB_SHA")
-            web=false indexer=false docs=false
+            web=false indexer=false docs=false landing=false
             echo "$files" | grep -qE "^(apps/web/|packages/brand/|deploy/static/|$shared)" && web=true
             echo "$files" | grep -qE "^(apps/indexer/|contracts/deployments/|$shared)" && indexer=true
             echo "$files" | grep -qE "^(apps/docs/|packages/brand/|deploy/static/|$shared)" && docs=true
+            echo "$files" | grep -qE "^(apps/landing/|packages/brand/|deploy/static/|$shared)" && landing=true
           fi
           echo "web=$web" >>"$GITHUB_OUTPUT"
           echo "indexer=$indexer" >>"$GITHUB_OUTPUT"
           echo "docs=$docs" >>"$GITHUB_OUTPUT"
-          echo "rebuild web: $web, indexer: $indexer, docs: $docs"
+          echo "landing=$landing" >>"$GITHUB_OUTPUT"
+          echo "rebuild web: $web, indexer: $indexer, docs: $docs, landing: $landing"
       - name: Trigger the deploys
         env:
           WEB: ${{ steps.pick.outputs.web }}
           INDEXER: ${{ steps.pick.outputs.indexer }}
           DOCS: ${{ steps.pick.outputs.docs }}
+          LANDING: ${{ steps.pick.outputs.landing }}
         run: |
           if [ -z "$COOLIFY_TOKEN" ] || [ -z "$COOLIFY_URL" ]; then
             echo "::warning::COOLIFY_URL or COOLIFY_TOKEN is not set; skipping deploy."
@@ -75,4 +79,5 @@ jobs:
           [ "$WEB" = true ] && deploy web "$COOLIFY_WEB_UUID"
           [ "$INDEXER" = true ] && deploy indexer "$COOLIFY_INDEXER_UUID"
           [ "$DOCS" = true ] && deploy docs "$COOLIFY_DOCS_UUID"
+          [ "$LANDING" = true ] && deploy landing "$COOLIFY_LANDING_UUID"
           exit 0

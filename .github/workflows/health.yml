@@ -1,7 +1,7 @@
 name: Health
 
-# Checks the hosted demo every 30 minutes: the app, the docs, the indexer, and that the keeper
-# keeps the oracle fresh (bets need a reading younger than 2 days). On failure it opens one
+# Checks the hosted demo every 30 minutes: the landing, the app, the docs, the indexer, and
+# that the keeper keeps the oracle fresh (bets need a reading younger than 2 days). On failure it opens one
 # issue labelled `incident` (while it is open, failing runs only fail), so an outage reaches
 # everyone who watches the repo. Close the issue when it is fixed. Public endpoints only.
 on:
@@ -20,7 +20,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     env:
-      APP: https://pearn.103.150.190.91.sslip.io/
+      LANDING: https://pearn.103.150.190.91.sslip.io/
+      APP: https://app.pearn.103.150.190.91.sslip.io/
       DOCS: https://docs.pearn.103.150.190.91.sslip.io/docs/
       INDEXER: https://indexer.pearn.103.150.190.91.sslip.io/ready
       ORACLE: "0xA8adEFE2C8f0F71a585a73c1259997f593F9e463"
@@ -35,7 +36,7 @@ jobs:
         id: check
         run: |
           down=""
-          for target in APP DOCS INDEXER; do
+          for target in LANDING APP DOCS INDEXER; do
             # Two tries a minute apart, so a redeploy blip doesn't page.
             ok=""
             for _ in 1 2; do
