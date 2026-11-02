@@ -7,6 +7,7 @@ Pearn logo and icons, shared by the apps. One set: the mark is drawn on its own 
 | `favicon.ico` (16 + 32), `favicon-16x16.png`, `favicon-32x32.png` | Browser tab |
 | `apple-touch-icon.png` (180) | iOS home screen |
 | `android-chrome-192x192.png`, `android-chrome-512x512.png` | PWA, `site.webmanifest`, README and org avatar |
+| `tokens.css` | Colours, fonts and radii as CSS custom properties, light and dark (app and landing) |
 
 Theme colour `#fe835a` (the tile's top edge).
 

@@ -21,7 +21,8 @@
 			"!contracts/broadcast",
 			"!packages/abi/index.ts",
 			"!apps/indexer/ponder-env.d.ts",
-			"!apps/indexer/generated"
+			"!apps/indexer/generated",
+			"!apps/landing/.astro"
 		]
 	},
 	"formatter": {
@@ -123,6 +124,17 @@
 		{
 			"includes": ["apps/docs/src/app/global.css"],
 			"css": { "parser": { "tailwindDirectives": true } }
+		},
+		{
+			"includes": ["**/*.astro"],
+			"linter": {
+				"rules": {
+					"correctness": {
+						"noUnusedVariables": "off",
+						"noUnusedImports": "off"
+					}
+				}
+			}
 		}
 	],
 	"assist": {

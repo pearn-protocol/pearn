@@ -1,0 +1,4 @@
+# Copied from packages/brand by scripts/brand.mjs
+/public/
+# Written by astro
+/.astro/

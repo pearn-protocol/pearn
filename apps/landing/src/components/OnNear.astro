@@ -1,0 +1,43 @@
+---
+import { stack } from "../data/content";
+import { site } from "../data/site";
+---
+
+<section class="section" id="near">
+	<div class="wrap">
+		<p class="eyebrow">Built on NEAR</p>
+		<h2>The yield and the rate both come from NEAR.</h2>
+		<p class="lead">
+			No off-chain price feed. A Solidity contract on Aurora asks Meta Pool on NEAR what one stNEAR
+			is worth, and the answer comes back in a callback.
+		</p>
+		<div class="grid">
+			{
+				stack.map((s) => (
+					<div class="card">
+						<h3>{s.title}</h3>
+						<p>{s.text}</p>
+					</div>
+				))
+			}
+		</div>
+		<p class="links">
+			<a href={site.explorerUrl}>PearnMarkets on Blockscout</a>
+			<a href={`${site.docsUrl}/docs/oracle/`}>How the oracle works</a>
+			<a href={`${site.docsUrl}/docs/without-aurora-eth/`}>Deploying without Aurora ETH</a>
+		</p>
+	</div>
+</section>
+
+<style>
+	.links {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 24px;
+		margin-top: 28px;
+		font-size: 15px;
+	}
+	.links a {
+		color: var(--accent);
+	}
+</style>

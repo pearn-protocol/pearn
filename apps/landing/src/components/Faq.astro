@@ -1,0 +1,60 @@
+---
+/** Native exclusive `<details name>` rows: one answer open at a time, no script. */
+import { faq } from "../data/content";
+---
+
+<section class="section" id="faq">
+	<div class="wrap">
+		<p class="eyebrow">FAQ</p>
+		<h2>Common questions.</h2>
+		<div class="list">
+			{
+				faq.map((item) => (
+					<details name="faq">
+						<summary>
+							<h3>{item.q}</h3>
+							<span aria-hidden="true">+</span>
+						</summary>
+						<p>{item.a}</p>
+					</details>
+				))
+			}
+		</div>
+	</div>
+</section>
+
+<style>
+	.list {
+		max-width: 760px;
+		margin-top: 32px;
+	}
+	details {
+		border-bottom: 1px solid var(--line);
+	}
+	summary {
+		display: flex;
+		justify-content: space-between;
+		gap: 24px;
+		padding: 20px 0;
+		cursor: pointer;
+		list-style: none;
+	}
+	summary::-webkit-details-marker {
+		display: none;
+	}
+	h3 {
+		font-size: 18px;
+	}
+	summary span {
+		font-size: 22px;
+		line-height: 1;
+		transition: transform 200ms ease;
+	}
+	details[open] summary span {
+		transform: rotate(45deg);
+	}
+	details p {
+		color: var(--muted);
+		padding-bottom: 20px;
+	}
+</style>

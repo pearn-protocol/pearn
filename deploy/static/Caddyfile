@@ -1,5 +1,6 @@
-# Static server for apps/web. TLS ends at the host nginx (deploy/nginx.conf); this listens on
-# plain :8080 as an unprivileged user. No `log` directive, so no access logs or client IPs.
+# Static server for apps/web, apps/docs and apps/landing. TLS ends at the host nginx
+# (deploy/nginx*.conf); this listens on plain :8080 as an unprivileged user. No `log`
+# directive, so no access logs or client IPs.
 {
 	admin off
 	auto_https off

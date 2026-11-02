@@ -1,0 +1,37 @@
+---
+import { safety } from "../data/content";
+import { site } from "../data/site";
+---
+
+<section class="section" id="safety">
+	<div class="wrap">
+		<p class="eyebrow">Safety</p>
+		<h2>Small surface, no owner.</h2>
+		<p class="lead">
+			No admin, no upgrades. The only special role is a guardian that can mark an outcome Invalid,
+			and only for a day. <a href={`${site.docsUrl}/docs/risks/`}>Risks, in full.</a>
+		</p>
+		<ul class="grid">
+			{
+				safety.map((s) => (
+					<li class="card">
+						<h3>{s.title}</h3>
+						<p>{s.text}</p>
+					</li>
+				))
+			}
+		</ul>
+	</div>
+</section>
+
+<style>
+	ul {
+		grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+		list-style: none;
+		padding: 0;
+		margin: 0;
+	}
+	.lead a {
+		color: var(--accent);
+	}
+</style>
