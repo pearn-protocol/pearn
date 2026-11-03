@@ -1,6 +1,6 @@
 # @pearn/indexer
 
-[Ponder](https://ponder.sh) over the PearnMarkets events on Aurora. Tables: `market` (kept in step with every event), `participant` (stake, sponsorship and claim per account and market), `activity` (every event, for feeds). Served at `/graphql` and `/sql`; health at `/health`, `/ready`.
+[Ponder](https://ponder.sh) over the PearnMarkets events on Aurora. Tables: `market` (kept in step with every event), `participant` (stake, sponsorship and claim per account and market), `activity` (every event, for feeds). Served at `/graphql` (no `/sql`: arbitrary queries could stall the in-process database); health at `/health`, `/ready`.
 
 Hosted: https://indexer.pearn.site/graphql (Aurora testnet).
 
