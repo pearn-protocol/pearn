@@ -7,6 +7,8 @@ ARG PUBLIC_DOCS_URL=https://docs.pearn.site
 ARG PUBLIC_INDEXER_URL=https://indexer.pearn.site
 ENV HUSKY=0 ASTRO_TELEMETRY_DISABLED=1 PUBLIC_APP_URL=$PUBLIC_APP_URL \
 	PUBLIC_DOCS_URL=$PUBLIC_DOCS_URL PUBLIC_INDEXER_URL=$PUBLIC_INDEXER_URL
+# The VPS is shared and tight on memory: cap Node's heap so a build can't starve the host.
+ENV NODE_OPTIONS=--max-old-space-size=1536
 RUN corepack enable
 WORKDIR /repo
 COPY . .
