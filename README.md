@@ -64,7 +64,7 @@ To read the story in code, start with `test/integration/MarketLifecycle.t.sol`. 
 
 ## Deployments
 
-Site: https://pearn.103.150.190.91.sslip.io, app: **https://app.pearn.103.150.190.91.sslip.io**, docs: https://docs.pearn.103.150.190.91.sslip.io, indexer: https://indexer.pearn.103.150.190.91.sslip.io/graphql (Aurora testnet; deployed from `main` by Coolify, see [deploy/](deploy/README.md)).
+Site: https://pearn.site, app: **https://app.pearn.site**, docs: https://docs.pearn.site, indexer: https://indexer.pearn.site/graphql (Aurora testnet; deployed from `main` by Coolify, see [deploy/](deploy/README.md)).
 
 Aurora testnet (1313161555), all verified on Blockscout:
 

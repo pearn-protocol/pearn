@@ -20,10 +20,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     env:
-      LANDING: https://pearn.103.150.190.91.sslip.io/
-      APP: https://app.pearn.103.150.190.91.sslip.io/
-      DOCS: https://docs.pearn.103.150.190.91.sslip.io/docs/
-      INDEXER: https://indexer.pearn.103.150.190.91.sslip.io/ready
+      LANDING: https://pearn.site/
+      APP: https://app.pearn.site/
+      DOCS: https://docs.pearn.site/docs/
+      INDEXER: https://indexer.pearn.site/ready
       ORACLE: "0xA8adEFE2C8f0F71a585a73c1259997f593F9e463"
       RPC: https://testnet.aurora.dev
       # Two keeper runs missed in a row, with margin; bets stop at 48 h.

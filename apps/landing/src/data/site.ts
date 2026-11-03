@@ -3,9 +3,9 @@ export const site = {
 	title: "Pearn | No-loss prediction markets on NEAR",
 	description:
 		"Bet the staking yield of your NEAR, never the NEAR itself. Everyone gets their principal back; the winning side splits the yield.",
-	appUrl: import.meta.env.PUBLIC_APP_URL ?? "https://app.pearn.103.150.190.91.sslip.io",
-	docsUrl: import.meta.env.PUBLIC_DOCS_URL ?? "https://docs.pearn.103.150.190.91.sslip.io",
-	indexerUrl: import.meta.env.PUBLIC_INDEXER_URL ?? "https://indexer.pearn.103.150.190.91.sslip.io",
+	appUrl: import.meta.env.PUBLIC_APP_URL ?? "https://app.pearn.site",
+	docsUrl: import.meta.env.PUBLIC_DOCS_URL ?? "https://docs.pearn.site",
+	indexerUrl: import.meta.env.PUBLIC_INDEXER_URL ?? "https://indexer.pearn.site",
 	repoUrl: "https://github.com/pearn-protocol/pearn",
 	explorerUrl:
 		"https://explorer.testnet.aurora.dev/address/0x4659f0d99587D4fA396840d982a4215FcFe8a557",

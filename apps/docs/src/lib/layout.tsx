@@ -1,7 +1,7 @@
 import type { BaseLayoutProps } from "fumadocs-ui/layouts/shared";
 import Image from "next/image";
 
-export const APP_URL = "https://app.pearn.103.150.190.91.sslip.io";
+export const APP_URL = "https://app.pearn.site";
 export const REPO_URL = "https://github.com/pearn-protocol/pearn";
 
 export const baseOptions: BaseLayoutProps = {

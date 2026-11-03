@@ -1,6 +1,6 @@
 # @pearn/landing
 
-The marketing site at https://pearn.103.150.190.91.sslip.io (Astro, static): hero, how it works, the newest markets, built on NEAR, safety, FAQ. The app lives at `app.`, the docs at `docs.`.
+The marketing site at https://pearn.site (Astro, static): hero, how it works, the newest markets, built on NEAR, safety, FAQ. The app lives at `app.`, the docs at `docs.`.
 
 ```sh
 pnpm --filter @pearn/landing dev        # http://localhost:3003

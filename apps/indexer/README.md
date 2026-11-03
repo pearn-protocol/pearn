@@ -2,7 +2,7 @@
 
 [Ponder](https://ponder.sh) over the PearnMarkets events on Aurora. Tables: `market` (kept in step with every event), `participant` (stake, sponsorship and claim per account and market), `activity` (every event, for feeds). Served at `/graphql` and `/sql`; health at `/health`, `/ready`.
 
-Hosted: https://indexer.pearn.103.150.190.91.sslip.io/graphql (Aurora testnet).
+Hosted: https://indexer.pearn.site/graphql (Aurora testnet).
 
 ```sh
 pnpm start --schema pearn            # index Aurora testnet into PGlite (.ponder/), serve on :42069
