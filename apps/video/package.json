@@ -1,0 +1,15 @@
+{
+	"name": "@pearn/video",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"capture": "node scripts/capture.mjs",
+		"render": "node scripts/render.mjs",
+		"build": "node scripts/capture.mjs && node scripts/render.mjs"
+	},
+	"dependencies": {
+		"@fontsource/jetbrains-mono": "^5.3.0",
+		"@pearn/brand": "workspace:*",
+		"viem": "^2.57.13"
+	}
+}

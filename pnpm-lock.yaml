@@ -105,6 +105,18 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
 
+  apps/video:
+    dependencies:
+      '@fontsource/jetbrains-mono':
+        specifier: ^5.3.0
+        version: 5.3.0
+      '@pearn/brand':
+        specifier: workspace:*
+        version: link:../../packages/brand
+      viem:
+        specifier: ^2.57.13
+        version: 2.57.13(typescript@5.9.3)(zod@4.6.7)
+
   apps/web:
     dependencies:
       '@fontsource/jetbrains-mono':
