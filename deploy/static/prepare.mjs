@@ -51,6 +51,8 @@ const policy = [
 		? "style-src 'self' 'unsafe-inline'"
 		: `style-src 'self' ${[...styles, ...attrs].join(" ")}${attrs.size ? " 'unsafe-hashes'" : ""}`,
 	"img-src 'self'",
+	// The landing's demo video (/pitch/).
+	"media-src 'self'",
 	"font-src 'self'",
 	"manifest-src 'self'",
 	`connect-src 'self' ${origins.join(" ")}`,

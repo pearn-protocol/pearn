@@ -64,8 +64,10 @@ export async function openTab(port, script) {
 	await new Promise((r) => ws.addEventListener("open", r, { once: true }));
 	let id = 0;
 	const pending = new Map();
+	const listeners = new Map();
 	ws.addEventListener("message", (e) => {
 		const msg = JSON.parse(e.data);
+		if (msg.method) for (const fn of listeners.get(msg.method) ?? []) fn(msg.params);
 		const p = pending.get(msg.id);
 		if (!p) return;
 		pending.delete(msg.id);
@@ -124,6 +126,15 @@ export async function openTab(port, script) {
 		},
 		/** Raw CDP command, for anything the helpers above don't cover. */
 		send,
+		/** Subscribes to a CDP event, e.g. Page.screencastFrame; returns the unsubscribe. */
+		on: (method, fn) => {
+			listeners.set(method, [...(listeners.get(method) ?? []), fn]);
+			return () =>
+				listeners.set(
+					method,
+					(listeners.get(method) ?? []).filter((f) => f !== fn),
+				);
+		},
 		close: () => ws.close(),
 	};
 }

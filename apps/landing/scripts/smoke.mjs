@@ -1,11 +1,11 @@
 // Smoke test of the built site (run by `build`): the key routes exist with a title, every local
-// href/src resolves to a built file or, for "#id", to an element on that page, and no page loads
-// anything from another origin (the only cross-origin request is the indexer fetch at runtime).
+// href/src/poster resolves to a built file or, for "#id", to an element on that page, and no
+// page loads anything from another origin (the only cross-origin request is the indexer fetch).
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
 const DIST = new URL("../dist/", import.meta.url).pathname;
-const ROUTES = ["index.html", "404.html"];
+const ROUTES = ["index.html", "404.html", "pitch/index.html"];
 
 const bad = [];
 const pages = readdirSync(DIST, { recursive: true }).filter((p) => p.endsWith(".html"));
@@ -19,7 +19,7 @@ for (const page of pages) {
 		const url = tag.match(/\s(?:src|href)="(https?:[^"]+)"/)?.[1];
 		if (url && !tag.includes('rel="canonical"')) bad.push(`${page}: loads ${url}`);
 	}
-	for (const [, attr, url] of html.matchAll(/\s(href|src)="([^"]+)"/g)) {
+	for (const [, attr, url] of html.matchAll(/\s(href|src|poster)="([^"]+)"/g)) {
 		if (/^(https?:|mailto:|data:)/.test(url)) continue;
 		if (url.startsWith("#")) {
 			if (url.length > 1 && !ids.has(url.slice(1)))

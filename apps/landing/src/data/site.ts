@@ -18,4 +18,5 @@ export const nav = [
 	{ label: "On NEAR", href: "/#near" },
 	{ label: "Safety", href: "/#safety" },
 	{ label: "FAQ", href: "/#faq" },
+	{ label: "Demo video", href: "/pitch/" },
 ];
