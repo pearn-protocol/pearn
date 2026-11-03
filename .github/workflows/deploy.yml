@@ -42,7 +42,10 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          shared='package\.json$|pnpm-lock\.yaml$|pnpm-workspace\.yaml$|\.dockerignore$|packages/abi/'
+          # No pnpm-lock.yaml: an app's own dependency change also touches its package.json, and a
+          # lockfile change for another app must not rebuild (and, for the indexer, reindex) this one.
+          # A lockfile-only update (pnpm update) needs a manual run, which rebuilds everything.
+          shared='package\.json$|pnpm-workspace\.yaml$|\.dockerignore$|packages/abi/'
           # Diff against the last deploy that succeeded, not the previous push: a push whose CI
           # failed, or a run superseded in the queue, must not leave its changes undeployed.
           base=$(gh run list -R "$GITHUB_REPOSITORY" --workflow deploy.yml --branch main --status success \
