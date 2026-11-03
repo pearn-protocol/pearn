@@ -9,46 +9,38 @@ import { useNow } from "@/hooks/useNow";
 import { usePoll } from "@/hooks/usePoll";
 import { useWallet } from "@/hooks/useWallet";
 import { type MarketWithId, type Position, readPosition } from "@/lib/chain";
-import { contracts, INDEXER_URL, POLL_MS } from "@/lib/config";
-import { readAccountMarkets } from "@/lib/indexer";
+import { contracts, POLL_MS } from "@/lib/config";
 import { phaseOf } from "@/lib/markets";
 
 type Row = { m: MarketWithId; p: Position };
-
-/**
- * The markets an account touched: the indexer says which, so only those positions are read
- * from the chain. Without an indexer (or if it fails) every market is checked.
- */
-async function candidates(markets: MarketWithId[], account: `0x${string}`) {
-	if (!INDEXER_URL) return markets;
-	try {
-		const ids = new Set(await readAccountMarkets(INDEXER_URL, account));
-		return markets.filter((m) => ids.has(m.id));
-	} catch {
-		return markets;
-	}
-}
 
 /** Every market the connected account bet on or sponsored. */
 export default function PortfolioList() {
 	const { address, connect } = useWallet();
 	const { markets, version } = useChainData();
 	const now = useNow(10_000);
-	const [rows, setRows] = useState<Row[] | null>(null);
+	const [read, setRead] = useState<{ address: string; rows: Row[] }>();
 
+	// ponytail: one position read per market, straight from the chain. The indexer lags a few
+	// blocks and rebuilds after each redeploy, so it would hide fresh bets. Filter by the
+	// indexer's participant list once there are too many markets to read, and still read the
+	// markets newer than its last indexed block.
 	usePoll(
 		async () => {
 			const pearn = contracts.markets;
 			if (!pearn || !address || !markets) return;
-			const touched = await candidates(markets, address);
 			const all = await Promise.all(
-				touched.map(async (m) => ({ m, p: await readPosition(pearn, m.id, address) })),
+				markets.map(async (m) => ({ m, p: await readPosition(pearn, m.id, address) })),
 			);
-			setRows(all.filter(({ p }) => p.yes.staked + p.no.staked + p.sponsored > 0n));
+			setRead({
+				address,
+				rows: all.filter(({ p }) => p.yes.staked + p.no.staked + p.sponsored > 0n),
+			});
 		},
 		POLL_MS,
 		`${address}:${version}`,
 	);
+	const rows = read?.address === address ? read.rows : null;
 
 	if (!contracts.markets) return <NotDeployed />;
 	if (!address) {

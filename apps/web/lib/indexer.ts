@@ -6,6 +6,8 @@ import type { Address, Hash } from "viem";
  */
 
 export type Activity = {
+	/** Ponder's event id: unique, and sorts in chain order. */
+	id: string;
 	kind: "create" | "bet" | "sponsor" | "resolve" | "override" | "claim";
 	account: Address | null;
 	/** Side for bets (0 Yes, 1 No); outcome for resolve and override. */
@@ -43,23 +45,11 @@ export async function readActivity(url: string, marketId: bigint, limit = 20): P
 	const data = await gql<{ activitys: { items: RawActivity[] } }>(
 		url,
 		`query ($id: BigInt!, $limit: Int!) {
-			activitys(where: { marketId: $id }, orderBy: "timestamp", orderDirection: "desc", limit: $limit) {
-				items { kind account side amount timestamp txHash }
+			activitys(where: { marketId: $id }, orderBy: "id", orderDirection: "desc", limit: $limit) {
+				items { id kind account side amount timestamp txHash }
 			}
 		}`,
 		{ id: marketId.toString(), limit },
 	);
 	return data.activitys.items.map(parseActivity);
-}
-
-/** Ids of the markets an account bet on or sponsored. */
-export async function readAccountMarkets(url: string, account: Address): Promise<bigint[]> {
-	const data = await gql<{ participants: { items: { marketId: string }[] } }>(
-		url,
-		`query ($account: String!) {
-			participants(where: { account: $account }, limit: 1000) { items { marketId } }
-		}`,
-		{ account: account.toLowerCase() },
-	);
-	return data.participants.items.map((p) => BigInt(p.marketId));
 }
