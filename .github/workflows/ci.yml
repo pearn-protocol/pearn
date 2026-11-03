@@ -164,6 +164,8 @@ jobs:
         run: forge test -vvv --match-path 'test/integration/*'
       - name: Property tests (fuzz)
         run: forge test -vvv --match-path 'test/property/*'
+      - name: Invariant tests (several markets, random actions)
+        run: forge test -vvv --match-path 'test/invariant/*'
       - name: Fork tests (real stNEAR on Aurora testnet and mainnet)
         env:
           FOUNDRY_PROFILE: fork

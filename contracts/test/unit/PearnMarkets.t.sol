@@ -294,4 +294,43 @@ contract PearnMarketsTest is MarketsFixture {
         vm.expectRevert(abi.encodeWithSelector(IPearnMarkets.MarketResolvedAlready.selector, id));
         markets.sponsor(id, uint128(ONE));
     }
+
+    // ─── edge cases from the audit ───────────────────────────────────────────
+
+    function test_sponsorWhoAlsoBet_getsOnlyTheBetPayout() public {
+        _bet(alice, Side.Yes, 100 * ONE);
+        _bet(bob, Side.No, 100 * ONE);
+        _sponsor(alice, 50 * ONE);
+        _settle(Outcome.No, RATE); // no yield: the pot is alice's own sponsorship
+
+        // With bets in the market the sponsorship is part of the pot, so alice loses it to bob.
+        assertApproxEqAbs(_claim(alice), 100 * ONE, 1);
+        assertApproxEqAbs(_claim(bob), 150 * ONE, 1);
+    }
+
+    function test_noBets_overriddenToInvalid_sponsorStillTakesItBack() public {
+        _sponsor(carol, 10 * ONE);
+        _warpAndSync(closeTime, RATE);
+        vm.prank(resolver);
+        markets.resolve(id, Outcome.Yes);
+        vm.prank(guardian);
+        markets.overrideInvalid(id);
+        vm.warp(block.timestamp + markets.CHALLENGE_WINDOW());
+
+        assertEq(_claim(carol), 10 * ONE);
+    }
+
+    function test_voidExpired_afterTheKeeperStopped_principalStillWhole() public {
+        _bet(alice, Side.Yes, 100 * ONE);
+        _bet(bob, Side.No, 50 * ONE);
+        // The last sync was at bet time; nobody resolves and nobody syncs again.
+        vm.warp(uint256(closeTime) + markets.RESOLVE_TIMEOUT());
+        markets.voidExpired(id);
+        vm.warp(block.timestamp + markets.CHALLENGE_WINDOW());
+
+        // Settled at the stale rate: no yield, but every stNEAR comes back.
+        assertEq(markets.getMarket(id).settlementRate, RATE);
+        assertApproxEqAbs(_claim(alice), 100 * ONE, 1);
+        assertApproxEqAbs(_claim(bob), 50 * ONE, 1);
+    }
 }
