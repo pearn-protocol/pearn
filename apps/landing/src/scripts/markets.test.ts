@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { type RawMarket, stNear, toCard } from "./markets.ts";
+import { type RawMarket, stNear, toCard, usd } from "./markets.ts";
 
 const E24 = 10n ** 24n;
 const raw = (over: Partial<RawMarket>): RawMarket => ({
@@ -49,4 +49,17 @@ test("YES share is by principal, like the app; the total is stake plus sponsorsh
 	assert.equal(c.yes, 75);
 	assert.equal(c.staked, "3.00");
 	assert.equal(toCard(raw({ sponsored: String(E24) }), 0).yes, null);
+});
+
+test("usd values the total at the stNEAR price", () => {
+	assert.equal(usd(0n, 5.91), "$0.00");
+	assert.equal(usd((E24 * 2n) / 5n, 5.91), "$2.36");
+	assert.equal(usd(1n, 5.91), "< $0.01");
+	const c = toCard(
+		raw({ yesStaked: (E24 / 5n).toString(), sponsored: (E24 / 5n).toString() }),
+		0,
+		5.91,
+	);
+	assert.equal(c.usd, "$2.36");
+	assert.equal(toCard(raw({}), 0).usd, null);
 });
