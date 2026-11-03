@@ -37,16 +37,18 @@ jobs:
         run: |
           down=""
           for target in LANDING APP DOCS INDEXER; do
-            # Two tries a minute apart, so a redeploy blip doesn't page.
+            # Two tries a minute apart, so a redeploy blip doesn't page. Worst case for an
+            # unreachable host: 4 × (20 + 60 + 20) s, inside the job timeout.
             ok=""
-            for _ in 1 2; do
+            for try in 1 2; do
               curl -sf -m 20 -o /dev/null "${!target}" && { ok=1; break; }
-              sleep 60
+              [ "$try" = 2 ] || sleep 60
             done
             [ -n "$ok" ] || down="$down $target"
           done
-          updated=$(cast call "$ORACLE" "updatedAt()(uint64)" --rpc-url "$RPC" | cut -d' ' -f1 || echo 0)
-          age=$(( $(date +%s) - updated ))
+          # An RPC failure counts as a stale oracle instead of killing the step before it reports.
+          updated=$(cast call "$ORACLE" "updatedAt()(uint64)" --rpc-url "$RPC" 2>/dev/null | cut -d' ' -f1)
+          age=$(( $(date +%s) - ${updated:-0} ))
           echo "oracle age ${age}s"
           [ "$age" -le "$MAX_RATE_AGE" ] || down="$down oracle-stale(${age}s)"
           echo "down=${down# }" >>"$GITHUB_OUTPUT"

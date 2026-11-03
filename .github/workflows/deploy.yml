@@ -22,6 +22,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     environment: production
+    permissions:
+      contents: read
+      # To find the last successful deploy.
+      actions: read
     env:
       COOLIFY_URL: ${{ vars.COOLIFY_URL }}
       COOLIFY_TOKEN: ${{ secrets.COOLIFY_TOKEN }}
@@ -36,14 +40,19 @@ jobs:
       - name: Which images changed?
         id: pick
         env:
-          BEFORE: ${{ github.event.before }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           shared='package\.json$|pnpm-lock\.yaml$|pnpm-workspace\.yaml$|\.dockerignore$|packages/abi/'
-          # A manual run, a new branch or a force-push past history rebuilds everything.
-          if [ "${{ github.event_name }}" != push ] || ! git cat-file -e "$BEFORE^{commit}" 2>/dev/null; then
+          # Diff against the last deploy that succeeded, not the previous push: a push whose CI
+          # failed, or a run superseded in the queue, must not leave its changes undeployed.
+          base=$(gh run list -R "$GITHUB_REPOSITORY" --workflow deploy.yml --branch main --status success \
+            --limit 1 --json headSha -q '.[0].headSha' 2>/dev/null || true)
+          # A manual run, no earlier success, or a base outside history rebuilds everything.
+          if [ "${{ github.event_name }}" != push ] || [ -z "$base" ] || ! git cat-file -e "$base^{commit}" 2>/dev/null; then
             web=true indexer=true docs=true landing=true
           else
-            files=$(git diff --name-only "$BEFORE" "$GITHUB_SHA")
+            echo "changes since $base"
+            files=$(git diff --name-only "$base" "$GITHUB_SHA")
             web=false indexer=false docs=false landing=false
             echo "$files" | grep -qE "^(apps/web/|packages/brand/|deploy/static/|$shared)" && web=true
             echo "$files" | grep -qE "^(apps/indexer/|contracts/deployments/|$shared)" && indexer=true
@@ -63,11 +72,11 @@ jobs:
           LANDING: ${{ steps.pick.outputs.landing }}
         run: |
           if [ -z "$COOLIFY_TOKEN" ] || [ -z "$COOLIFY_URL" ]; then
-            echo "::warning::COOLIFY_URL or COOLIFY_TOKEN is not set; skipping deploy."
-            exit 0
+            echo "::error::COOLIFY_URL or COOLIFY_TOKEN is not set."
+            exit 1
           fi
           deploy() {
-            if [ -z "$2" ]; then echo "::warning::no Coolify uuid for $1; skipping."; return; fi
+            if [ -z "$2" ]; then echo "::error::no Coolify uuid for $1"; exit 1; fi
             code=$(curl -s -o /tmp/deploy.json -w '%{http_code}' -X POST \
               -H "Authorization: Bearer $COOLIFY_TOKEN" "$COOLIFY_URL/api/v1/deploy?uuid=$2")
             if [ "$code" != "200" ]; then
