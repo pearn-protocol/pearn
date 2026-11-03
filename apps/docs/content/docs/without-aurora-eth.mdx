@@ -11,8 +11,9 @@ The Aurora relayer rejects transactions with gas price 0. The Aurora **engine** 
 
 ```sh
 pnpm rpc:testnet &
+export WALLET_PK=…   # the Aurora signer; the simulation reads it too
 cd contracts && forge script script/Deploy.s.sol --rpc-url aurora_testnet --legacy
-WALLET_PK=… NEAR_SIGNER=you.testnet node ../scripts/aurora-submit.mjs broadcast/Deploy.s.sol/1313161555/dry-run/run-latest.json
+NEAR_SIGNER=you.testnet node ../scripts/aurora-submit.mjs broadcast/Deploy.s.sol/1313161555/dry-run/run-latest.json
 ```
 
 That is how Pearn's testnet contracts, the oracle's first sync and the demo markets went live.

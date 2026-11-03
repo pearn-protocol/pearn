@@ -66,7 +66,7 @@ To read the story in code, start with `test/integration/MarketLifecycle.t.sol`. 
 
 Site: https://pearn.site, app: **https://app.pearn.site**, docs: https://docs.pearn.site, indexer: https://indexer.pearn.site/graphql (Aurora testnet; deployed from `main` by Coolify, see [deploy/](deploy/README.md)).
 
-Aurora testnet (1313161555), all verified on Blockscout:
+Aurora testnet (1313161555); PearnMarkets and the oracle are verified on Blockscout:
 
 | Contract | Address |
 |---|---|
@@ -90,8 +90,9 @@ Markets 0 and 1 are still open.
 
 ```sh
 pnpm rpc:testnet &
+export WALLET_PK=…   # the Aurora signer; the simulation reads it too
 cd contracts && forge script script/Deploy.s.sol --rpc-url aurora_testnet --legacy     # simulate only
-WALLET_PK=… NEAR_SIGNER=you.testnet node ../scripts/aurora-submit.mjs broadcast/Deploy.s.sol/1313161555/dry-run/run-latest.json
+NEAR_SIGNER=you.testnet node ../scripts/aurora-submit.mjs broadcast/Deploy.s.sol/1313161555/dry-run/run-latest.json
 ```
 
 The oracle's first `sync()` pulls 2 wNEAR from the caller for its XCC account (approve first); later syncs are free. The keeper (`.github/workflows/keeper.yml`) syncs every 12 h the same way, with a NEAR function-call key that can only call `aurora.submit`.
@@ -118,7 +119,7 @@ The stNEAR shows up at `0x2137…f144` on Aurora testnet. wNEAR (for the oracle'
 | `apps/web` | Next.js static app (viem, injected wallet): markets, bet, sponsor, resolve, claim, create, portfolio |
 | `packages/brand` | Logo and icons |
 | `deploy/` | Caddy static server, CSP build step, host nginx; CD via Coolify |
-| `.github/workflows/health.yml` | Checks app, docs, indexer and oracle freshness every 30 min; opens an `incident` issue |
+| `.github/workflows/health.yml` | Checks landing, app, docs, indexer and oracle freshness on a 30-minute cron (GitHub runs it every few hours in practice); opens an `incident` issue |
 | `.github/workflows/keeper.yml` | Keeper: `oracle.sync()` every 12 h through NEAR, from a dedicated wallet |
 | `apps/landing` | Marketing site (Astro, static) with live markets from the indexer |
 | `apps/docs` | Documentation site (Fumadocs, static), also as `llms.txt` |

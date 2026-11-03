@@ -5,7 +5,7 @@ description: Addresses, API and events.
 
 ## Aurora testnet (1313161555)
 
-All verified on [Blockscout](https://explorer.testnet.aurora.dev).
+PearnMarkets, StNearRateOracle and their libraries are verified on [Blockscout](https://explorer.testnet.aurora.dev); stNEAR and wNEAR are the bridged tokens.
 
 | Contract | Address |
 |---|---|
@@ -26,7 +26,7 @@ Amounts are raw units, 1e24 per token. Contracts never call `decimals()`: bridge
 | `resolve(uint256 id, Outcome outcome)` | the market's resolver, after close and a post-close sync |
 | `voidExpired(uint256 id)` | anyone, 7 days after close |
 | `overrideInvalid(uint256 id)` | the guardian, within 24 h of resolution |
-| `claim(uint256 id) → amount` | bettors and sponsors, after the window |
+| `claim(uint256 id) → amount` | bettors after the window; sponsors only when nobody bet |
 
 Views: `getMarket`, `positionOf`, `sponsorshipOf`, `claimable`, `hasClaimed`, `marketCount`.
 
