@@ -11,8 +11,9 @@ description: What can go wrong, and what is assumed.
 | Resolver lies | Ideally a DAO; for 24 h the guardian can force `Invalid` (everyone keeps principal plus a share of the yield) |
 | Resolver disappears | Anyone voids after 7 days |
 | stNEAR depeg or Meta Pool bug | Principal is a NEAR value paid in stNEAR, so Meta Pool risk is yours |
-| Slashing introduced on NEAR | The rate could fall; the oracle would stop updating (monotonic) |
-| Contract bug | Small surface, no admin, fuzz and invariant tests on "payouts ≤ holdings" |
+| Slashing introduced on NEAR | The rate could fall. The oracle keeps its last (higher) rate and stops refreshing: after 2 days bets stop, markets can no longer be resolved (that needs a sync after close), and after 7 days they can only be voided to `Invalid`. stNEAR comes back at the last rate |
+| Contract bug | Small surface, no admin, fuzz and invariant tests on "payouts ≤ holdings" across several markets |
+| Betting both sides | Costs only capital, and the hedger's weight earns a share of any sponsored pot whatever the outcome. Inherent to no-loss: losers lose nothing, and per-account netting is defeated by a second account. Sponsors should expect their pot to be shared by capital as well as by calls |
 
 ## FAQ
 

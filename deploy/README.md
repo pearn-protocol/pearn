@@ -26,4 +26,4 @@ Browser → host nginx on the VPS (TLS) → Caddy in each container on its loopb
 
 **Rollback:** Coolify → `pearn` → `web` → Deployments → pick an earlier build → Redeploy.
 
-**Privacy:** Caddy has no `log` directive, host nginx has `access_log off` and drops client-IP headers. The CSP allows only the app's own files, its inline scripts by hash, and `connect-src` to the Aurora RPC.
+**Privacy:** Caddy has no `log` directive, host nginx has `access_log off` and drops client-IP headers. The CSP allows only each site's own files and its inline scripts by hash; `connect-src` adds the Aurora RPC and the indexer for the app, and the indexer alone for the landing.

@@ -112,9 +112,10 @@ contracts/
     interfaces/IPearnMarkets.sol  events, errors, external API
     interfaces/IRateOracle.sol
     libraries/PayoutMath.sol    pure §5 math
+    libraries/NearJson.sol      parses the u128 string Meta Pool returns
     types/Market.sol            Market, Side, Outcome, Position
-  test/                         unit, fuzz and invariant tests (mocks under test/mocks)
-  script/Deploy.s.sol
+  test/                         unit, integration, fuzz (property), invariant (several markets) and fork tests
+  script/                       Deploy, SyncOracle, SeedMarkets, DevChain (local anvil), NetworkConfig
 ```
 
 Best practice applied: Solidity 0.8.28, custom errors, events on every state change, checks-effects-interactions plus `ReentrancyGuard`, `SafeERC20`, `Math.mulDiv` for all products, immutables for every address, NatSpec on the external API.
@@ -123,38 +124,42 @@ Best practice applied: Solidity 0.8.28, custom errors, events on every state cha
 
 | Risk | Mitigation |
 |---|---|
-| Oracle callback spoofed | Only `nearRepresentitiveImplicitAddress(oracle)` may call `onRate`; the rate never decreases |
+| Oracle callback spoofed | Only the oracle's own XCC account (`implicitAuroraAddress(addressSubAccount(oracle, "aurora"))`) may call `onRate`; the rate never decreases |
 | Resolver lies | DAO resolver; 24 h window where the guardian can force `Invalid` (everyone keeps principal plus their share of the yield) |
 | Resolver disappears | Anyone voids after 7 days |
-| stNEAR depeg or bug | Principal is a NEAR value paid in stNEAR; Meta Pool risk is stated in the README |
-| Slashing introduced on NEAR | The rate could fall; the oracle would stop updating (monotonic) and the README states the assumption |
-| Contract bug | Small surface, no admin, fuzz + invariant tests on "payouts ≤ holdings" |
+| stNEAR depeg or bug | Principal is a NEAR value paid in stNEAR, so Meta Pool risk stays with the bettor (docs: Risks) |
+| Slashing introduced on NEAR | The rate could fall. The oracle keeps its last (higher) rate and stops refreshing: after 2 days bets stop, markets can no longer be resolved (that needs a sync after close), and after 7 days they can only be voided to `Invalid`. stNEAR comes back at the last rate |
+| Contract bug | Small surface, no admin, fuzz + invariant tests on "payouts ≤ holdings" across several markets |
+| Betting both sides | Costs only capital, and the hedger's weight earns a share of any sponsored pot whatever the outcome. Inherent to no-loss: losers lose nothing, and per-account netting is defeated by a second account. Sponsors should expect their pot to be shared by capital as well as by calls |
 
 ## 9. User flows
 
 - **Bettor:** connect MetaMask (Aurora) → open market → see odds, pot and the projected-winnings calculator → approve + bet 5 stNEAR on YES → after resolution and the window: claim → refund + winnings.
 - **Sponsor:** "Add to pot" → 100 stNEAR → the pot grows and the sponsor is listed.
 - **Resolver DAO:** a proposal "resolve market 7 = YES" → vote → the DAO calls `resolve`.
-- **Getting stNEAR:** stake NEAR at Meta Pool and bridge it to Aurora. `scripts/` documents the testnet path.
+- **Getting stNEAR:** stake NEAR at Meta Pool and bridge it to Aurora. The README and the docs (Testnet stNEAR) give the testnet commands.
 
 ## 10. Repository
 
 ```
-contracts/   Foundry project (§7)
-apps/web/    Next.js static export + viem
-scripts/     keeper (oracle.sync), testnet stNEAR helper
+contracts/       Foundry project (§7)
+apps/web/        Next.js static export + viem (the app)
+apps/landing/    Astro static site (pearn.site)
+apps/indexer/    Ponder indexer (activity, positions)
+apps/docs/       Fumadocs static docs
+packages/        abi (generated from contracts), brand (logo, tokens, ASCII mark)
+scripts/         aurora-submit (deploy and sync through NEAR), aurora-rpc (fork proxy), abi
+.github/         CI, deploy, keeper (oracle.sync every 12 h), health
 ```
 
 ## 11. Timeline (hackathon ends 2026-11-14 23:59 UTC)
 
-| Dates | Work |
+| When | Status |
 |---|---|
-| Oct 30 – Nov 3 | Contracts: math, markets, oracle, tests; Deploy script |
-| Nov 4 – 5 | Testnet deploy, keeper, testnet stNEAR path |
-| Nov 6 – 10 | Web app: markets, detail, portfolio, create; Coolify deploy |
-| Nov 11 – 12 | Seed markets with a sponsored pot, end-to-end run |
-| Nov 13 | README, demo video, X post draft (the human posts) |
-| Nov 14 | Repo public, submission — the human confirms the payload first |
+| Oct 30 – 31 | Done: contracts and tests, testnet deploy and verification through NEAR, keeper |
+| Oct 31 – Nov 2 | Done: web app, indexer, docs, seed markets, a full demo lifecycle (bet → resolve → claim) |
+| Nov 2 – 3 | Done: landing, pearn.site, audit fixes |
+| By Nov 14 | Demo video and X post (the human posts), submission — the human confirms the payload first |
 
 ## 12. Tracks
 

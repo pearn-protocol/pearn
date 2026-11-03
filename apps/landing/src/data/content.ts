@@ -55,7 +55,7 @@ export const safety = [
 	{ title: "7-day void", text: "If nobody resolves, anyone can void the market after 7 days." },
 	{
 		title: "Solvent by construction",
-		text: "Rounding never pays out more than the contract holds; fuzz and invariant tests check it.",
+		text: "Rounding never pays out more than the contract holds; fuzz and invariant tests check it across several markets.",
 	},
 ];
 
