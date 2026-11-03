@@ -24,6 +24,9 @@ export const market = onchainTable("market", (t) => ({
 	pot: t.bigint(),
 	yesStaked: t.bigint().notNull(),
 	noStaked: t.bigint().notNull(),
+	/** NEAR value of each side at bet time (1e24 per NEAR): what the odds are measured in. */
+	yesPrincipal: t.bigint().notNull(),
+	noPrincipal: t.bigint().notNull(),
 	sponsored: t.bigint().notNull(),
 	bets: t.integer().notNull(),
 }));

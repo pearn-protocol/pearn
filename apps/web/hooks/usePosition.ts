@@ -10,22 +10,24 @@ import { useWallet } from "./useWallet";
 export function usePosition(id: bigint | null) {
 	const { address } = useWallet();
 	const { version } = useChainData();
-	const [account, setAccount] = useState<Account | null>(null);
-	const [position, setPosition] = useState<Position | null>(null);
+	// Reads are tagged with whose position they are, so after a switch of account or market
+	// neither the old values nor a late answer for the old key is ever shown.
+	const key = `${address}:${id}`;
+	const [read, setRead] = useState<{ key: string; account: Account; position: Position | null }>();
 
 	usePoll(
 		async () => {
 			if (!contracts.markets || !address) return;
-			const [a, p] = await Promise.all([
+			const [account, position] = await Promise.all([
 				readAccount(contracts.markets, address),
 				id === null ? null : readPosition(contracts.markets, id, address),
 			]);
-			setAccount(a);
-			setPosition(p);
+			setRead({ key, account, position });
 		},
 		POLL_MS,
-		`${address}:${id}:${version}`,
+		`${key}:${version}`,
 	);
 
-	return { account, position };
+	const current = read?.key === key ? read : undefined;
+	return { account: current?.account ?? null, position: current?.position ?? null };
 }

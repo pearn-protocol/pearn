@@ -1,4 +1,5 @@
 "use client";
+import { useId } from "react";
 import { formatUnits } from "viem";
 import { DECIMALS } from "@/lib/format";
 import Amount from "./Amount";
@@ -13,10 +14,12 @@ export default function AmountInput({
 	onChange: (v: string) => void;
 	balance: bigint | null;
 }) {
+	const id = useId();
+	// The Balance button sits outside the <label>: inside it, a click on the label text would press it.
 	return (
-		<label>
+		<div className="field">
 			<span className="row">
-				Amount (stNEAR)
+				<label htmlFor={id}>Amount (stNEAR)</label>
 				{balance !== null && (
 					<button
 						className="link"
@@ -29,11 +32,12 @@ export default function AmountInput({
 			</span>
 			<input
 				autoComplete="off"
+				id={id}
 				inputMode="decimal"
 				onChange={(e) => onChange(e.target.value)}
 				placeholder="0.0"
 				value={value}
 			/>
-		</label>
+		</div>
 	);
 }

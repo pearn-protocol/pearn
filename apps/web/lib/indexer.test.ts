@@ -4,6 +4,7 @@ import { parseActivity } from "./indexer.ts";
 
 test("parseActivity turns GraphQL strings into bigint and number", () => {
 	const a = parseActivity({
+		id: "179342333200000013131615500000000275552600000000000000000",
 		kind: "bet",
 		account: "0x3b4f0135465d444a5bd06ab90fc59b73916c85f5",
 		side: 0,

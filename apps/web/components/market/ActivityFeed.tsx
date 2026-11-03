@@ -21,23 +21,25 @@ const VERB: Record<Activity["kind"], (a: Activity) => string> = {
 /** The market's recent events from the indexer. Hidden when there is no indexer. */
 export default function ActivityFeed({ id, now }: { id: bigint; now: number }) {
 	const { version } = useChainData();
-	const [items, setItems] = useState<Activity[] | null>(null);
+	const [read, setRead] = useState<{ id: bigint; items: Activity[] }>();
 
 	usePoll(
 		async () => {
-			if (INDEXER_URL) setItems(await readActivity(INDEXER_URL, id));
+			if (INDEXER_URL) setRead({ id, items: await readActivity(INDEXER_URL, id) });
 		},
 		POLL_MS,
 		`${id}:${version}`,
 	);
 
+	// Never another market's feed, even from a late answer.
+	const items = read?.id === id ? read.items : null;
 	if (!INDEXER_URL || !items?.length) return null;
 	return (
 		<div className="card form">
 			<h2>Activity</h2>
 			<ul className="activity">
 				{items.map((a) => (
-					<li key={`${a.txHash}:${a.kind}:${a.account}`}>
+					<li key={a.id}>
 						<span>
 							<span className="mono">{a.account ? short(getAddress(a.account)) : "someone"}</span>{" "}
 							{VERB[a.kind](a)}

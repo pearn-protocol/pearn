@@ -90,7 +90,7 @@ after(() => {
 
 test("indexes DevChain's markets, bets and sponsorship", async () => {
 	const data = await gql(`{
-		markets(orderBy: "id") { items { id yesStaked noStaked sponsored bets outcome } }
+		markets(orderBy: "id") { items { id yesStaked noStaked yesPrincipal noPrincipal sponsored bets outcome } }
 		activitys { totalCount }
 		participant(marketId: "0", account: "${BETTOR.toLowerCase()}") { noStaked }
 	}`);
@@ -100,6 +100,9 @@ test("indexes DevChain's markets, bets and sponsorship", async () => {
 		[BigInt(m0.yesStaked), BigInt(m0.noStaked), m0.bets],
 		[120n * ONE, 80n * ONE, 2],
 	);
+	// One fixed rate on DevChain, so principal splits like the stake: 120 : 80.
+	assert.ok(BigInt(m0.yesPrincipal) > 0n);
+	assert.equal(BigInt(m0.yesPrincipal) * 80n, BigInt(m0.noPrincipal) * 120n);
 	assert.equal(BigInt(m2.sponsored), 100n * ONE);
 	// 3 creates, 4 bets, 1 sponsorship (also what `before` waited for).
 	assert.equal(data.activitys.totalCount, 8);

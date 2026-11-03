@@ -5,8 +5,12 @@ export type RawMarket = {
 	question: string;
 	closeTime: string;
 	outcome: number;
+	/** Unix seconds, null until resolved. */
+	resolvedAt: string | null;
 	yesStaked: string;
 	noStaked: string;
+	yesPrincipal: string;
+	noPrincipal: string;
 	sponsored: string;
 	bets: number;
 };
@@ -15,7 +19,7 @@ export type Card = {
 	id: string;
 	question: string;
 	status: string;
-	/** YES share of the staked stNEAR, 0–100, or null before the first bet. */
+	/** YES share of the principal (NEAR value at bet time), 0–100, as in the app; null before the first bet. */
 	yes: number | null;
 	staked: string;
 	bets: number;
@@ -23,10 +27,12 @@ export type Card = {
 
 const OUTCOMES = ["", "Resolved YES", "Resolved NO", "Invalid"];
 const UNIT = 10n ** 24n;
+/** PearnMarkets.CHALLENGE_WINDOW: the guardian may still turn the outcome into Invalid. */
+const CHALLENGE_WINDOW = 86_400;
 
 export const QUERY = `{
 	markets(orderBy: "id", orderDirection: "desc", limit: 3) {
-		items { id question closeTime outcome yesStaked noStaked sponsored bets }
+		items { id question closeTime outcome resolvedAt yesStaked noStaked yesPrincipal noPrincipal sponsored bets }
 	}
 }`;
 
@@ -36,17 +42,22 @@ export function stNear(raw: bigint): string {
 	return `${hundredths / 100n}.${(hundredths % 100n).toString().padStart(2, "0")}`;
 }
 
+function statusOf(m: RawMarket, now: number): string {
+	if (m.outcome === 0) return Number(m.closeTime) > now ? "Open" : "Awaiting result";
+	if (now < Number(m.resolvedAt ?? 0) + CHALLENGE_WINDOW) return "Challenge window";
+	return OUTCOMES[m.outcome];
+}
+
 export function toCard(m: RawMarket, now: number): Card {
-	const yes = BigInt(m.yesStaked);
-	const total = yes + BigInt(m.noStaked);
-	const status =
-		m.outcome !== 0 ? OUTCOMES[m.outcome] : Number(m.closeTime) > now ? "Open" : "Awaiting result";
+	const yes = BigInt(m.yesPrincipal);
+	const principal = yes + BigInt(m.noPrincipal);
+	const staked = BigInt(m.yesStaked) + BigInt(m.noStaked);
 	return {
 		id: m.id,
 		question: m.question,
-		status,
-		yes: total === 0n ? null : Number((yes * 100n) / total),
-		staked: stNear(total + BigInt(m.sponsored)),
+		status: statusOf(m, now),
+		yes: principal === 0n ? null : Number((yes * 100n) / principal),
+		staked: stNear(staked + BigInt(m.sponsored)),
 		bets: m.bets,
 	};
 }
