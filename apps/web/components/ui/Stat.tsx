@@ -8,7 +8,7 @@ export default function Stat({
 }: {
 	label: string;
 	value: bigint;
-	unit?: string;
+	unit?: "stNEAR" | "NEAR";
 }) {
 	return (
 		<div>

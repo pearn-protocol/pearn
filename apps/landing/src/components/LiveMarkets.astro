@@ -45,7 +45,7 @@ import Section from "./ui/Section.astro";
 						const bar = node.querySelector(".bar span") as HTMLElement;
 						bar.style.width = `${c.yes ?? 0}%`;
 						(node.querySelector(".meta") as HTMLElement).textContent =
-							`${c.yes === null ? "No bets yet" : `${c.yes}% YES`} · ${c.staked} stNEAR · ${c.bets} bet${c.bets === 1 ? "" : "s"}`;
+							`${c.yes === null ? "No bets yet" : `${c.yes}% YES`} · ${c.staked} stNEAR${c.usd ? ` (≈ ${c.usd})` : ""} · ${c.bets} bet${c.bets === 1 ? "" : "s"}`;
 						return node;
 					}),
 				);
