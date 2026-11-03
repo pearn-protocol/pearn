@@ -4,7 +4,8 @@
 # 1. HTTP-only stubs for names that have no certificate yet, so certbot's webroot challenge works.
 # 2. certbot (as the cuyvps user, its usual config dir) for each missing name.
 # 3. The full configs from this directory; the old sslip.io site files are replaced, since each
-#    new config also serves its old name as a redirect. nginx -t gates every reload.
+#    new config also serves its old name as a redirect. nginx -t gates every reload; on a failure
+#    the previous configs (backed up under /var/backups/pearn-nginx/) come back.
 set -euo pipefail
 
 DIR=$(cd "$(dirname "$0")" && pwd)
@@ -37,19 +38,39 @@ for name in "${SITES[@]}"; do
 		--non-interactive --agree-tos --register-unsafely-without-email --cert-name "$name" -d "$name"
 done
 
-backup=$(mktemp -d)
+# Everything this run replaces goes here first (outside /tmp, so a reboot keeps it).
+backup=/var/backups/pearn-nginx/$(date +%Y%m%dT%H%M%S)
+mkdir -p "$backup"
+restore() {
+	echo "nginx -t failed; restoring the previous configs from $backup" >&2
+	for file in "${!SITES[@]}"; do
+		name=${SITES[$file]}
+		old=${name%pearn.site}pearn.$OLD_SUFFIX
+		if [ -e "$backup/$name" ]; then
+			cp "$backup/$name" "$AVAIL/$name"
+		else
+			rm -f "$ENABLED/$name"
+		fi
+		if [ -e "$backup/$old" ]; then
+			mv "$backup/$old" "$AVAIL/$old"
+			ln -sf "$AVAIL/$old" "$ENABLED/$old"
+		fi
+	done
+	reload
+}
 for file in "${!SITES[@]}"; do
 	name=${SITES[$file]}
 	old=${name%pearn.site}pearn.$OLD_SUFFIX
-	[ -e "$AVAIL/$old" ] && mv "$AVAIL/$old" "$backup/" && rm -f "$ENABLED/$old"
+	if [ -e "$AVAIL/$name" ]; then cp "$AVAIL/$name" "$backup/"; fi
+	if [ -e "$AVAIL/$old" ]; then
+		mv "$AVAIL/$old" "$backup/"
+		rm -f "$ENABLED/$old"
+	fi
 	install -m 644 "$DIR/$file" "$AVAIL/$name"
 	ln -sf "$AVAIL/$name" "$ENABLED/$name"
 done
 if ! reload; then
-	echo "nginx -t failed; restoring the old sslip.io configs from $backup" >&2
-	for f in "$backup"/*; do mv "$f" "$AVAIL/" && ln -sf "$AVAIL/$(basename "$f")" "$ENABLED/"; done
-	for name in "${SITES[@]}"; do rm -f "$ENABLED/$name"; done
-	reload
+	restore
 	exit 1
 fi
-echo "pearn.site live; old configs kept in $backup"
+echo "pearn.site live; previous configs kept in $backup"
