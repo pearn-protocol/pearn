@@ -27,8 +27,6 @@ jobs:
       ORACLE: ${{ vars.ORACLE }}
       AURORA_RPC: ${{ vars.AURORA_RPC_URL || 'https://testnet.aurora.dev' }}
       NEAR_SIGNER: ${{ vars.NEAR_KEEPER_ACCOUNT }}
-      NEAR_PRIVATE_KEY: ${{ secrets.NEAR_KEEPER_KEY }}
-      WALLET_PK: ${{ secrets.KEEPER_PK }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -37,13 +35,20 @@ jobs:
       - uses: foundry-rs/foundry-toolchain@v1
         with:
           version: v1.8.3
+      # Its postinstall downloads the binary; it runs before, and without, the keys.
+      - name: Install near-cli-rs
+        run: npm install -g near-cli-rs@0.30.1 >/dev/null
       - name: Sync
+        # The keys exist in this step only.
+        env:
+          NEAR_PRIVATE_KEY: ${{ secrets.NEAR_KEEPER_KEY }}
+          WALLET_PK: ${{ secrets.KEEPER_PK }}
         run: |
+          # Missing config fails the run: a silent skip would only surface as a stale oracle a day later.
           if [ -z "$ORACLE" ] || [ -z "$WALLET_PK" ] || [ -z "$NEAR_SIGNER" ] || [ -z "$NEAR_PRIVATE_KEY" ]; then
-            echo "::warning::ORACLE, KEEPER_PK, NEAR_KEEPER_ACCOUNT or NEAR_KEEPER_KEY is not set; skipping."
-            exit 0
+            echo "::error::ORACLE, KEEPER_PK, NEAR_KEEPER_ACCOUNT or NEAR_KEEPER_KEY is not set."
+            exit 1
           fi
-          npm install -g near-cli-rs@0.30.1 >/dev/null
           keeper=$(cast wallet address "$WALLET_PK")
           nonce=$(cast to-hex "$(cast nonce "$keeper" --rpc-url "$AURORA_RPC")")
           printf '{"transactions":[{"function":"StNearRateOracle.sync()","transaction":{"from":"%s","to":"%s","gas":"0x2dc6c0","input":"%s","nonce":"%s"}}]}' \
