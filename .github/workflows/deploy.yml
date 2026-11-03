@@ -1,5 +1,8 @@
 name: Deploy
 
+# CI, then the images of the apps that changed are built here on GitHub's runners, from this very
+# commit, and pushed to GHCR. Coolify only pulls them (build pack "dockerimage"): building on the
+# shared VPS stalled it twice on 2026-11-03.
 on:
   push:
     branches: [main]
@@ -16,29 +19,22 @@ jobs:
   ci:
     uses: ./.github/workflows/ci.yml
 
-  coolify:
-    name: Coolify (landing, web, indexer, docs)
+  changes:
+    name: Which images changed?
     needs: ci
     runs-on: ubuntu-latest
-    timeout-minutes: 15
-    environment: production
+    timeout-minutes: 5
     permissions:
       contents: read
       # To find the last successful deploy.
       actions: read
-    env:
-      COOLIFY_URL: ${{ vars.COOLIFY_URL }}
-      COOLIFY_TOKEN: ${{ secrets.COOLIFY_TOKEN }}
-      COOLIFY_WEB_UUID: ${{ vars.COOLIFY_WEB_UUID }}
-      COOLIFY_INDEXER_UUID: ${{ vars.COOLIFY_INDEXER_UUID }}
-      COOLIFY_DOCS_UUID: ${{ vars.COOLIFY_DOCS_UUID }}
-      COOLIFY_LANDING_UUID: ${{ vars.COOLIFY_LANDING_UUID }}
+    outputs:
+      apps: ${{ steps.pick.outputs.apps }}
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Which images changed?
-        id: pick
+      - id: pick
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -50,46 +46,100 @@ jobs:
           # failed, or a run superseded in the queue, must not leave its changes undeployed.
           base=$(gh run list -R "$GITHUB_REPOSITORY" --workflow deploy.yml --branch main --status success \
             --limit 1 --json headSha -q '.[0].headSha' 2>/dev/null || true)
+          apps=()
           # A manual run, no earlier success, or a base outside history rebuilds everything.
           if [ "${{ github.event_name }}" != push ] || [ -z "$base" ] || ! git cat-file -e "$base^{commit}" 2>/dev/null; then
-            web=true indexer=true docs=true landing=true
+            apps=(web indexer docs landing)
           else
             echo "changes since $base"
             files=$(git diff --name-only "$base" "$GITHUB_SHA")
-            web=false indexer=false docs=false landing=false
-            echo "$files" | grep -qE "^(apps/web/|packages/brand/|deploy/static/|$shared)" && web=true
-            echo "$files" | grep -qE "^(apps/indexer/|contracts/deployments/|$shared)" && indexer=true
-            echo "$files" | grep -qE "^(apps/docs/|packages/brand/|deploy/static/|$shared)" && docs=true
-            echo "$files" | grep -qE "^(apps/landing/|packages/brand/|deploy/static/|$shared)" && landing=true
+            echo "$files" | grep -qE "^(apps/web/|packages/brand/|deploy/static/|$shared)" && apps+=(web)
+            echo "$files" | grep -qE "^(apps/indexer/|contracts/deployments/|$shared)" && apps+=(indexer)
+            echo "$files" | grep -qE "^(apps/docs/|packages/brand/|deploy/static/|$shared)" && apps+=(docs)
+            echo "$files" | grep -qE "^(apps/landing/|packages/brand/|deploy/static/|$shared)" && apps+=(landing)
           fi
-          echo "web=$web" >>"$GITHUB_OUTPUT"
-          echo "indexer=$indexer" >>"$GITHUB_OUTPUT"
-          echo "docs=$docs" >>"$GITHUB_OUTPUT"
-          echo "landing=$landing" >>"$GITHUB_OUTPUT"
-          echo "rebuild web: $web, indexer: $indexer, docs: $docs, landing: $landing"
+          json=$(printf '%s\n' "${apps[@]}" | jq -R . | jq -sc 'map(select(. != ""))')
+          echo "apps=$json" >>"$GITHUB_OUTPUT"
+          echo "rebuild: $json"
+
+  images:
+    name: Image (${{ matrix.app }})
+    needs: changes
+    if: needs.changes.outputs.apps != '[]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      fail-fast: true
+      matrix:
+        app: ${{ fromJSON(needs.changes.outputs.apps) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+      - name: Build args
+        id: args
+        run: |
+          # The app's contract addresses come from the deployment record, the one source of truth.
+          if [ "${{ matrix.app }}" = web ]; then
+            d=contracts/deployments/1313161555.json
+            {
+              echo "list<<EOF"
+              echo "NEXT_PUBLIC_MARKETS=$(jq -r .markets "$d")"
+              echo "NEXT_PUBLIC_ORACLE=$(jq -r .oracle "$d")"
+              echo "EOF"
+            } >>"$GITHUB_OUTPUT"
+          fi
+          # :main is what Coolify pulls; only main may move it.
+          tags="ghcr.io/${GITHUB_REPOSITORY_OWNER}/pearn-${{ matrix.app }}:${GITHUB_SHA}"
+          [ "$GITHUB_REF" = refs/heads/main ] && tags="$tags,ghcr.io/${GITHUB_REPOSITORY_OWNER}/pearn-${{ matrix.app }}:main"
+          echo "tags=$tags" >>"$GITHUB_OUTPUT"
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: apps/${{ matrix.app }}/Dockerfile
+          build-args: ${{ steps.args.outputs.list }}
+          tags: ${{ steps.args.outputs.tags }}
+          labels: org.opencontainers.image.source=https://github.com/${{ github.repository }}
+          push: true
+          cache-from: type=gha,scope=${{ matrix.app }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.app }}
+
+  coolify:
+    name: Coolify (pull and restart)
+    needs: [changes, images]
+    if: needs.changes.outputs.apps != '[]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: production
+    env:
+      COOLIFY_URL: ${{ vars.COOLIFY_URL }}
+      COOLIFY_TOKEN: ${{ secrets.COOLIFY_TOKEN }}
+      APPS: ${{ needs.changes.outputs.apps }}
+      UUIDS: >-
+        {"web": "${{ vars.COOLIFY_WEB_UUID }}", "indexer": "${{ vars.COOLIFY_INDEXER_UUID }}",
+        "docs": "${{ vars.COOLIFY_DOCS_UUID }}", "landing": "${{ vars.COOLIFY_LANDING_UUID }}"}
+    steps:
       - name: Trigger the deploys
-        env:
-          WEB: ${{ steps.pick.outputs.web }}
-          INDEXER: ${{ steps.pick.outputs.indexer }}
-          DOCS: ${{ steps.pick.outputs.docs }}
-          LANDING: ${{ steps.pick.outputs.landing }}
         run: |
           if [ -z "$COOLIFY_TOKEN" ] || [ -z "$COOLIFY_URL" ]; then
             echo "::error::COOLIFY_URL or COOLIFY_TOKEN is not set."
             exit 1
           fi
-          deploy() {
-            if [ -z "$2" ]; then echo "::error::no Coolify uuid for $1"; exit 1; fi
+          for app in $(echo "$APPS" | jq -r '.[]'); do
+            uuid=$(echo "$UUIDS" | jq -r --arg a "$app" '.[$a]')
+            if [ -z "$uuid" ]; then echo "::error::no Coolify uuid for $app"; exit 1; fi
             code=$(curl -s -o /tmp/deploy.json -w '%{http_code}' -X POST \
-              -H "Authorization: Bearer $COOLIFY_TOKEN" "$COOLIFY_URL/api/v1/deploy?uuid=$2")
+              -H "Authorization: Bearer $COOLIFY_TOKEN" "$COOLIFY_URL/api/v1/deploy?uuid=$uuid")
             if [ "$code" != "200" ]; then
-              echo "::error::deploy $1 failed with HTTP $code"
+              echo "::error::deploy $app failed with HTTP $code"
               exit 1
             fi
-            echo "queued $1"
-          }
-          [ "$WEB" = true ] && deploy web "$COOLIFY_WEB_UUID"
-          [ "$INDEXER" = true ] && deploy indexer "$COOLIFY_INDEXER_UUID"
-          [ "$DOCS" = true ] && deploy docs "$COOLIFY_DOCS_UUID"
-          [ "$LANDING" = true ] && deploy landing "$COOLIFY_LANDING_UUID"
-          exit 0
+            echo "queued $app"
+          done
