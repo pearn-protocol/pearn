@@ -32,9 +32,10 @@ export default function ResolvePanel({ m, now }: { m: MarketWithId; now: number 
 	const isResolver = address === m.resolver;
 	const isGuardian = address === guardian;
 
-	if (phase === "closed" && isResolver) {
+	// The resolver can still resolve after the 7-day timeout, until someone voids the market.
+	if ((phase === "closed" && isResolver) || phase === "voidable") {
 		const synced = oracle !== null && oracle.updatedAt >= Number(m.closeTime);
-		return (
+		const resolveCard = (
 			<div className="card form">
 				<h2>Resolve this market</h2>
 				{!synced && (
@@ -64,10 +65,7 @@ export default function ResolvePanel({ m, now }: { m: MarketWithId; now: number 
 				<TxStatus {...tx} />
 			</div>
 		);
-	}
-
-	if (phase === "voidable") {
-		return (
+		const voidCard = (
 			<div className="card form">
 				<h2>Resolver timed out</h2>
 				<p className="muted small">
@@ -84,6 +82,13 @@ export default function ResolvePanel({ m, now }: { m: MarketWithId; now: number 
 				</button>
 				<TxStatus {...tx} />
 			</div>
+		);
+		if (phase === "closed") return resolveCard;
+		return (
+			<>
+				{isResolver && resolveCard}
+				{voidCard}
+			</>
 		);
 	}
 
