@@ -2,9 +2,9 @@
 #   docker build -f apps/landing/Dockerfile .
 FROM node:24.19.0-slim@sha256:a9f5f7c91a432850b2a8a7797adf5eadb6c733ceed61167806cee7ea7fbc29df AS build
 # The landing links to the app and docs and reads its market cards from the indexer.
-ARG PUBLIC_APP_URL=https://app.pearn.103.150.190.91.sslip.io
-ARG PUBLIC_DOCS_URL=https://docs.pearn.103.150.190.91.sslip.io
-ARG PUBLIC_INDEXER_URL=https://indexer.pearn.103.150.190.91.sslip.io
+ARG PUBLIC_APP_URL=https://app.pearn.site
+ARG PUBLIC_DOCS_URL=https://docs.pearn.site
+ARG PUBLIC_INDEXER_URL=https://indexer.pearn.site
 ENV HUSKY=0 ASTRO_TELEMETRY_DISABLED=1 PUBLIC_APP_URL=$PUBLIC_APP_URL \
 	PUBLIC_DOCS_URL=$PUBLIC_DOCS_URL PUBLIC_INDEXER_URL=$PUBLIC_INDEXER_URL
 RUN corepack enable
