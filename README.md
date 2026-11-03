@@ -4,7 +4,7 @@
 
 # Pearn
 
-[![CI](https://github.com/pearn-protocol/pearn/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/pearn-protocol/pearn/actions/workflows/ci.yml)
+[![CI](https://github.com/pearn-protocol/pearn/actions/workflows/deploy.yml/badge.svg?branch=main)](https://github.com/pearn-protocol/pearn/actions/workflows/deploy.yml)
 
 No-loss prediction market on NEAR. **Bet the staking yield, keep the principal.**
 
