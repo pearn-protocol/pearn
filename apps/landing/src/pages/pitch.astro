@@ -1,0 +1,60 @@
+---
+import video from "../assets/pitch.mp4?url";
+/** The demo video (apps/video): the live site, the app on a local chain, and testnet proof. */
+import poster from "../assets/pitch-poster.jpg?url";
+import Footer from "../components/Footer.astro";
+import Header from "../components/Header.astro";
+import Base from "../layouts/Base.astro";
+---
+
+<Base title="Demo | Pearn" description="Pearn in 83 seconds: bet stNEAR, keep your principal, claim the yield.">
+	<Header />
+	<main class="pitch">
+		<p class="label">Demo · 83 s</p>
+		<h1><span>Pearn in 83 seconds.</span></h1>
+		<video controls playsinline preload="metadata" poster={poster} src={video}>
+			<a href={video}>Download the demo (MP4)</a>
+		</video>
+		<p class="note">
+			Every frame is a real recording. The bet, resolve and claim run on a local chain in the same
+			app; the testnet transaction and the live sites follow.
+		</p>
+	</main>
+	<Footer />
+</Base>
+
+<style>
+	.pitch {
+		display: grid;
+		justify-items: center;
+		gap: 28px;
+		max-width: var(--max);
+		margin: 0 auto;
+		padding: 160px var(--gutter) 40px;
+		text-align: center;
+		color: var(--muted);
+	}
+	h1 {
+		font-size: clamp(26px, 3vw, 40px);
+		color: var(--on-accent);
+	}
+	h1 span {
+		padding: 2px 12px;
+		background: var(--accent);
+	}
+	video {
+		width: 100%;
+		max-width: 1200px;
+		aspect-ratio: 1920 / 1230;
+		background: #000;
+		border: 1px solid var(--line);
+	}
+	.note {
+		max-width: 720px;
+	}
+	@media (max-width: 900px) {
+		.pitch {
+			padding-top: 100px;
+		}
+	}
+</style>

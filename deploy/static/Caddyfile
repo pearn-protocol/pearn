@@ -23,9 +23,9 @@
 	}
 
 	# Content-hashed build output never changes.
-	@hashed path /_next/static/*
+	@hashed path /_next/static/* /_astro/*
 	header @hashed Cache-Control "public, max-age=31536000, immutable"
-	@other not path /_next/static/*
+	@other not path /_next/static/* /_astro/*
 	header @other Cache-Control "public, max-age=300"
 
 	try_files {path} {path}/index.html {path}.html
