@@ -2,17 +2,22 @@
 import { createContext, type ReactNode, useCallback, useContext, useState } from "react";
 import { type MarketWithId, type OracleState, readMarkets, readOracle } from "@/lib/chain";
 import { contracts, POLL_MS } from "@/lib/config";
+import { fetchPrices, type Prices } from "@/lib/price";
 import { usePoll } from "./usePoll";
 
 type ChainData = {
 	markets: MarketWithId[] | null;
 	oracle: OracleState | null;
 	error: string | null;
+	/** Mainnet USD prices, null until (or if never) the price feed answers. */
+	prices: Prices | null;
 	/** Bumps on every successful read, so per-account reads can follow along. */
 	version: number;
 	/** Re-reads now, e.g. right after a transaction. */
 	refresh: () => Promise<void>;
 };
+
+const PRICE_MS = 5 * 60_000;
 
 const ChainDataContext = createContext<ChainData | null>(null);
 
@@ -22,6 +27,7 @@ export function ChainDataProvider({ children }: { children: ReactNode }) {
 	const [oracle, setOracle] = useState<OracleState | null>(null);
 	const [error, setError] = useState<string | null>(null);
 	const [version, setVersion] = useState(0);
+	const [prices, setPrices] = useState<Prices | null>(null);
 
 	const refresh = useCallback(async () => {
 		if (!contracts.markets || !contracts.oracle) return;
@@ -40,9 +46,11 @@ export function ChainDataProvider({ children }: { children: ReactNode }) {
 	}, []);
 
 	usePoll(refresh, POLL_MS);
+	// A failed price read keeps the last prices; amounts just lose their USD line meanwhile.
+	usePoll(async () => setPrices(await fetchPrices()), PRICE_MS);
 
 	return (
-		<ChainDataContext.Provider value={{ markets, oracle, error, version, refresh }}>
+		<ChainDataContext.Provider value={{ markets, oracle, error, prices, version, refresh }}>
 			{children}
 		</ChainDataContext.Provider>
 	);
