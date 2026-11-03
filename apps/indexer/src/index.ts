@@ -22,6 +22,8 @@ ponder.on("PearnMarkets:MarketCreated", async ({ event, context }) => {
 		createdAt: event.block.timestamp,
 		outcome: 0,
 		...emptyStake,
+		yesPrincipal: 0n,
+		noPrincipal: 0n,
 		bets: 0,
 	});
 	await context.db
@@ -30,11 +32,13 @@ ponder.on("PearnMarkets:MarketCreated", async ({ event, context }) => {
 });
 
 ponder.on("PearnMarkets:BetPlaced", async ({ event, context }) => {
-	const { id, bettor, side, staked } = event.args;
+	const { id, bettor, side, staked, principal } = event.args;
 	const yes = side === 0;
 	await context.db.update(market, { id }).set((m) => ({
 		yesStaked: m.yesStaked + (yes ? staked : 0n),
 		noStaked: m.noStaked + (yes ? 0n : staked),
+		yesPrincipal: m.yesPrincipal + (yes ? principal : 0n),
+		noPrincipal: m.noPrincipal + (yes ? 0n : principal),
 		bets: m.bets + 1,
 	}));
 	await context.db
