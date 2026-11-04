@@ -73,8 +73,8 @@ export default function Featured({
 								>
 									Principal: returned
 								</span>
-								<span className="mmeta__chip" title="The winning side splits the staking yield">
-									Yield: at stake
+								<span className="mmeta__chip" title="Win or lose, the stake comes back">
+									No-loss
 								</span>
 								<span className="mmeta__badge">
 									{it.mirror ? "Resolves per Polymarket" : `Resolver ${short(it.m.resolver)}`}

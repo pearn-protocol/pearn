@@ -14,7 +14,7 @@ import Topbar from "@/components/layout/Topbar";
 
 export const metadata: Metadata = {
 	title: { default: "Pearn | No-loss prediction markets on NEAR", template: "%s | Pearn" },
-	description: "Bet the staking yield of your NEAR, never the NEAR itself.",
+	description: "No-loss prediction markets on NEAR: win or lose, your stake comes back.",
 	icons: { icon: "/favicon.ico", apple: "/apple-touch-icon.png" },
 	manifest: "/site.webmanifest",
 };

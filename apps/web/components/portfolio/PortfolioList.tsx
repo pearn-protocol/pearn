@@ -55,7 +55,7 @@ export default function PortfolioList() {
 	}
 	if (!rows) return <p className="muted">Loading your positions…</p>;
 	if (rows.length === 0)
-		return <p className="muted">No bets yet. Pick a market and bet the yield.</p>;
+		return <p className="muted">No bets yet. Pick a market: win or lose, your stake comes back.</p>;
 
 	return (
 		<div className="table">

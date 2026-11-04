@@ -2,7 +2,7 @@
 export const site = {
 	title: "Pearn | No-loss prediction markets on NEAR",
 	description:
-		"Bet the staking yield of your NEAR, never the NEAR itself. Everyone gets their principal back; the winning side splits the yield.",
+		"Bet on real questions with stNEAR. Win or lose, your stake comes back; the winning side splits the staking yield.",
 	appUrl: import.meta.env.PUBLIC_APP_URL ?? "https://app.pearn.site",
 	docsUrl: import.meta.env.PUBLIC_DOCS_URL ?? "https://docs.pearn.site",
 	indexerUrl: import.meta.env.PUBLIC_INDEXER_URL ?? "https://indexer.pearn.site",

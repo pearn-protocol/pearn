@@ -10,7 +10,7 @@ export default function Footer() {
 	].filter((l) => l !== null);
 	return (
 		<footer className="footer">
-			<span>Pearn on {chain.name}. Principal safe, yield at stake.</span>
+			<span>Pearn on {chain.name}. No-loss prediction markets.</span>
 			<nav>
 				{links.map((l) => (
 					<a href={l.href} key={l.label} rel="noreferrer" target="_blank">

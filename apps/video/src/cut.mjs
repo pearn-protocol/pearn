@@ -10,10 +10,10 @@ export const LOCAL = "Local chain · the same app";
 export const cut = [
 	{
 		name: "open",
-		say: "Lose a prediction market bet, and you lose your money. On Pearn, you only bet the staking yield.",
+		say: "Lose a prediction market bet, and you lose your money. Pearn is the no-loss prediction market: win or lose, your stake comes back.",
 		card: {
 			lines: ["Lose a prediction market bet,", "lose your money."],
-			sub: "On Pearn you only bet the staking yield.",
+			sub: "Pearn: the no-loss prediction market. Your stake comes back.",
 		},
 		seconds: 4.5,
 	},
@@ -62,9 +62,9 @@ export const cut = [
 	},
 	{
 		name: "end",
-		say: "Bet the yield. Keep the NEAR. Pearn dot site.",
+		say: "Pearn. No-loss prediction markets on NEAR. Pearn dot site.",
 		card: {
-			lines: ["Bet the yield.", "Keep the NEAR."],
+			lines: ["No-loss", "prediction markets."],
 			sub: "pearn.site · app.pearn.site · docs.pearn.site · github.com/pearn-protocol/pearn",
 		},
 		seconds: 5,

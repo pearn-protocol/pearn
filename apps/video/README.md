@@ -1,10 +1,11 @@
 # @pearn/video
 
-The demo video at https://pearn.site/pitch/ (83 s). Every frame of product is a real headless-Chrome recording; the only drawn frames are the opening and closing cards and the caption bands.
+The demo video at https://pearn.site/pitch/ (87 s, voiced). Every frame of product is a real headless-Chrome recording; the only drawn frames are the opening and closing cards and the caption bands.
 
 ```sh
 pnpm --filter @pearn/video capture   # footage/*.mp4: live pearn.site, the app on a local chain, live testnet proof (~2 min)
-pnpm --filter @pearn/video render    # out/pearn-demo.mp4, 1920×1230, hard cuts, no audio
+pnpm --filter @pearn/video voice     # voice/*.mp3: ElevenLabs voiceover per shot (ELEVENLABS_API_KEY in .env)
+pnpm --filter @pearn/video render    # out/pearn-demo.mp4, 1920×1230, hard cuts, voiceover from voice/ when present
 cp apps/video/out/pearn-demo.mp4 apps/landing/src/assets/pitch.mp4   # publish it on /pitch/
 ```
 
