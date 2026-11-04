@@ -1,6 +1,7 @@
 name: Keeper
 
-# Asks StNearRateOracle for a fresh stNEAR rate. Bets need a reading younger than 2 days and
+# Asks StNearRateOracle for a fresh stNEAR rate, then resolves the mirrored Polymarket markets
+# that Polymarket has settled (scripts/polymarket-resolve.mjs). Bets need a reading younger than 2 days and
 # `resolve` needs one taken after close (DESIGN.md §5); twice a day keeps both satisfied.
 # The sync is signed at gas price 0 and submitted to the Aurora engine through NEAR
 # (scripts/aurora-submit.mjs), so the keeper needs no Aurora ETH: NEAR_KEEPER_ACCOUNT pays
@@ -66,3 +67,9 @@ jobs:
           done
           echo "::error::sync landed but updatedAt did not move in 2 minutes (SyncFailed or RateRejected?)"
           exit 1
+      # Right after the sync, so markets that closed before it have a rate read after close.
+      - name: Resolve mirrored Polymarket markets
+        env:
+          NEAR_PRIVATE_KEY: ${{ secrets.NEAR_KEEPER_KEY }}
+          WALLET_PK: ${{ secrets.KEEPER_PK }}
+        run: node scripts/polymarket-resolve.mjs
