@@ -6,7 +6,7 @@
 
 [![CI](https://github.com/pearn-protocol/pearn/actions/workflows/deploy.yml/badge.svg?branch=main)](https://github.com/pearn-protocol/pearn/actions/workflows/deploy.yml)
 
-No-loss prediction market on NEAR. **Bet the staking yield, keep the principal.**
+**The no-loss prediction market on NEAR.** Bet on real questions; win or lose, your stake comes back.
 
 You bet stNEAR (staked NEAR) on YES or NO. When the market resolves, everyone gets their principal's NEAR value back, and the winning side splits all the staking yield the market earned, plus any sponsored pot.
 

@@ -84,11 +84,11 @@ export const faq = [
 
 /** Hero highlighter strips. */
 export const heroLines = [
-	"Bet the yield.",
-	"Keep the NEAR.",
-	"Principal back, win or lose.",
+	"No-loss",
+	"prediction markets.",
+	"Bet on real questions.",
+	"Win or lose, your stake comes back.",
 	"Winners split the staking yield.",
-	"Rate read from NEAR itself.",
 ];
 
 /** What Pearn is built from, for the hero marquee. */
