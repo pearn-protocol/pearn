@@ -1,0 +1,8 @@
+{
+	"name": "@pearn/catalog",
+	"private": true,
+	"version": "0.1.0",
+	"exports": {
+		"./*": "./*"
+	}
+}
