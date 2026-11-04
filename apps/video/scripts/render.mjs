@@ -1,10 +1,10 @@
 // Cuts footage/*.mp4 into out/pearn-demo.mp4 as src/cut.mjs says: each shot gets a caption band
 // (what it shows, and whether it is live or local), cards open and close the cut. Bands and
 // cards are HTML rendered by headless Chrome in the sites' own type and colours; ffmpeg only
-// stacks and joins. Hard cuts, no music.
+// stacks and joins. Hard cuts, no music; the voiceover from scripts/voice.mjs when it exists.
 // Usage: pnpm render   (after pnpm capture; needs Chrome and ffmpeg)
 import { execFileSync } from "node:child_process";
-import { mkdirSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import { join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -15,6 +15,7 @@ const ROOT = fileURLToPath(new URL("..", import.meta.url));
 const FOOTAGE = join(ROOT, "footage");
 const OUT = join(ROOT, "out");
 const WORK = join(OUT, "work");
+const VOICE = join(ROOT, "voice");
 const W = 1920;
 const FOOT_H = 1080;
 const BAND_H = 150;
@@ -93,6 +94,9 @@ const duration = (file) =>
 		.toString()
 		.trim();
 const ENCODE = ["-r", "30", "-c:v", "libx264", "-crf", "18", "-pix_fmt", "yuv420p"];
+const AUDIO_ENCODE = ["-c:a", "aac", "-b:a", "160k", "-ar", "44100", "-ac", "2"];
+const LEAD = 0.3;
+const TAIL = 0.5;
 
 rmSync(WORK, { recursive: true, force: true });
 mkdirSync(WORK, { recursive: true });
@@ -102,33 +106,47 @@ try {
 	const tab = await openTab(chrome.port, "");
 	for (const [i, shot] of cut.entries()) {
 		const seg = join(WORK, `${String(i).padStart(2, "0")}-${shot.name}.mp4`);
-		if (shot.card) {
-			const png = await screenshot(tab, card(shot.card), shot.name, H);
-			ffmpeg("-loop", "1", "-t", String(shot.seconds), "-i", png, ...ENCODE, seg);
-		} else {
-			const png = await screenshot(tab, band(shot), shot.name, BAND_H);
-			const footage = join(FOOTAGE, `${shot.name}.mp4`);
-			// The looped band is bounded by the footage's length: -shortest does not end a looped
-			// input inside a filter graph.
+		const voice = join(VOICE, `${shot.name}.mp3`);
+		const voiced = existsSync(voice);
+		const footage = join(FOOTAGE, `${shot.name}.mp4`);
+		const base = shot.card ? shot.seconds : Number(duration(footage));
+		// A shot is as long as its footage, or longer when the voiceover needs it (the last
+		// frame holds); the voice starts a beat in.
+		const len = (voiced ? Math.max(base, Number(duration(voice)) + LEAD + TAIL) : base).toFixed(3);
+		// Silence when unvoiced, so every segment has the same streams and concat can copy.
+		const audioIn = voiced ? ["-i", voice] : ["-f", "lavfi", "-i", "anullsrc=r=44100:cl=stereo"];
+		const audioFx = voiced ? `adelay=${LEAD * 1000}:all=1,apad` : "anull";
+		const mix = (inputs, video, n) =>
 			ffmpeg(
-				"-i",
-				footage,
-				"-loop",
-				"1",
-				"-t",
-				duration(footage),
-				"-i",
-				png,
+				...inputs,
+				...audioIn,
 				"-filter_complex",
-				`[0:v]scale=${W}:${FOOT_H}[f];[f][1:v]vstack=inputs=2,format=yuv420p[v]`,
+				`${video};[${n}:a]${audioFx}[a]`,
 				"-map",
 				"[v]",
+				"-map",
+				"[a]",
+				"-t",
+				len,
 				...ENCODE,
+				...AUDIO_ENCODE,
 				seg,
+			);
+		if (shot.card) {
+			const png = await screenshot(tab, card(shot.card), shot.name, H);
+			mix(["-loop", "1", "-t", len, "-i", png], "[0:v]format=yuv420p[v]", 1);
+		} else {
+			const png = await screenshot(tab, band(shot), shot.name, BAND_H);
+			// The looped band is bounded by the shot's length: -shortest does not end a looped
+			// input inside a filter graph.
+			mix(
+				["-i", footage, "-loop", "1", "-t", len, "-i", png],
+				`[0:v]scale=${W}:${FOOT_H},tpad=stop_mode=clone:stop_duration=${(len - base).toFixed(3)}[f];[f][1:v]vstack=inputs=2,format=yuv420p[v]`,
+				2,
 			);
 		}
 		segments.push(seg);
-		console.log(`${shot.name}: ok`);
+		console.log(`${shot.name}: ok${voiced ? " (voiced)" : ""}`);
 	}
 	tab.close();
 } finally {
