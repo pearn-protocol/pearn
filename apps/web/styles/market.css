@@ -104,3 +104,23 @@
 	gap: 12px;
 	flex-wrap: wrap;
 }
+
+.polyref {
+	display: grid;
+	gap: 12px;
+	justify-items: start;
+}
+
+.polyref h2 {
+	margin: 0;
+	font-size: 16px;
+}
+
+.polyref p {
+	margin: 0;
+}
+
+.polyref__price b {
+	color: var(--accent);
+	font-weight: 700;
+}
