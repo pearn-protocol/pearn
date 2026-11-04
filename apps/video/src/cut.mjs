@@ -19,9 +19,9 @@ export const cut = [
 	},
 	{
 		name: "landing",
-		say: "Pearn is a no-loss prediction market on NEAR. Live at pearn dot site.",
+		say: "Pearn is a no-loss prediction market on NEAR, on live Polymarket questions. At pearn dot site.",
 		where: LIVE,
-		caption: "Pearn: a no-loss prediction market on NEAR. pearn.site",
+		caption: "Pearn: a no-loss prediction market on NEAR, on live Polymarket questions. pearn.site",
 	},
 	{
 		name: "bet-form",
