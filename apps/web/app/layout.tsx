@@ -6,6 +6,7 @@ import "@/styles/layout.css";
 import "@/styles/ui.css";
 import "@/styles/markets.css";
 import "@/styles/market.css";
+import "@/styles/chart.css";
 import type { Metadata, Viewport } from "next";
 import Announce from "@/components/layout/Announce";
 import Footer from "@/components/layout/Footer";

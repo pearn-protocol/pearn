@@ -15,6 +15,7 @@ import { dateTime, duration, short } from "@/lib/format";
 import { Outcome, phaseOf, potAt, Side } from "@/lib/markets";
 import ActivityFeed from "./ActivityFeed";
 import BetForm from "./BetForm";
+import MarketChart from "./MarketChart";
 import PolymarketRef from "./PolymarketRef";
 import PositionPanel from "./PositionPanel";
 import ResolvePanel from "./ResolvePanel";
@@ -72,6 +73,7 @@ export default function MarketDetail() {
 						Created by <Addr a={m.creator} />, resolved by <Addr a={m.resolver} />
 					</p>
 				</div>
+				<MarketChart id={m.id} />
 				<PolymarketRef id={m.id} />
 				<RateInfo />
 				<ResolvePanel m={m} now={now} />
