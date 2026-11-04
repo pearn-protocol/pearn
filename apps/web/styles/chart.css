@@ -1,0 +1,172 @@
+/* Price chart: dotted grid, step lines, crosshair. Pearn in accent, Polymarket in ink. */
+
+.pchart {
+	display: grid;
+	gap: 10px;
+}
+
+.pchart__legend {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px 20px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	font-size: 12px;
+}
+
+.pchart__legend li {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	color: var(--muted);
+}
+
+.pchart__legend li::before {
+	content: "";
+	width: 10px;
+	height: 10px;
+	background: var(--tone);
+}
+
+.pchart__legend .num {
+	color: var(--tone);
+}
+
+.pchart__plot {
+	position: relative;
+	height: 300px;
+	touch-action: pan-y;
+	cursor: crosshair;
+	user-select: none;
+}
+
+.pchart__plot:focus-visible {
+	outline: 1px solid var(--accent);
+	outline-offset: 4px;
+}
+
+.pchart__plot svg {
+	display: block;
+	overflow: visible;
+	font-family: inherit;
+}
+
+.pchart__empty {
+	display: grid;
+	place-items: center;
+	height: 100%;
+	border: 1px dashed var(--line);
+	color: var(--muted);
+	font-size: 13px;
+}
+
+.pchart__grid {
+	stroke: var(--line);
+	stroke-dasharray: 1 5;
+}
+
+.pchart__ylab,
+.pchart__xlab {
+	fill: var(--muted);
+	font-size: 11px;
+}
+
+.pchart__ylab {
+	text-anchor: end;
+}
+
+.pchart__xlab {
+	text-anchor: middle;
+}
+
+.pchart__line {
+	fill: none;
+	stroke-width: 2;
+	stroke-linejoin: miter;
+}
+
+.pchart__line.is-dim {
+	stroke: #2a2a28;
+}
+
+.tone-accent {
+	--tone: var(--accent);
+}
+
+.tone-ink {
+	--tone: var(--ink);
+}
+
+.tone-grey {
+	--tone: var(--glyph);
+}
+
+.pchart__line[class*="tone-"] {
+	stroke: var(--tone);
+}
+
+.pchart__cross {
+	stroke: var(--muted);
+	stroke-width: 1;
+}
+
+.pchart__time {
+	fill: var(--ink);
+	font-size: 12px;
+}
+
+.pchart__dot {
+	fill: var(--tone);
+}
+
+.pchart__name {
+	fill: var(--tone);
+	font-size: 13px;
+}
+
+.pchart__pct {
+	fill: var(--tone);
+	font-size: 30px;
+	letter-spacing: -0.04em;
+}
+
+.pchart__ranges {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 4px;
+}
+
+.pchart__ranges button {
+	border: 0;
+	background: none;
+	font: inherit;
+	cursor: pointer;
+	min-width: 40px;
+	height: 28px;
+	padding: 0 8px;
+	color: var(--muted);
+	font-size: 11px;
+}
+
+.pchart__ranges button:hover {
+	color: var(--ink);
+}
+
+.pchart__ranges button[aria-pressed="true"] {
+	background: var(--panel);
+	color: var(--ink);
+}
+
+@media (max-width: 699.98px) {
+	.pchart__plot {
+		height: 240px;
+	}
+	.pchart__pct {
+		font-size: 22px;
+	}
+}
