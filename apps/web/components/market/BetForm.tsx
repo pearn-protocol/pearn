@@ -15,12 +15,21 @@ import { projectBet } from "@/lib/payout";
 import ProjectionView from "./ProjectionView";
 import SidePicker from "./SidePicker";
 
-export default function BetForm({ m, now }: { m: MarketWithId; now: number }) {
+export default function BetForm({
+	m,
+	now,
+	side: initialSide = Side.Yes,
+}: {
+	m: MarketWithId;
+	now: number;
+	/** The side picked on the card that led here. */
+	side?: number;
+}) {
 	const { wallet, connect } = useWallet();
 	const { oracle } = useChainData();
 	const { account } = usePosition(m.id);
 	const tx = useTx();
-	const [side, setSide] = useState<number>(Side.Yes);
+	const [side, setSide] = useState<number>(initialSide);
 	const [input, setInput] = useState("");
 
 	const value = parseAmount(input);

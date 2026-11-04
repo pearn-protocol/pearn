@@ -1,45 +1,59 @@
 import Link from "next/link";
 import Amount from "@/components/ui/Amount";
-import OddsBar from "@/components/ui/OddsBar";
-import PhaseChip from "@/components/ui/PhaseChip";
-import type { MarketWithId } from "@/lib/chain";
 import { duration } from "@/lib/format";
-import { phaseOf, potAt } from "@/lib/markets";
+import type { Listed } from "@/lib/home";
+import { OUTCOME_LABEL, PHASE_LABEL, phaseOf, potAt } from "@/lib/markets";
+import { usdCompact } from "@/lib/reference";
+import ChanceRing from "./ChanceRing";
+import Glyph from "./Glyph";
 
+/** A market card: badge, question, chance ring, Bet Yes / Bet No, then pot and volume. */
 export default function MarketCard({
-	m,
+	item: { m, mirror, ref, topic, chance, chanceLabel },
 	rate,
 	now,
 }: {
-	m: MarketWithId;
+	item: Listed;
 	rate: bigint;
 	now: number;
 }) {
+	const href = `/market/?id=${m.id}`;
 	const phase = phaseOf(m, now);
 	return (
-		<Link className="card market-card" href={`/market/?id=${m.id}`}>
-			<div className="row">
-				<PhaseChip outcome={m.outcome} phase={phase} />
-				{phase === "open" && (
-					<span className="muted">closes in {duration(Number(m.closeTime) - now)}</span>
-				)}
-			</div>
-			<h3>{m.question}</h3>
-			<OddsBar m={m} />
-			<dl className="stats">
-				<div>
-					<dt>Pot</dt>
-					<dd>
-						<Amount value={potAt(m, rate)} />
-					</dd>
+		<article className="mcard">
+			<header className="mcard__head">
+				<Glyph mirror={mirror} topic={topic} />
+				<h3 className="mcard__q">
+					<Link href={href}>{m.question}</Link>
+				</h3>
+				<ChanceRing label={chanceLabel} pct={chance} />
+			</header>
+			{phase === "open" ? (
+				<div className="prices">
+					<Link className="price price--yes" href={`${href}&side=yes`}>
+						Bet Yes <span aria-hidden="true">→</span>
+					</Link>
+					<Link className="price price--no" href={`${href}&side=no`}>
+						Bet No <span aria-hidden="true">→</span>
+					</Link>
 				</div>
-				<div>
-					<dt>Staked</dt>
-					<dd>
-						<Amount value={m.yes.staked + m.no.staked} />
-					</dd>
-				</div>
-			</dl>
-		</Link>
+			) : (
+				<p className="mcard__state">
+					■ {phase === "final" ? `Settled: ${OUTCOME_LABEL[m.outcome]}` : PHASE_LABEL[phase]}
+				</p>
+			)}
+			<footer className="mcard__foot">
+				<span>
+					Pot <Amount value={potAt(m, rate)} />
+				</span>
+				<span>
+					{ref
+						? `${usdCompact(ref.volume)} Polymarket vol.`
+						: phase === "open"
+							? `closes in ${duration(Number(m.closeTime) - now)}`
+							: ""}
+				</span>
+			</footer>
+		</article>
 	);
 }

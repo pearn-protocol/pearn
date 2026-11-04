@@ -19,7 +19,7 @@ COPY . .
 RUN pnpm install --frozen-lockfile --filter @pearn/web... \
 	&& pnpm --filter @pearn/web build \
 	&& node deploy/static/prepare.mjs apps/web/out /csp.caddy \
-		"$(node -p 'process.argv.slice(1).filter(Boolean).map((u) => new URL(u).origin).join()' "$NEXT_PUBLIC_RPC_URL" "$NEXT_PUBLIC_INDEXER_URL" https://api.coingecko.com)"
+		"$(node -p 'process.argv.slice(1).filter(Boolean).map((u) => new URL(u).origin).join()' "$NEXT_PUBLIC_RPC_URL" "$NEXT_PUBLIC_INDEXER_URL" https://api.coingecko.com https://gamma-api.polymarket.com)"
 
 FROM caddy:2.11.7-alpine@sha256:24ec7b05bc532c7bb57f727030c5056e257ff7138b4b50460306819ff79362bd
 COPY deploy/static/Caddyfile /etc/caddy/Caddyfile

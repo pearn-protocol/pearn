@@ -1,0 +1,122 @@
+[
+	{
+		"id": 3,
+		"slug": "will-david-lisnard-win-the-2027-french-presidential-election",
+		"conditionId": "0xce610556ec78cfd7894f4169d91fe70e31c2fb49f927fffd7fe7d06530f88d56",
+		"question": "Will David Lisnard win the 2027 French presidential election?",
+		"topic": "World",
+		"image": "ce610556ec.jpg",
+		"closeTime": 1808107140,
+		"rules": "The next French presidential election is currently expected to be held around April 2027. This market pertains to the outcome of the next French presidential election, regardless of whether it follows the scheduled end of the current term or is held earlier."
+	},
+	{
+		"id": 4,
+		"slug": "will-bitcoin-dip-to-55000-by-december-31-2026-527-627-868-745-188-361-314-673-612-946-821-624-855-557-684-381-884-939-182-939-516",
+		"conditionId": "0x752fa61c93f16c4b15e85b0bd438d9c684176b0ea7b319a84c8aca34616e8a8c",
+		"question": "Will Bitcoin dip to $55,000 by December 31, 2026?",
+		"topic": "Crypto",
+		"image": "752fa61c93.jpg",
+		"closeTime": 1798779600,
+		"rules": "This market will immediately resolve to \"Yes\" if any Binance 1 minute candle for Bitcoin (BTC/USDT) between November 24, 2025, 14:00 and December 31, 2026, 23:59 in the ET timezone has a final \"Low\" price equal to or lower than the price specified in the title. Otherwise, this market will resolve to \"No.\""
+	},
+	{
+		"id": 5,
+		"slug": "will-the-denver-broncos-win-the-2027-nfl-league-championship",
+		"conditionId": "0x8e29cb5c6b8d6b8d259114ffca2796fb378d1e0575f8362fb93f4cb174fad405",
+		"question": "Will the Denver Broncos win the 2027 NFL league championship?",
+		"topic": "Sports",
+		"image": "8e29cb5c6b.jpg",
+		"closeTime": 1806551940,
+		"rules": "This market will resolve according to the team that wins the 2027 NFL league championship."
+	},
+	{
+		"id": 6,
+		"slug": "will-barcelona-win-the-2026-27-uefa-champions-league-championship-20260701202025560",
+		"conditionId": "0xa23467e95abf6544819a9dcb90b7719846aacf300b991ea07204e1f1649097cb",
+		"question": "Will Barcelona win the 2026-27 UEFA Champions League Championship?",
+		"topic": "Sports",
+		"image": "a23467e95a.jpg",
+		"closeTime": 1811721540,
+		"rules": "This market will resolve according to the team that wins the 2026-27 UEFA Champions League Championship."
+	},
+	{
+		"id": 7,
+		"slug": "new-stranger-things-episode-released-by-march-31-2027-20260721142740863",
+		"conditionId": "0xae3a545b19c84d6510c2bd54b0183202ab5e93088d70bbc4a5c3bfac4c534e11",
+		"question": "New \"Stranger Things\" episode released by March 31, 2027?",
+		"topic": "Culture",
+		"image": "ae3a545b19.jpg",
+		"closeTime": 1806551940,
+		"rules": "This market will resolve to \"Yes\" if Netflix officially releases a new episode of Stranger Things (i.e., an episode that was not previously available to stream on Netflix) between market creation and March 31, 2027, 11:59 PM ET. Otherwise, this market will resolve to \"No\"."
+	},
+	{
+		"id": 8,
+		"slug": "will-bitcoin-hit-150k-by-september-30-2027",
+		"conditionId": "0x9c1e35fe68023147db17a2e5ca11aee3ab755891fe3c8e8891f02be08ee47097",
+		"question": "Will Bitcoin hit $150k by September 30, 2027?",
+		"topic": "Crypto",
+		"image": "9c1e35fe68.jpg",
+		"closeTime": 1822363200,
+		"rules": "This market will immediately resolve to \"Yes\" if any Binance 1 minute candle for Bitcoin (BTC/USDT) has a final \"High\" price equal to or greater than the price specified in the title by 11:59PM ET on the date specified in the title. Otherwise, this market will resolve to \"No.\""
+	},
+	{
+		"id": 9,
+		"slug": "will-perplexity-ai-be-acquired-before-2027-776-526",
+		"conditionId": "0x3d2fc07e08c46d8f642f56e5f8c08763df53a3f9d96073a117ce564368cace5f",
+		"question": "Will Perplexity AI be acquired before 2027?",
+		"topic": "Economy",
+		"image": "3d2fc07e08.jpg",
+		"closeTime": 1798779540,
+		"rules": "This market will resolve to “Yes” if credible reporting confirms that any entity enters into an agreement to acquire the listed company by December 31, 2026, 11:59 PM ET. Otherwise, this market will resolve to “No”."
+	},
+	{
+		"id": 10,
+		"slug": "bab-el-mandeb-strait-effectively-closed-by-december-31-983-117-222-252",
+		"conditionId": "0xd8659b58a90d0d69fb1170f25b2b896871a1328115fd11c6f4cfe2b01a2a8ba0",
+		"question": "Bab el-Mandeb Strait effectively closed by December 31?",
+		"topic": "World",
+		"image": "d8659b58a9.jpg",
+		"closeTime": 1798779540,
+		"rules": "This market will resolve to “Yes” if IMF PortWatch publishes a 7-day moving average of transit calls (“Arrivals of Ships”) for the Bab el-Mandeb Strait less than or equal to 10 for any date between market creation and the listed date. Otherwise, this market will resolve to “No”."
+	},
+	{
+		"id": 11,
+		"slug": "will-avengers-doomsday-be-the-top-grossing-movie-of-2026",
+		"conditionId": "0xe4f4b614a6c2b4ecd8eb700d19c0e6533d3fbd1bc28193b2255394ef74006e6f",
+		"question": "Will Avengers: Doomsday be the top grossing movie of 2026?",
+		"topic": "Culture",
+		"image": "e4f4b614a6.jpg",
+		"closeTime": 1799384340,
+		"rules": "This market will resolve according to the title of the film with the highest 2026 gross according to the \"Gross\" column on https://www.boxofficemojo.com/year/2026/?grossesOption=calendarGrosses once data for December 31 is made available."
+	},
+	{
+		"id": 12,
+		"slug": "will-the-fed-increase-interest-rates-by-25-bps-after-the-december-2026-meeting-20260729232808636",
+		"conditionId": "0x8a4196617dcb703e49d9bb36d3847bf6a75fd364dbd19f8d408ac944bf1a03d8",
+		"question": "Will the Fed increase interest rates by 25 bps after the December 2026 meeting?",
+		"topic": "Economy",
+		"image": "8a4196617d.jpg",
+		"closeTime": 1796860740,
+		"rules": "The FED interest rates are defined in this market by the upper bound of the target federal funds range. The decisions on the target federal funds range are made by the Federal Open Market Committee (FOMC) meetings."
+	},
+	{
+		"id": 13,
+		"slug": "will-there-be-at-least-10000-measles-cases-in-the-us-in-2026-418-668-617-245-787-217",
+		"conditionId": "0x1d916047bbca1be9808076a0590c17ff113fb92986a4b4bc7f0f962642158827",
+		"question": "Will there be at least 10000 measles cases in the U.S. in 2026?",
+		"topic": "Science",
+		"image": "1d916047bb.jpg",
+		"closeTime": 1798779540,
+		"rules": "This market will resolve to \"Yes\" if there have been the specified amount or more confirmed cases of Measles (Rubeola) in humans in the territory of the United States of America in 2026 according to the CDC case counter between January 1, 2026, 12:00 AM ET and December 31, 2026, 11:59 PM ET. Otherwise, this market will resolve to \"No\"."
+	},
+	{
+		"id": 14,
+		"slug": "will-samuel-alito-announce-his-retirement-by-december-31-2026-573-343-622",
+		"conditionId": "0xa222013f2baf3e9eb0613b7dc45d2fd8a3e63177c21bd282d9bb5133d6a44986",
+		"question": "Will Samuel Alito announce his retirement by December 31, 2026?",
+		"topic": "Politics",
+		"image": "a222013f2b.jpg",
+		"closeTime": 1798779540,
+		"rules": "This market will resolve to \"Yes\" if Samuel Alito announces that he will retire from his position as Associate Justice of the Supreme Court of the United States by the specified date at 11:59 PM ET. Otherwise, this market will resolve to \"No\"."
+	}
+]

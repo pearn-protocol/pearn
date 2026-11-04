@@ -1,72 +1,556 @@
-.hero {
-	padding: 24px 0 40px;
-}
+/* Markets home: featured carousel + closing soon, then all markets as square mono cards. */
 
-.hero h1 {
-	display: inline;
-	padding: 2px 10px;
+/* A market's square badge: its Polymarket image, or a letter. */
+.glyph {
+	display: inline-grid;
+	flex: none;
+	place-items: center;
+	width: 32px;
+	height: 32px;
 	background: var(--accent);
 	color: var(--on-accent);
-	font-size: clamp(26px, 4vw, 40px);
-	box-decoration-break: clone;
-	-webkit-box-decoration-break: clone;
+	font-size: 15px;
 }
 
-.hero p {
-	max-width: 720px;
-	margin-top: 24px;
-	color: var(--muted);
+.glyph--img {
+	object-fit: cover;
+	background: var(--panel);
 }
 
-.steps {
+.home {
 	display: grid;
-	grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-	gap: var(--gap);
-	padding: 0;
-	margin: 24px 0 0;
-	list-style: none;
-	counter-reset: step;
+	align-content: start;
+	gap: 56px;
 }
 
-.steps li {
-	padding: 20px;
-	background: var(--surface);
+.home__top {
+	display: grid;
+	grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
+	gap: 24px;
+}
+
+/* Desktop: the card and Closing soon share the first row; the carousel nav gets its own. */
+@media (min-width: 1100px) {
+	.home__top {
+		row-gap: 12px;
+	}
+	.feat {
+		display: contents;
+	}
+	.feat__card {
+		grid-area: 1 / 1;
+	}
+	.feat__nav {
+		grid-area: 2 / 1;
+	}
+	.home__side {
+		grid-area: 1 / 2;
+	}
+}
+
+.feat {
+	display: grid;
+	gap: 12px;
+}
+
+.feat__card {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+	gap: 24px;
+	min-height: 400px;
+	padding: 28px;
 	border: 1px solid var(--line);
+	background: var(--surface);
+}
+
+.feat__body {
+	display: flex;
+	flex-direction: column;
+	gap: 18px;
+	min-width: 0;
+}
+
+.feat__cat {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin: 0;
 	color: var(--muted);
-	counter-increment: step;
+	font-size: 11px;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
 }
 
-.steps li b {
-	color: var(--ink);
-	font-weight: var(--weight);
-}
-
-.steps li::before {
-	content: "0" counter(step);
-	display: block;
-	margin-bottom: 12px;
-	color: var(--accent);
+.feat__cat .glyph {
+	width: 22px;
+	height: 22px;
 	font-size: 12px;
 }
 
-.grid {
-	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-	gap: var(--gap);
+.feat__title {
+	margin: 0;
+	font-size: clamp(22px, 2vw, 30px);
+	line-height: 1.25;
+	letter-spacing: -0.04em;
+	text-wrap: balance;
 }
 
-.market-card {
+.feat__rows {
 	display: grid;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.feat__rows li {
+	display: flex;
+	justify-content: space-between;
 	gap: 16px;
-	text-decoration: none;
-	transition: border-color 250ms ease;
+	padding: 10px 0;
+	border-bottom: 1px solid var(--line);
+	font-size: 15px;
 }
 
-.market-card:hover {
+.feat__rows span {
+	color: var(--accent);
+}
+
+.feat__title a,
+.feat__rows a,
+.mcard__q a,
+.soon__row {
+	text-decoration: none;
+}
+
+.feat__title a:hover,
+.feat__rows a:hover,
+.mcard__q a:hover {
+	color: var(--accent);
+}
+
+/* The ASCII mark: 84 × 56 cells (packages/brand/mark.txt), 2:3 cells → a square. */
+.feat__visual {
+	align-self: center;
+	margin: 0;
+	color: var(--glyph);
+	font-size: 6px;
+	line-height: 0.9;
+	letter-spacing: 0;
+	user-select: none;
+}
+
+.feat__nav {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	min-height: 32px;
+}
+
+.feat__nav button {
+	min-width: 32px;
+	height: 32px;
+	border: 1px solid var(--glyph);
+	background: none;
+	color: var(--ink);
+	cursor: pointer;
+}
+
+.feat__nav button:hover {
+	border-color: var(--accent);
+	color: var(--accent);
+}
+
+.feat__nav .feat__dot {
+	display: grid;
+	place-items: center;
+	min-width: 24px;
+	height: 24px;
+	border: 0;
+}
+
+.feat__dot::before {
+	content: "";
+	width: 10px;
+	height: 10px;
+	border: 1px solid var(--glyph);
+}
+
+.feat__dot[aria-current="true"]::before {
+	border-color: var(--accent);
+	background: var(--accent);
+}
+
+.pbar {
+	display: grid;
+	grid-template-columns: repeat(24, 1fr);
+	margin: 0;
+	color: var(--glyph);
+	font-size: 13px;
+	line-height: 1;
+	text-align: center;
+}
+
+.pbar .is-yes {
+	color: var(--accent);
+}
+
+.mmeta {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 4px 12px;
+	color: var(--muted);
+	font-size: 10px;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+}
+
+.mmeta__chip::before {
+	content: "[ ";
+}
+
+.mmeta__chip::after {
+	content: " ]";
+}
+
+.mmeta__badge {
+	margin-left: auto;
+}
+
+.mmeta__badge::before {
+	content: "";
+	display: inline-block;
+	width: 6px;
+	height: 6px;
+	margin-right: 6px;
+	background: var(--accent);
+	vertical-align: 1px;
+}
+
+.feat__body .mmeta {
+	margin-top: auto;
+}
+
+/* Closing soon: a numbered list. */
+.soon {
+	padding: 18px 22px;
+	border: 1px solid var(--line);
+}
+
+.soon__title {
+	margin: 0 0 8px;
+	font-size: 14px;
+	text-transform: uppercase;
+}
+
+.soon ol {
+	min-height: 230px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.soon__row {
+	display: grid;
+	grid-template-columns: 18px minmax(0, 1fr) auto;
+	gap: 10px;
+	align-items: center;
+	padding: 9px 0;
+	border-bottom: 1px solid var(--line);
+	font-size: 12px;
+}
+
+.soon li:last-child .soon__row {
+	border-bottom: 0;
+}
+
+.soon__n {
+	color: var(--muted);
+}
+
+.soon__q {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+.soon__meta {
+	display: grid;
+	justify-items: end;
+	color: var(--accent);
+}
+
+.soon__meta small {
+	color: var(--muted);
+	font-size: 10px;
+}
+
+.soon__row:hover .soon__q {
+	color: var(--accent);
+}
+
+/* All markets. */
+.all {
+	display: grid;
+	gap: 18px;
+}
+
+.all__head {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px 24px;
+}
+
+.all__title {
+	margin: 0;
+	font-size: clamp(22px, 1.8vw, 28px);
+	letter-spacing: -0.04em;
+}
+
+.all__search input {
+	width: min(320px, 100%);
+	height: 40px;
+	padding: 0 14px;
+	border: 1px solid var(--glyph);
+	background: transparent;
+	color: var(--ink);
+	font: inherit;
+	font-size: 13px;
+}
+
+.all__search input:focus {
+	border-color: var(--accent);
+	outline: none;
+}
+
+.all__tabs {
+	display: flex;
+	gap: 6px;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	overflow-x: auto;
+	scrollbar-width: none;
+}
+
+.all__tabs button {
+	flex: none;
+	height: 32px;
+	padding: 0 12px;
+	border: 1px solid var(--line);
+	background: none;
+	color: var(--muted);
+	font: inherit;
+	font-size: 12px;
+	white-space: nowrap;
+	cursor: pointer;
+}
+
+.all__tabs button:hover {
+	color: var(--ink);
+}
+
+.all__tabs button[aria-pressed="true"] {
+	border-color: var(--accent);
+	background: var(--accent);
+	color: var(--on-accent);
+}
+
+.all__grid {
+	display: grid;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	gap: 8px;
+}
+
+.mcard {
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
+	min-height: 210px;
+	padding: 16px;
+	border: 1px solid var(--line);
+	background: var(--surface);
+	transition: border-color 450ms var(--ease);
+}
+
+.mcard--ghost {
+	border-style: dashed;
+	background: none;
+}
+
+.mcard:hover,
+.mcard:focus-within {
 	border-color: var(--accent);
 }
 
-.market-card h3 {
-	font-size: 18px;
+.mcard__head {
+	display: grid;
+	grid-template-columns: auto minmax(0, 1fr) auto;
+	align-items: start;
+	gap: 10px;
+}
+
+.mcard__q {
+	display: -webkit-box;
 	margin: 0;
+	overflow: hidden;
+	font-size: 14px;
+	line-height: 1.35;
+	letter-spacing: -0.02em;
+	-webkit-line-clamp: 3;
+	-webkit-box-orient: vertical;
+}
+
+.mcard__state {
+	margin: auto 0 0;
+	color: var(--muted);
+	font-size: 13px;
+}
+
+.mcard__foot {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	gap: 4px 12px;
+	color: var(--muted);
+	font-size: 10px;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+}
+
+.mcard__foot .amount {
+	color: var(--ink);
+	text-transform: none;
+}
+
+.prices {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 6px;
+	margin-top: auto;
+}
+
+.price {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	height: 44px;
+	padding: 0 14px;
+	border: 1px solid var(--accent);
+	font-size: 13px;
+	text-decoration: none;
+	text-transform: uppercase;
+	transition:
+		background-color 250ms ease,
+		color 250ms ease;
+}
+
+.price--yes {
+	background: var(--accent);
+	color: var(--on-accent);
+}
+
+.price--yes:hover {
+	background: transparent;
+	color: var(--accent);
+}
+
+.price--no {
+	border-color: var(--glyph);
+	color: var(--ink);
+}
+
+.price--no:hover {
+	border-color: var(--ink);
+	background: var(--ink);
+	color: var(--bg);
+}
+
+.ring {
+	position: relative;
+	width: 52px;
+	height: 52px;
+}
+
+.ring__svg {
+	width: 100%;
+	height: 100%;
+}
+
+.ring__track,
+.ring__val {
+	fill: none;
+	stroke-width: 4;
+}
+
+.ring__track {
+	stroke: var(--panel);
+}
+
+.ring__val {
+	stroke: var(--accent);
+	stroke-linecap: butt;
+}
+
+.ring__text {
+	position: absolute;
+	inset: 0;
+	display: grid;
+	place-content: center;
+	margin: 0;
+	text-align: center;
+	line-height: 1.1;
+}
+
+.ring__pct {
+	font-size: 12px;
+}
+
+.ring__label {
+	color: var(--muted);
+	font-size: 7px;
+	text-transform: uppercase;
+}
+
+@media (max-width: 1279.98px) {
+	.all__grid {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+}
+
+@media (max-width: 1099.98px) {
+	.home__top {
+		grid-template-columns: minmax(0, 1fr);
+	}
+}
+
+@media (max-width: 899.98px) {
+	.all__grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+@media (max-width: 699.98px) {
+	.home {
+		gap: 40px;
+	}
+	.feat__card {
+		grid-template-columns: minmax(0, 1fr);
+		min-height: 0;
+		padding: 18px;
+	}
+	.feat__visual {
+		display: none;
+	}
+}
+
+@media (max-width: 599.98px) {
+	.all__grid {
+		grid-template-columns: minmax(0, 1fr);
+	}
+	.mcard {
+		min-height: 0;
+	}
 }

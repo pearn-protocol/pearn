@@ -84,7 +84,7 @@ Check the XCC oracle yourself: `cast call 0xA8adEFE2C8f0F71a585a73c1259997f593F9
 | resolve YES | [`0x5231…dc48`](https://explorer.testnet.aurora.dev/tx/0x523112c3cbc9eaad96669e861d69a62788c8e24c79064d09ad42fdc1cf89dc48) | `resolve`, then the 24 h challenge window |
 | claim 0.4 | [`0xc8ef…af53`](https://explorer.testnet.aurora.dev/tx/0xc8ef84622bcb243e2095dbb23bbdf3ccaa3579a4d317a71fc7d2bfc13c9eaf53) | `claim`: principal 0.2 + pot 0.2, less 1 wei of rounding |
 
-Markets 0 and 1 are still open.
+Markets 0 and 1 are still open. Markets 3–14 mirror live Polymarket questions and resolve as Polymarket settles them, reported by the keeper ([docs](https://docs.pearn.site/docs/polymarket/)).
 
 **Deploying without Aurora ETH.** Forge simulates, then `scripts/aurora-submit.mjs` signs each transaction at gas price 0 and hands it to the Aurora engine's `submit` method on NEAR, so a NEAR account pays NEAR gas. That is how these contracts went live:
 
@@ -118,9 +118,10 @@ The stNEAR shows up at `0x2137…f144` on Aurora testnet. wNEAR (for the oracle'
 | `contracts/script` | Deploy, SyncOracle, SeedMarkets (testnet demo markets), DevChain (local sample markets), per-network addresses |
 | `apps/web` | Next.js static app (viem, injected wallet): markets, bet, sponsor, resolve, claim, create, portfolio |
 | `packages/brand` | Logo and icons |
+| `packages/catalog` | The mirrored Polymarket markets (`markets.json`) and their images; `scripts/polymarket-*.mjs` pick, create and resolve them |
 | `deploy/` | Caddy static server, CSP build step, host nginx; CD via Coolify |
 | `.github/workflows/health.yml` | Checks landing, app, docs, indexer and oracle freshness on a 30-minute cron (GitHub runs it every few hours in practice); opens an `incident` issue |
-| `.github/workflows/keeper.yml` | Keeper: `oracle.sync()` every 12 h through NEAR, from a dedicated wallet |
+| `.github/workflows/keeper.yml` | Keeper: `oracle.sync()` every 12 h through NEAR, from a dedicated wallet, then resolves settled Polymarket mirrors |
 | `apps/landing` | Marketing site (Astro, static) with live markets from the indexer and the demo video (`/pitch/`) |
 | `apps/video` | The demo video: headless-Chrome recordings cut with captions (ffmpeg) |
 | `apps/docs` | Documentation site (Fumadocs, static), also as `llms.txt` |

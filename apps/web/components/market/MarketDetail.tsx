@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import Glyph from "@/components/markets/Glyph";
 import NotDeployed from "@/components/ui/NotDeployed";
 import OddsBar from "@/components/ui/OddsBar";
 import PhaseChip from "@/components/ui/PhaseChip";
@@ -8,17 +9,20 @@ import RateInfo from "@/components/ui/RateInfo";
 import Stat from "@/components/ui/Stat";
 import { useChainData } from "@/hooks/useChainData";
 import { useNow } from "@/hooks/useNow";
+import { mirrorOf, topicOf } from "@/lib/catalog";
 import { contracts, explorerAddress } from "@/lib/config";
 import { dateTime, duration, short } from "@/lib/format";
-import { Outcome, phaseOf, potAt } from "@/lib/markets";
+import { Outcome, phaseOf, potAt, Side } from "@/lib/markets";
 import ActivityFeed from "./ActivityFeed";
 import BetForm from "./BetForm";
+import PolymarketRef from "./PolymarketRef";
 import PositionPanel from "./PositionPanel";
 import ResolvePanel from "./ResolvePanel";
 import SponsorForm from "./SponsorForm";
 
 export default function MarketDetail() {
-	const raw = useSearchParams().get("id");
+	const params = useSearchParams();
+	const raw = params.get("id");
 	const { markets, oracle, error } = useChainData();
 	const now = useNow();
 
@@ -44,6 +48,9 @@ export default function MarketDetail() {
 					← All markets
 				</Link>
 				<div className="card detail-head">
+					<p className="feat__cat">
+						<Glyph mirror={mirrorOf(m.id)} topic={topicOf(m.id)} /> {topicOf(m.id)}
+					</p>
 					<PhaseChip outcome={m.outcome} phase={phase} />
 					<h1>{m.question}</h1>
 					<p className="muted">
@@ -65,12 +72,15 @@ export default function MarketDetail() {
 						Created by <Addr a={m.creator} />, resolved by <Addr a={m.resolver} />
 					</p>
 				</div>
+				<PolymarketRef id={m.id} />
 				<RateInfo />
 				<ResolvePanel m={m} now={now} />
 				<ActivityFeed id={m.id} now={now} />
 			</section>
 			<aside className="detail-side">
-				{phase === "open" && <BetForm m={m} now={now} />}
+				{phase === "open" && (
+					<BetForm m={m} now={now} side={params.get("side") === "no" ? Side.No : Side.Yes} />
+				)}
 				<PositionPanel m={m} now={now} />
 				{m.outcome === Outcome.Unresolved && <SponsorForm m={m} />}
 			</aside>

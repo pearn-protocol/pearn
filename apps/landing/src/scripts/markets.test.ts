@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { type RawMarket, stNear, toCard, usd } from "./markets.ts";
+import catalog from "@pearn/catalog/markets.json" with { type: "json" };
+import { chances, type RawMarket, stNear, toCard, usd } from "./markets.ts";
 
 const E24 = 10n ** 24n;
 const raw = (over: Partial<RawMarket>): RawMarket => ({
@@ -62,4 +63,19 @@ test("usd values the total at the stNEAR price", () => {
 	);
 	assert.equal(c.usd, "$2.36");
 	assert.equal(toCard(raw({}), 0).usd, null);
+});
+
+test("a mirrored market shows its topic, image and Polymarket's chance", () => {
+	assert.deepEqual(
+		chances([{ slug: "a", outcomePrices: '["0.1345", "0.8655"]' }, { slug: "b" }]),
+		new Map([["a", 13]]),
+	);
+	const pearn = toCard(raw({ id: "0" }), 0);
+	assert.equal(pearn.topic, "Pearn");
+	assert.equal(pearn.image, null);
+	assert.equal(pearn.chance, null);
+	const mirror = toCard(raw({ id: "3" }), 0, null, new Map([[catalog[0].slug, 42]]));
+	assert.equal(mirror.topic, catalog[0].topic);
+	assert.equal(mirror.image, `/markets/${catalog[0].image}`);
+	assert.equal(mirror.chance, 42);
 });
