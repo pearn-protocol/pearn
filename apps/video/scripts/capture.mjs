@@ -118,7 +118,7 @@ try {
 	// ── Live: the landing at pearn.site ─────────────────────────────────────────
 	const landing = await tab(chrome);
 	await landing.goto("https://pearn.site/");
-	await landing.waitForText("Bet the yield.");
+	await landing.waitForText("prediction markets.");
 	await record(landing, "landing", async () => {
 		await sleep(3200);
 		await scrollTo(landing, "#how", 2600);

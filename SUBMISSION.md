@@ -13,7 +13,7 @@ Suggested tracks: `defi` (yield-backed markets), `social` (DAO-resolved, communi
 <!-- IDEA START -->
 Problem: in a prediction market the loser loses everything, which keeps most people out.
 
-Pearn is a no-loss prediction market on NEAR. You bet stNEAR (Meta Pool liquid-staked NEAR) on YES or NO. When the market settles, everyone gets their principal's NEAR value back, and the winning side splits the staking yield the whole market earned, plus anything sponsors added. Bet the interest, keep the money.
+Pearn is the no-loss prediction market on NEAR: win or lose, your stake comes back. You bet stNEAR (Meta Pool liquid-staked NEAR) on YES or NO, including live Polymarket questions mirrored on testnet. When the market settles, everyone gets their principal's NEAR value back, and the winning side splits the staking yield the whole market earned, plus anything sponsors added.
 
 How NEAR fits in:
 - Contracts are Solidity on Aurora, NEAR's EVM.
@@ -28,7 +28,7 @@ Live on Aurora testnet, verified on Blockscout: PearnMarkets 0x4659f0d99587D4fA3
 
 ## Demo post draft (the human posts it)
 
-> Lose a prediction market bet and you lose your money. On Pearn you only bet the staking yield; your NEAR comes back either way.
+> Pearn is the no-loss prediction market. Bet on real questions, including live Polymarket ones; win or lose, your stake comes back. Winners split the staking yield.
 >
 > Built at #NEARHackathon on @NEARProtocol: stNEAR bets on Aurora, with the rate read from Meta Pool on NEAR by a Solidity contract through cross-contract calls. No price feed.
 >
@@ -37,4 +37,4 @@ Live on Aurora testnet, verified on Blockscout: PearnMarkets 0x4659f0d99587D4fA3
 >
 > Which market would you bet your yield on?
 
-Attach the demo video: `apps/video/out/pearn-demo.mp4` (render it with `pnpm --filter @pearn/video build`; the same file is on https://pearn.site/pitch/). 83 s, 1920×1230, no audio: opening card → pearn.site → bet → resolve → claim (local chain, labelled) → the testnet claim on Blockscout → the oracle → closing card.
+Attach the demo video: `apps/video/out/pearn-demo.mp4` (render it with `pnpm --filter @pearn/video build`; the same file is on https://pearn.site/pitch/). 87 s, 1920×1230, ElevenLabs voiceover: opening card → pearn.site → bet → resolve → claim (local chain, labelled) → the testnet claim on Blockscout → the oracle → closing card.
