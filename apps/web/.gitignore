@@ -2,6 +2,8 @@
 /public/*.png
 /public/*.ico
 /public/site.webmanifest
+# Copied from packages/catalog by scripts/brand.mjs
+/public/markets/
 # Written by next dev
 /AGENTS.md
 /CLAUDE.md

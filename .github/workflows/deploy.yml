@@ -53,10 +53,10 @@ jobs:
           else
             echo "changes since $base"
             files=$(git diff --name-only "$base" "$GITHUB_SHA")
-            echo "$files" | grep -qE "^(apps/web/|packages/brand/|deploy/static/|$shared)" && apps+=(web)
+            echo "$files" | grep -qE "^(apps/web/|packages/brand/|packages/catalog/|deploy/static/|$shared)" && apps+=(web)
             echo "$files" | grep -qE "^(apps/indexer/|contracts/deployments/|$shared)" && apps+=(indexer)
             echo "$files" | grep -qE "^(apps/docs/|packages/brand/|deploy/static/|$shared)" && apps+=(docs)
-            echo "$files" | grep -qE "^(apps/landing/|packages/brand/|deploy/static/|$shared)" && apps+=(landing)
+            echo "$files" | grep -qE "^(apps/landing/|packages/brand/|packages/catalog/|deploy/static/|$shared)" && apps+=(landing)
           fi
           json=$(printf '%s\n' "${apps[@]}" | jq -R . | jq -sc 'map(select(. != ""))')
           echo "apps=$json" >>"$GITHUB_OUTPUT"

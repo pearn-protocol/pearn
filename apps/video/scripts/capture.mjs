@@ -123,7 +123,7 @@ try {
 		await sleep(3200);
 		await scrollTo(landing, "#how", 2600);
 		await scrollTo(landing, "#markets", 1200);
-		await landing.waitForText("% YES", 15_000);
+		await landing.waitForText("chance on Polymarket", 15_000);
 		await sleep(2200);
 	});
 	landing.close();

@@ -23,6 +23,7 @@
 		"@fontsource/jetbrains-mono": "^5.3.0",
 		"@pearn/abi": "workspace:*",
 		"@pearn/brand": "workspace:*",
+		"@pearn/catalog": "workspace:*",
 		"next": "^16.4.3",
 		"react": "^19.3.1",
 		"react-dom": "^19.3.1",

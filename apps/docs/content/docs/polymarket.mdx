@@ -1,0 +1,40 @@
+---
+title: Mirrored Polymarket markets
+description: Most testnet markets ask a live Polymarket question and resolve the way Polymarket settles it.
+---
+
+Most markets on the testnet deployment mirror a binary Yes/No market on [Polymarket](https://polymarket.com): the same question, bet here with stNEAR on Pearn's no-loss terms. Betting closes at Polymarket's end date.
+
+## Which markets
+
+[`scripts/polymarket-catalog.mjs`](https://github.com/pearn-protocol/pearn/blob/main/scripts/polymarket-catalog.mjs) picks the top open Polymarket markets by volume and writes them to [`packages/catalog/markets.json`](https://github.com/pearn-protocol/pearn/blob/main/packages/catalog/markets.json). It only takes markets that:
+
+- have outcomes of exactly `["Yes", "No"]`;
+- end between 3 days from now and the end of 2027;
+- have a Yes price between 4% and 96%.
+
+It takes at most one market per event and two per topic, and skips death and violence markets. Each market's image is downloaded once and served from Pearn's own origin.
+
+[`scripts/polymarket-seed.mjs`](https://github.com/pearn-protocol/pearn/blob/main/scripts/polymarket-seed.mjs) creates the new entries with `createMarket` through NEAR. The keeper's wallet is the resolver, and the script checks every id against the chain before saving it.
+
+## Resolution
+
+The keeper (`.github/workflows/keeper.yml`, every 12 h) first syncs the rate, then runs [`scripts/polymarket-resolve.mjs`](https://github.com/pearn-protocol/pearn/blob/main/scripts/polymarket-resolve.mjs). The script only acts on a closed market once the oracle has a rate read after its close.
+
+For each such market, it reads `gamma-api.polymarket.com/markets/slug/<slug>` and checks that the conditionId is unchanged. It waits until the market is `closed` and UMA's status is `resolved`; a proposed or disputed answer waits for the next run. Then it calls `resolve`:
+
+| Polymarket settles | Pearn outcome |
+|---|---|
+| Yes at 1 | `Yes` |
+| No at 1 | `No` |
+| Anything else (a 50-50 split) | `Invalid`: everyone gets their principal back |
+
+The 24 h challenge window still applies: the guardian can turn a wrong report into `Invalid`. If Polymarket takes longer than 7 days after close, anyone can void the market, and everyone gets their principal back.
+
+<Callout type="warn">
+**The oracle for these markets is Polymarket (UMA) plus Pearn's keeper.** The keeper reports what Polymarket published; nobody can recompute that from chain data. On mainnet the resolver should be a DAO or a verifiable bridge of the UMA result, not one key.
+</Callout>
+
+## In the app
+
+Cards show Polymarket's live Yes price as the chance and Polymarket's volume. The pot and the stakes are Pearn's own. The browser reads those numbers from Gamma's public API; the market page links to the Polymarket market. Markets created on Pearn show the YES share of their stake instead.
