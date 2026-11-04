@@ -1,6 +1,6 @@
 # @pearn/video
 
-The demo video at https://pearn.site/pitch/ (87 s, voiced). Every frame of product is a real headless-Chrome recording; the only drawn frames are the opening and closing cards and the caption bands.
+The demo video at https://pearn.site/pitch/ (89 s, voiced). Every frame of product is a real headless-Chrome recording; the only drawn frames are the opening and closing cards and the caption bands.
 
 ```sh
 pnpm --filter @pearn/video capture   # footage/*.mp4: live pearn.site, the app on a local chain, live testnet proof (~2 min)

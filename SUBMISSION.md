@@ -37,4 +37,4 @@ Live on Aurora testnet, verified on Blockscout: PearnMarkets 0x4659f0d99587D4fA3
 >
 > Which market would you bet your yield on?
 
-Attach the demo video: `apps/video/out/pearn-demo.mp4` (render it with `pnpm --filter @pearn/video build`; the same file is on https://pearn.site/pitch/). 87 s, 1920×1230, ElevenLabs voiceover: opening card → pearn.site → bet → resolve → claim (local chain, labelled) → the testnet claim on Blockscout → the oracle → closing card.
+Attach the demo video: `apps/video/out/pearn-demo.mp4` (render it with `pnpm --filter @pearn/video build`; the same file is on https://pearn.site/pitch/). 89 s, 1920×1230, ElevenLabs voiceover: opening card → pearn.site → bet → resolve → claim (local chain, labelled) → the testnet claim on Blockscout → the oracle → closing card.
