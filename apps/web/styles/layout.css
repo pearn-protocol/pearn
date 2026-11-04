@@ -1,14 +1,52 @@
 .announce {
-	margin: 0;
-	padding: 8px var(--gutter);
+	overflow: hidden;
+	padding: 8px 0;
 	background: var(--accent);
 	color: var(--on-accent);
 	font-size: 13px;
-	text-align: center;
+	white-space: nowrap;
+}
+
+.announce__track {
+	display: flex;
+	gap: 48px;
+	width: max-content;
+	animation: announce 90s linear infinite;
+}
+
+.announce:hover .announce__track,
+.announce:focus-within .announce__track {
+	animation-play-state: paused;
 }
 
 .announce a {
-	font-weight: 700;
+	text-decoration: none;
+}
+
+.announce a:hover {
+	text-decoration: underline;
+}
+
+.announce__topic {
+	text-transform: uppercase;
+	font-size: 11px;
+	opacity: 0.7;
+}
+
+/* The track holds two copies (plus one gap), so half its width is one full loop. */
+@keyframes announce {
+	to {
+		transform: translateX(calc(-50% - 24px));
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.announce {
+		overflow-x: auto;
+	}
+	.announce__track {
+		animation: none;
+	}
 }
 
 .topbar {
