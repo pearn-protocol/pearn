@@ -4,8 +4,9 @@
 	"type": "module",
 	"scripts": {
 		"capture": "node scripts/capture.mjs",
+		"voice": "node --env-file-if-exists=../../.env scripts/voice.mjs",
 		"render": "node scripts/render.mjs",
-		"build": "node scripts/capture.mjs && node scripts/render.mjs"
+		"build": "node scripts/capture.mjs && node --env-file-if-exists=../../.env scripts/voice.mjs && node scripts/render.mjs"
 	},
 	"dependencies": {
 		"@fontsource/jetbrains-mono": "^5.3.0",
