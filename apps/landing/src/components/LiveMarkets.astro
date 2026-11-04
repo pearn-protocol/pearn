@@ -6,7 +6,8 @@ import Section from "./ui/Section.astro";
 
 <Section id="markets" tone="dark" eyebrow="Live on Aurora testnet" title={["Live", "markets."]}>
 	<Fragment slot="lead">
-		The newest markets, read from the Pearn indexer as you open this page. Testnet stNEAR, real
+		The newest markets, read from the Pearn indexer as you open this page, most of them mirrored
+		from Polymarket and resolved as Polymarket settles them. Testnet stNEAR, real
 		contracts.
 	</Fragment>
 	<div class="cards" data-markets data-indexer={site.indexerUrl} data-app={site.appUrl}>
@@ -17,7 +18,7 @@ import Section from "./ui/Section.astro";
 	</div>
 	<template id="market-card">
 		<a class="market">
-			<span class="status label"></span>
+			<span class="top"><img alt="" class="glyph" height="32" width="32" /><span class="topic"></span><span class="status"></span></span>
 			<h3></h3>
 			<div class="bar" aria-hidden="true"><span></span></div>
 			<p class="meta"></p>
@@ -41,11 +42,22 @@ import Section from "./ui/Section.astro";
 						const a = node.querySelector("a") as HTMLAnchorElement;
 						a.href = `${app}/market/?id=${c.id}`;
 						(node.querySelector(".status") as HTMLElement).textContent = `■ ${c.status}`;
+						(node.querySelector(".topic") as HTMLElement).textContent = c.topic;
+						const img = node.querySelector(".glyph") as HTMLImageElement;
+						if (c.image) img.src = c.image;
+						else img.replaceWith(Object.assign(document.createElement("span"), { className: "glyph", textContent: "P" }));
 						(node.querySelector("h3") as HTMLElement).textContent = c.question;
 						const bar = node.querySelector(".bar span") as HTMLElement;
-						bar.style.width = `${c.yes ?? 0}%`;
+						const pct = c.chance ?? c.yes;
+						bar.style.width = `${pct ?? 0}%`;
+						const odds =
+							c.chance !== null
+								? `${c.chance}% chance on Polymarket`
+								: c.yes === null
+									? "No bets yet"
+									: `${c.yes}% YES`;
 						(node.querySelector(".meta") as HTMLElement).textContent =
-							`${c.yes === null ? "No bets yet" : `${c.yes}% YES`} · ${c.staked} stNEAR${c.usd ? ` (≈ ${c.usd})` : ""} · ${c.bets} bet${c.bets === 1 ? "" : "s"}`;
+							`${odds} · ${c.staked} stNEAR${c.usd ? ` (≈ ${c.usd})` : ""} · ${c.bets} bet${c.bets === 1 ? "" : "s"}`;
 						return node;
 					}),
 				);
@@ -80,7 +92,30 @@ import Section from "./ui/Section.astro";
 	.cards :global(.market:hover) {
 		border-color: var(--accent);
 	}
+	.cards :global(.top) {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		font-size: 11px;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+	}
+	.cards :global(.glyph) {
+		display: inline-grid;
+		flex: none;
+		place-items: center;
+		width: 32px;
+		height: 32px;
+		object-fit: cover;
+		background: var(--accent);
+		color: var(--on-accent);
+		font-size: 15px;
+	}
+	.cards :global(.topic) {
+		color: var(--muted);
+	}
 	.cards :global(.status) {
+		margin-left: auto;
 		color: var(--accent);
 	}
 	.cards :global(h3) {

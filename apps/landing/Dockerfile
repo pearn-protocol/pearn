@@ -12,11 +12,11 @@ ENV NODE_OPTIONS=--max-old-space-size=1536
 RUN corepack enable
 WORKDIR /repo
 COPY . .
-# The CSP connects only to the indexer and the price feed.
+# The CSP connects only to the indexer, the price feed and Polymarket (mirrored markets).
 RUN pnpm install --frozen-lockfile --filter @pearn/landing... \
 	&& pnpm --filter @pearn/landing build \
 	&& node deploy/static/prepare.mjs apps/landing/dist /csp.caddy \
-		"$(node -p 'new URL(process.argv[1]).origin' "$PUBLIC_INDEXER_URL"),https://api.coingecko.com"
+		"$(node -p 'new URL(process.argv[1]).origin' "$PUBLIC_INDEXER_URL"),https://api.coingecko.com,https://gamma-api.polymarket.com"
 
 FROM caddy:2.11.7-alpine@sha256:24ec7b05bc532c7bb57f727030c5056e257ff7138b4b50460306819ff79362bd
 COPY deploy/static/Caddyfile /etc/caddy/Caddyfile
