@@ -11,6 +11,7 @@
 //      default `near`), NEAR_NETWORK (default testnet), AURORA_RPC (default testnet RPC).
 import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
+import { cast } from "./polymarket.mjs";
 
 const [file] = process.argv.slice(2);
 const { WALLET_PK, NEAR_SIGNER } = process.env;
@@ -26,7 +27,6 @@ const ENGINE = "aurora";
 /** Headroom over Forge's estimate; unused gas costs nothing at price 0. */
 const GAS_MARGIN = 13n;
 
-const cast = (...args) => execFileSync("cast", args, { encoding: "utf8" }).trim();
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 /** The signed raw transaction for one Forge transaction, at gas price 0. */
@@ -54,6 +54,15 @@ function sign(tx, chainId) {
 
 function submit(raw) {
 	const args = Buffer.from(raw.slice(2), "hex").toString("base64");
+	// The NEAR key is on this command line: report the failure without it.
+	try {
+		near(args);
+	} catch (e) {
+		throw new Error(`near-cli aurora.submit failed (exit ${e.status})`);
+	}
+}
+
+function near(args) {
 	execFileSync(
 		NEAR,
 		[

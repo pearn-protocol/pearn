@@ -8,7 +8,26 @@ export const OUTCOME = { Unresolved: 0, Yes: 1, No: 2, Invalid: 3 };
 const MARKET =
 	"(address,address,uint64,uint64,uint8,uint128,uint128,uint256,(uint128,uint128,uint256),(uint128,uint128,uint256),string)";
 
-export const cast = (...args) => execFileSync("cast", args, { encoding: "utf8" }).trim();
+/**
+ * Runs cast. A failure names only the subcommand and cast's own message: Node's error would
+ * quote the whole command line, which can hold a private key.
+ */
+export function cast(...args) {
+	try {
+		return execFileSync("cast", args, {
+			encoding: "utf8",
+			stdio: ["ignore", "pipe", "pipe"],
+		}).trim();
+	} catch (e) {
+		throw new Error(
+			`cast ${args[0]} failed: ${
+				String(e.stderr ?? "")
+					.trim()
+					.split("\n")[0]
+			}`,
+		);
+	}
+}
 
 /** The fields of PearnMarkets.getMarket(id) the scripts need. */
 export function readMarket(markets, id, rpc) {
