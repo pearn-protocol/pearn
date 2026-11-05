@@ -39,7 +39,8 @@ export default function RateInfo() {
 					Sync rate
 				</button>
 			)}
-			<TxStatus {...tx} />
+			{/* The rate comes back through a cross-chain callback, a few blocks after this lands. */}
+			<TxStatus {...tx} done="Requested: the new rate lands in a few blocks." />
 		</div>
 	);
 }

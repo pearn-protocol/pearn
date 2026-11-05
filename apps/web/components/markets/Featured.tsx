@@ -1,8 +1,10 @@
 "use client";
 import Link from "next/link";
 import { useState } from "react";
+import { useNow } from "@/hooks/useNow";
 import { short } from "@/lib/format";
 import type { Listed } from "@/lib/home";
+import { phaseOf } from "@/lib/markets";
 import Glyph from "./Glyph";
 
 const MAX = 5;
@@ -37,7 +39,8 @@ export default function Featured({
 	mark: string;
 	loading: boolean;
 }) {
-	const open = items.filter((x) => x.m.outcome === 0).slice(0, MAX);
+	const now = useNow(10_000);
+	const open = items.filter((x) => phaseOf(x.m, now) === "open").slice(0, MAX);
 	const [i, setI] = useState(0);
 	const k = Math.min(i, open.length - 1);
 	const it = open[k];

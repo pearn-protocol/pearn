@@ -2,7 +2,12 @@ import type { TxState } from "@/hooks/useTx";
 import { explorerTx } from "@/lib/config";
 
 /** One line under a form: waiting, the error, or a link to the landed transaction. */
-export default function TxStatus({ pending, error, hash }: TxState) {
+export default function TxStatus({
+	pending,
+	error,
+	hash,
+	done = "Done.",
+}: TxState & { done?: string }) {
 	if (pending)
 		return (
 			<p className="status" role="status">
@@ -18,7 +23,7 @@ export default function TxStatus({ pending, error, hash }: TxState) {
 	if (hash) {
 		return (
 			<p className="status ok" role="status">
-				Done.{" "}
+				{done}{" "}
 				<a href={explorerTx(hash)} rel="noreferrer" target="_blank">
 					View transaction
 				</a>

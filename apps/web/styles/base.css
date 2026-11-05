@@ -23,6 +23,7 @@ a {
 h1,
 h2,
 h3 {
+	overflow-wrap: anywhere;
 	font-weight: var(--weight);
 	letter-spacing: -0.04em;
 	line-height: 1.25;
