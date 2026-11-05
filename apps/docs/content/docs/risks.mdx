@@ -8,11 +8,14 @@ description: What can go wrong, and what is assumed.
 | Risk | Mitigation |
 |---|---|
 | Oracle callback spoofed | Only the oracle's own XCC account may call `onRate`; the rate never decreases |
-| Resolver lies | Ideally a DAO; for 24 h the guardian can force `Invalid` (everyone keeps principal plus a share of the yield) |
+| Resolver lies | Ideally a DAO; for 24 h the guardian can force `Invalid` (everyone keeps principal plus a share of the yield). Anyone creating a market picks its resolver, themselves included; the app notes when the creator resolves |
+| Guardian key lost or compromised | The guardian is fixed at deploy and cannot be rotated. On testnet it is the deployer's wallet (`0x3B4f…85F5`); mainnet should use a multisig |
 | Resolver disappears | Anyone voids after 7 days |
 | Polymarket (UMA) settles wrongly, or the keeper misreports a mirrored market | The guardian's 24 h window can force `Invalid`; otherwise the mirror follows Polymarket ([Mirrored Polymarket markets](/docs/polymarket/)) |
 | stNEAR depeg or Meta Pool bug | Principal is a NEAR value paid in stNEAR, so Meta Pool risk is yours |
-| Slashing introduced on NEAR | The rate could fall. The oracle keeps its last (higher) rate and stops refreshing: after 2 days bets stop, markets can no longer be resolved (that needs a sync after close), and after 7 days they can only be voided to `Invalid`. stNEAR comes back at the last rate |
+| Slashing introduced on NEAR | The rate could fall. The oracle keeps its last (higher) rate and stops refreshing: after 2 days bets stop, and markets closing after the last good sync can no longer be resolved (that needs a sync after close), so after 7 days they can only be voided to `Invalid`. Refunds use the last, higher rate, so the stNEAR returned is worth less NEAR than was put in: **principal loses value in proportion to the fall** |
+| Oracle reads a wrong, too-high rate | The oracle accepts any higher reading and never goes back, so a bad spike would be kept, and markets settled after it would pay losers back too little stNEAR. Nothing caps the rise per sync yet; this is the main open item before mainnet |
+| Late bet on a sponsored market | Bets have no minimum: a tiny bet just before close still earns the sponsorship if it is the only winning weight |
 | Contract bug | Small surface, no admin, fuzz and invariant tests on "payouts ≤ holdings" across several markets |
 | Betting both sides | Costs only capital, and the hedger's weight earns a share of any sponsored pot whatever the outcome. Inherent to no-loss: losers lose nothing, and per-account netting is defeated by a second account. Sponsors should expect their pot to be shared by capital as well as by calls |
 
