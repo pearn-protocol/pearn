@@ -29,11 +29,11 @@ jobs:
       AURORA_RPC: ${{ vars.AURORA_RPC_URL || 'https://testnet.aurora.dev' }}
       NEAR_SIGNER: ${{ vars.NEAR_KEEPER_ACCOUNT }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 24
-      - uses: foundry-rs/foundry-toolchain@v1
+      - uses: foundry-rs/foundry-toolchain@dba66c27052e63476d886f22216e119ba7e615bf # v1
         with:
           version: v1.8.3
       # Its postinstall downloads the binary; it runs before, and without, the keys.
@@ -69,6 +69,8 @@ jobs:
           exit 1
       # Right after the sync, so markets that closed before it have a rate read after close.
       - name: Resolve mirrored Polymarket markets
+        # Also after a failed sync: markets with a rate read after close can still resolve.
+        if: ${{ !cancelled() }}
         env:
           NEAR_PRIVATE_KEY: ${{ secrets.NEAR_KEEPER_KEY }}
           WALLET_PK: ${{ secrets.KEEPER_PK }}
