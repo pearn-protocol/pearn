@@ -1,5 +1,5 @@
 "use client";
-import { createContext, type ReactNode, useCallback, useContext, useState } from "react";
+import { createContext, type ReactNode, useCallback, useContext, useRef, useState } from "react";
 import { REFERENCE_URL } from "@/lib/catalog";
 import { type MarketWithId, type OracleState, readMarkets, readOracle } from "@/lib/chain";
 import { contracts, POLL_MS } from "@/lib/config";
@@ -34,19 +34,23 @@ export function ChainDataProvider({ children }: { children: ReactNode }) {
 	const [prices, setPrices] = useState<Prices | null>(null);
 	const [references, setReferences] = useState<Map<string, Reference>>(new Map());
 
+	// A poll that started before a refresh can answer after it: only the newest read lands.
+	const seq = useRef(0);
 	const refresh = useCallback(async () => {
 		if (!contracts.markets || !contracts.oracle) return;
+		const mine = ++seq.current;
 		try {
 			const [m, o] = await Promise.all([
 				readMarkets(contracts.markets),
 				readOracle(contracts.oracle),
 			]);
+			if (mine !== seq.current) return;
 			setMarkets(m);
 			setOracle(o);
 			setError(null);
 			setVersion((v) => v + 1);
 		} catch {
-			setError("Aurora RPC did not answer; retrying.");
+			if (mine === seq.current) setError("Aurora RPC did not answer; retrying.");
 		}
 	}, []);
 

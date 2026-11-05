@@ -11,7 +11,8 @@ export function usePoll(fn: () => unknown, ms: number, key: unknown = null) {
 		let t: ReturnType<typeof setTimeout>;
 		const tick = async () => {
 			try {
-				await ref.current();
+				// A hidden tab skips the read but keeps the loop, so it catches up when shown.
+				if (!document.hidden) await ref.current();
 			} catch {
 				// a failed poll just waits for the next tick
 			}
