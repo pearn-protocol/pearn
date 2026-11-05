@@ -37,18 +37,18 @@ test("xTicks stays within range with at most ~7 labels", () => {
 	}
 });
 
-test("stakeShare: Yes share of the staked total after each bet, oldest first", () => {
+test("stakeShare: Yes share of the bets' NEAR value after each bet, oldest first", () => {
 	const e = 10n ** 24n;
 	const bet = (side: number, n: bigint, timestamp: number) => ({
 		kind: "bet",
 		side,
-		amount: n * e,
+		principal: n * e,
 		timestamp,
 	});
 	assert.deepEqual(
 		stakeShare([
 			bet(1, 1n, 30),
-			{ kind: "claim", side: null, amount: e, timestamp: 40 },
+			{ kind: "claim", side: null, principal: null, timestamp: 40 },
 			bet(0, 3n, 10),
 			bet(0, 1n, 20),
 		]),

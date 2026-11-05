@@ -59,6 +59,8 @@ export const activity = onchainTable(
 		/** Side for bets (0 Yes, 1 No); outcome for resolve and override. */
 		side: t.integer(),
 		amount: t.bigint(),
+		/** For bets: the NEAR value at bet time (1e24 per NEAR), the unit the odds use. */
+		principal: t.bigint(),
 		timestamp: t.bigint().notNull(),
 		txHash: t.hex().notNull(),
 	}),
