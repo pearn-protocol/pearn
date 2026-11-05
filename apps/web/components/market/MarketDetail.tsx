@@ -71,20 +71,27 @@ export default function MarketDetail() {
 					</dl>
 					<p className="muted small">
 						Created by <Addr a={m.creator} />, resolved by <Addr a={m.resolver} />
+						{m.creator.toLowerCase() === m.resolver.toLowerCase() &&
+							" (the creator resolves it: only the guardian's 24-hour challenge checks them)"}
 					</p>
 				</div>
 				<MarketChart id={m.id} />
 				<PolymarketRef id={m.id} />
 				<RateInfo />
-				<ResolvePanel m={m} now={now} />
+				<ResolvePanel key={String(m.id)} m={m} now={now} />
 				<ActivityFeed id={m.id} now={now} />
 			</section>
 			<aside className="detail-side">
 				{phase === "open" && (
-					<BetForm m={m} now={now} side={params.get("side") === "no" ? Side.No : Side.Yes} />
+					<BetForm
+						key={String(m.id)}
+						m={m}
+						now={now}
+						side={params.get("side") === "no" ? Side.No : Side.Yes}
+					/>
 				)}
-				<PositionPanel m={m} now={now} />
-				{m.outcome === Outcome.Unresolved && <SponsorForm m={m} />}
+				<PositionPanel key={String(m.id)} m={m} now={now} />
+				{m.outcome === Outcome.Unresolved && <SponsorForm key={String(m.id)} m={m} />}
 			</aside>
 		</div>
 	);
