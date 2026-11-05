@@ -1,6 +1,6 @@
 // Build step for the static web image.
 // 1. Writes csp.caddy (imported by the Caddyfile): a self-only CSP that allows the build's inline
-//    scripts and styles by sha256 hash, never 'unsafe-inline', and connects only to the RPC.
+//    scripts and styles by sha256 hash, never 'unsafe-inline', and connects only to the origins passed in.
 // 2. Precompresses text assets to .br and .gz so Caddy serves them without CPU per request.
 //    --inline-styles (the docs image only) allows runtime inline styles, which Fumadocs sets;
 //    scripts stay hash-only either way.

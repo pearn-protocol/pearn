@@ -1,4 +1,4 @@
-# The Pearn indexer: Ponder over PearnMarkets events, GraphQL at /graphql, SQL at /sql.
+# The Pearn indexer: Ponder over PearnMarkets events, GraphQL at /graphql (SQL is off).
 # Build context: repo root.  docker build -f apps/indexer/Dockerfile .
 FROM node:24.19.0-slim@sha256:a9f5f7c91a432850b2a8a7797adf5eadb6c733ceed61167806cee7ea7fbc29df
 ENV HUSKY=0 NODE_ENV=production

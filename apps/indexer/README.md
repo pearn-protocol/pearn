@@ -20,4 +20,4 @@ pnpm test                            # anvil + DevChain + ponder, GraphQL checks
 | `PONDER_START_BLOCK` | the testnet deploy block | |
 | `PONDER_PGLITE_DIR` | `.ponder/pglite` | |
 
-The web app uses it for market activity and to find an account's markets; balances and payouts always come from the chain, and the app works without it.
+The web app uses it for the activity feed and the stake chart; balances and payouts always come from the chain, and the app works without it.

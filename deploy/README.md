@@ -26,4 +26,4 @@ Browser → host nginx on the VPS (TLS) → Caddy in each container on its loopb
 
 **Rollback:** set the Coolify app's image tag to an earlier commit sha (every build stays in GHCR), redeploy, then set it back to `main`.
 
-**Privacy:** Caddy has no `log` directive, host nginx has `access_log off` and drops client-IP headers. The CSP allows only each site's own files and its inline scripts by hash; `connect-src` adds the Aurora RPC and the indexer for the app, and the indexer alone for the landing.
+**Privacy:** Caddy has no `log` directive, host nginx has `access_log off` and drops client-IP headers. The CSP allows only each site's own files and its inline scripts by hash; `connect-src` adds the Aurora RPC, the indexer, CoinGecko and Polymarket (Gamma and CLOB) for the app, and the indexer, CoinGecko and Gamma for the landing.
