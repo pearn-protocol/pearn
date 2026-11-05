@@ -1,6 +1,21 @@
+.skip {
+	position: absolute;
+	left: 8px;
+	top: -48px;
+	z-index: 10;
+	padding: 8px 12px;
+	background: var(--ink);
+	color: var(--bg);
+}
+
+.skip:focus {
+	top: 8px;
+}
+
 .announce {
+	position: relative;
 	overflow: hidden;
-	padding: 8px 0;
+	padding: 8px 0 8px 44px;
 	background: var(--accent);
 	color: var(--on-accent);
 	font-size: 13px;
@@ -15,8 +30,22 @@
 }
 
 .announce:hover .announce__track,
-.announce:focus-within .announce__track {
+.announce:focus-within .announce__track,
+.announce.is-paused .announce__track {
 	animation-play-state: paused;
+}
+
+.announce__toggle {
+	position: absolute;
+	inset: 0 auto 0 0;
+	z-index: 1;
+	width: 36px;
+	border: 0;
+	background: var(--accent);
+	color: inherit;
+	font: inherit;
+	font-size: 10px;
+	cursor: pointer;
 }
 
 .announce a {
