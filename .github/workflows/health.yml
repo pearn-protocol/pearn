@@ -29,7 +29,7 @@ jobs:
       # Two keeper runs missed in a row, with margin; bets stop at 48 h.
       MAX_RATE_AGE: 108000
     steps:
-      - uses: foundry-rs/foundry-toolchain@v1
+      - uses: foundry-rs/foundry-toolchain@dba66c27052e63476d886f22216e119ba7e615bf # v1
         with:
           version: v1.8.3
       - name: Check
