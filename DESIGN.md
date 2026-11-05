@@ -38,10 +38,10 @@ Testnet bridged tokens report empty metadata (`decimals() = 0`), so contracts ne
 | Actor | Does |
 |---|---|
 | Bettor | Bets stNEAR on YES or NO, claims principal + winnings |
-| Sponsor | Adds stNEAR to a market's pot; gets nothing back except attention |
+| Sponsor | Adds stNEAR to a market's pot; gets it back only if nobody bet |
 | Creator | Anyone. Creates a market: question, close time, resolver |
 | Resolver | Set per market (ideally a DAO). Reports the outcome after close |
-| Guardian | One account (a DAO) that can only turn an outcome into `Invalid` during the challenge window |
+| Guardian | One account, fixed at deploy, that can only turn an outcome into `Invalid` during the challenge window. Meant to be a DAO or multisig; on testnet it is the deployer's wallet |
 | Keeper | Anyone. Calls `oracle.sync()` once per epoch |
 
 There is no owner and no upgrade path: no one can move principal.
@@ -63,7 +63,7 @@ resolver DAO  ──► markets.resolve(id, outcome)
 
 ## 5. Accounting
 
-`rate` is yoctoNEAR per 1 stNEAR (1e24 scale). It only rises; the oracle ignores any lower reading, which is what keeps principal safe.
+`rate` is yoctoNEAR per 1 stNEAR (1e24 scale). It only rises; the oracle ignores any lower reading, which keeps every payout within the contract's holdings. It does not protect principal from a real fall in stNEAR's value (see §8, slashing).
 
 ### Bet
 User sends `s` stNEAR on side `side` at time `t < close`:
@@ -73,7 +73,7 @@ User sends `s` stNEAR on side `side` at time `t < close`:
 
 **Why time weight:** without it a whale bets on the obvious side just before close and takes the yield early bettors produced. With it, a late bet earns almost nothing.
 
-A stale rate is safe. An old, lower rate under-counts the bettor's own principal, and the difference goes into the pot. It never comes out of anyone else.
+A stale rate is safe for everyone else. An old, lower rate under-counts the bettor's own principal, by at most 2 days of yield (`MAX_RATE_AGE`), and the difference goes into the pot. It never comes out of anyone else.
 
 ### Resolve
 After `close`, once the oracle has synced after close, the resolver calls `resolve(id, Yes | No | Invalid)`. The market stores `rateR`:
@@ -113,7 +113,7 @@ contracts/
     interfaces/IRateOracle.sol
     libraries/PayoutMath.sol    pure §5 math
     libraries/NearJson.sol      parses the u128 string Meta Pool returns
-    types/Market.sol            Market, Side, Outcome, Position
+    types/Market.sol            Market, Side, Outcome, Stake
   test/                         unit, integration, fuzz (property), invariant (several markets) and fork tests
   script/                       Deploy, SyncOracle, SeedMarkets, DevChain (local anvil), NetworkConfig
 ```
@@ -128,7 +128,7 @@ Best practice applied: Solidity 0.8.28, custom errors, events on every state cha
 | Resolver lies | DAO resolver; 24 h window where the guardian can force `Invalid` (everyone keeps principal plus their share of the yield) |
 | Resolver disappears | Anyone voids after 7 days |
 | stNEAR depeg or bug | Principal is a NEAR value paid in stNEAR, so Meta Pool risk stays with the bettor (docs: Risks) |
-| Slashing introduced on NEAR | The rate could fall. The oracle keeps its last (higher) rate and stops refreshing: after 2 days bets stop, markets can no longer be resolved (that needs a sync after close), and after 7 days they can only be voided to `Invalid`. stNEAR comes back at the last rate |
+| Slashing introduced on NEAR | The rate could fall. The oracle keeps its last (higher) rate and stops refreshing: after 2 days bets stop, and markets closing after the last good sync can no longer be resolved (that needs a sync after close), so after 7 days they can only be voided to `Invalid`. Refunds use the last, higher rate, so the stNEAR returned is worth less NEAR than was put in: **principal loses value in proportion to the fall** |
 | Contract bug | Small surface, no admin, fuzz + invariant tests on "payouts ≤ holdings" across several markets |
 | Betting both sides | Costs only capital, and the hedger's weight earns a share of any sponsored pot whatever the outcome. Inherent to no-loss: losers lose nothing, and per-account netting is defeated by a second account. Sponsors should expect their pot to be shared by capital as well as by calls |
 

@@ -41,10 +41,10 @@ git clone --recursive https://github.com/pearn-protocol/pearn && cd pearn
 pnpm install
 cd contracts && forge test
 ```
-→ 46 tests pass:
+→ 50 tests pass:
 - unit: math, markets, oracle, JSON parsing;
 - integration: the full market lifecycle with the real oracle;
-- property: a fuzz test checking that nobody loses principal and the contract stays solvent.
+- property: fuzz and invariant tests checking that nobody loses principal and the contract stays solvent while the rate rises.
 
 ```sh
 pnpm rpc:testnet & pnpm rpc:mainnet &          # Aurora RPC proxy (see below)
@@ -125,7 +125,7 @@ The stNEAR shows up at `0x2137…f144` on Aurora testnet. wNEAR (for the oracle'
 | `apps/landing` | Marketing site (Astro, static) with live markets from the indexer and the demo video (`/pitch/`) |
 | `apps/video` | The demo video: headless-Chrome recordings cut with captions (ffmpeg) |
 | `apps/docs` | Documentation site (Fumadocs, static), also as `llms.txt` |
-| `apps/indexer` | Ponder indexer: markets, positions and activity over GraphQL/SQL |
+| `apps/indexer` | Ponder indexer: markets, positions and activity over GraphQL |
 | `packages/abi` | `@pearn/abi`: contract ABIs for the web app and the indexer |
 | `scripts/abi.mjs` | Writes `packages/abi` from the contracts; CI fails on drift |
 | `scripts/aurora-submit.mjs` | Replays a Forge run on Aurora through NEAR (`aurora.submit`, gas price 0): no Aurora ETH needed |
