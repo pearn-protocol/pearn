@@ -18,7 +18,7 @@ Pearn is the no-loss prediction market on NEAR: win or lose, your stake comes ba
 How NEAR fits in:
 - Contracts are Solidity on Aurora, NEAR's EVM.
 - The yield is NEAR staking: stNEAR's NEAR value rises every epoch.
-- The rate comes from NEAR itself: StNearRateOracle calls get_st_near_price on the Meta Pool contract through Aurora's cross-contract-call precompile and receives the answer in a Solidity callback. No off-chain price feed. The rate never decreases, which keeps principal safe.
+- The rate comes from NEAR itself: StNearRateOracle calls get_st_near_price on the Meta Pool contract through Aurora's cross-contract-call precompile and receives the answer in a Solidity callback. No off-chain price feed. The oracle never accepts a lower rate, so payouts never exceed holdings.
 - We deployed and run everything without Aurora ETH: transactions are signed at gas price 0 and submitted to the Aurora engine's submit method from a NEAR account. The keeper syncs the rate every 12 hours the same way, with a function-call key limited to aurora.submit.
 
 Design: principal is fixed in NEAR at bet time; winnings are weighted by principal × time left, so late whales can't take early bettors' yield. Each market names its resolver (ideally a DAO); a guardian can only turn an outcome into Invalid within 24 h; anyone can void after 7 days. No owner, no upgrades, rounding can never pay out more than the contract holds.

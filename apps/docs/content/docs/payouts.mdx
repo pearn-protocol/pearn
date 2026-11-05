@@ -12,7 +12,7 @@ principal = staked × rate / 1e24          // the bet's NEAR value
 weight    = principal × (closeTime − now)
 ```
 
-A stale, lower rate only under-counts your own principal; the difference ends up in the pot, never in anyone else's pocket.
+A stale, lower rate only under-counts your own principal, by at most 2 days of yield; the difference ends up in the pot, never in anyone else's pocket. A real fall in stNEAR's value (slashing) does cost principal: see [Risks](/docs/risks/).
 
 ## At settlement (rate R)
 
