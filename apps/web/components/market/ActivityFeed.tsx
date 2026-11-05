@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { getAddress } from "viem";
+import { getAddress, isAddress } from "viem";
 import Amount from "@/components/ui/Amount";
 import { useChainData } from "@/hooks/useChainData";
 import { usePoll } from "@/hooks/usePoll";
@@ -41,7 +41,9 @@ export default function ActivityFeed({ id, now }: { id: bigint; now: number }) {
 				{items.map((a) => (
 					<li key={a.id}>
 						<span>
-							<span className="mono">{a.account ? short(getAddress(a.account)) : "someone"}</span>{" "}
+							<span className="mono">
+								{a.account && isAddress(a.account) ? short(getAddress(a.account)) : "someone"}
+							</span>{" "}
 							{VERB[a.kind](a)}
 							{a.amount !== null && a.kind !== "create" && (
 								<>
