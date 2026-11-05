@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { type Account, type Position, readAccount, readPosition } from "@/lib/chain";
 import { contracts, POLL_MS } from "@/lib/config";
 import { useChainData } from "./useChainData";
@@ -14,15 +14,17 @@ export function usePosition(id: bigint | null) {
 	// neither the old values nor a late answer for the old key is ever shown.
 	const key = `${address}:${id}`;
 	const [read, setRead] = useState<{ key: string; account: Account; position: Position | null }>();
+	const seq = useRef(0);
 
 	usePoll(
 		async () => {
 			if (!contracts.markets || !address) return;
+			const mine = ++seq.current;
 			const [account, position] = await Promise.all([
 				readAccount(contracts.markets, address),
 				id === null ? null : readPosition(contracts.markets, id, address),
 			]);
-			setRead({ key, account, position });
+			if (mine === seq.current) setRead({ key, account, position });
 		},
 		POLL_MS,
 		`${key}:${version}`,

@@ -136,18 +136,18 @@ export function xTicks(t0: number, t1: number): { t: number; label: string }[] {
 	return out;
 }
 
-/** Pearn's Yes share of the staked total after each bet, oldest first, from indexer activity. */
+/** Pearn's Yes share of the bets' NEAR value after each bet, oldest first (as the odds bar). */
 export function stakeShare(
-	activity: { kind: string; side: number | null; amount: bigint | null; timestamp: number }[],
+	activity: { kind: string; side: number | null; principal: bigint | null; timestamp: number }[],
 ): Point[] {
 	let yes = 0n;
 	let no = 0n;
 	const out: Point[] = [];
 	for (const a of [...activity].sort((x, y) => x.timestamp - y.timestamp)) {
-		if (a.kind !== "bet" || a.amount === null) continue;
-		if (a.side === 0) yes += a.amount;
-		else no += a.amount;
-		out.push({ t: a.timestamp, p: Number((yes * 10_000n) / (yes + no)) / 100 });
+		if (a.kind !== "bet" || a.principal === null) continue;
+		if (a.side === 0) yes += a.principal;
+		else no += a.principal;
+		if (yes + no > 0n) out.push({ t: a.timestamp, p: Number((yes * 10_000n) / (yes + no)) / 100 });
 	}
 	return out;
 }

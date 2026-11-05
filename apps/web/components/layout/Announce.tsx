@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { useState } from "react";
 import { useChainData } from "@/hooks/useChainData";
 import { useNow } from "@/hooks/useNow";
 import { byInterest, listed } from "@/lib/home";
@@ -9,6 +10,7 @@ import { phaseOf } from "@/lib/markets";
 export default function Announce() {
 	const { markets, references } = useChainData();
 	const now = useNow();
+	const [paused, setPaused] = useState(false);
 	const items = (markets ?? [])
 		.filter((m) => phaseOf(m, now) === "open")
 		.map((m) => listed(m, references))
@@ -34,7 +36,15 @@ export default function Announce() {
 		));
 	// Two copies scroll as one loop; the second is for looks only.
 	return (
-		<nav aria-label="Market news" className="announce">
+		<nav aria-label="Market news" className={paused ? "announce is-paused" : "announce"}>
+			<button
+				aria-label={paused ? "Play the market ticker" : "Pause the market ticker"}
+				className="announce__toggle"
+				onClick={() => setPaused(!paused)}
+				type="button"
+			>
+				{paused ? "▶" : "❚❚"}
+			</button>
 			<div className="announce__track">
 				{run(0)}
 				{run(1)}

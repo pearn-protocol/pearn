@@ -27,9 +27,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 		<html lang="en">
 			<body>
 				<Providers>
+					<a className="skip" href="#content">
+						Skip to content
+					</a>
 					<Announce />
 					<Topbar />
-					{children}
+					<div id="content">{children}</div>
 					<Footer />
 				</Providers>
 			</body>

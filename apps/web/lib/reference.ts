@@ -35,7 +35,7 @@ export async function fetchReferences(url: string): Promise<Map<string, Referenc
 type History = { history: { t: number; p: number }[] };
 
 async function history(token: string, query: string): Promise<History["history"]> {
-	const r = await fetch(`${CLOB}/prices-history?market=${token}&${query}`);
+	const r = await fetch(`${CLOB}/prices-history?market=${encodeURIComponent(token)}&${query}`);
 	if (!r.ok) throw new Error(`Polymarket answered ${r.status}`);
 	return ((await r.json()) as History).history;
 }
@@ -43,7 +43,9 @@ async function history(token: string, query: string): Promise<History["history"]
 /** Fine points override coarse ones from the first fine point on; prices become percents. */
 export const mergeHistory = (coarse: History["history"], fine: History["history"]) => {
 	const from = fine[0]?.t ?? Number.POSITIVE_INFINITY;
-	return [...coarse.filter((h) => h.t < from), ...fine].map((h) => ({ t: h.t, p: h.p * 100 }));
+	return [...coarse.filter((h) => h.t < from), ...fine]
+		.filter((h) => Number.isFinite(h.t) && Number.isFinite(h.p))
+		.map((h) => ({ t: h.t, p: h.p * 100 }));
 };
 
 /**

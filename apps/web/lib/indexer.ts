@@ -13,12 +13,15 @@ export type Activity = {
 	/** Side for bets (0 Yes, 1 No); outcome for resolve and override. */
 	side: number | null;
 	amount: bigint | null;
+	/** For bets: the NEAR value at bet time, the unit the odds use. */
+	principal: bigint | null;
 	timestamp: number;
 	txHash: Hash;
 };
 
-type RawActivity = Omit<Activity, "amount" | "timestamp"> & {
+type RawActivity = Omit<Activity, "amount" | "principal" | "timestamp"> & {
 	amount: string | null;
+	principal: string | null;
 	timestamp: string;
 };
 
@@ -37,6 +40,7 @@ async function gql<T>(url: string, query: string, variables: Record<string, unkn
 export const parseActivity = (a: RawActivity): Activity => ({
 	...a,
 	amount: a.amount === null ? null : BigInt(a.amount),
+	principal: a.principal === null ? null : BigInt(a.principal),
 	timestamp: Number(a.timestamp),
 });
 
@@ -46,7 +50,7 @@ export async function readActivity(url: string, marketId: bigint, limit = 20): P
 		url,
 		`query ($id: BigInt!, $limit: Int!) {
 			activitys(where: { marketId: $id }, orderBy: "id", orderDirection: "desc", limit: $limit) {
-				items { id kind account side amount timestamp txHash }
+				items { id kind account side amount principal timestamp txHash }
 			}
 		}`,
 		{ id: marketId.toString(), limit },

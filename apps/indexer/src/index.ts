@@ -52,9 +52,15 @@ ponder.on("PearnMarkets:BetPlaced", async ({ event, context }) => {
 		.onConflictDoUpdate((p) =>
 			yes ? { yesStaked: p.yesStaked + staked } : { noStaked: p.noStaked + staked },
 		);
-	await context.db
-		.insert(activity)
-		.values({ ...at(event), marketId: id, kind: "bet", account: bettor, side, amount: staked });
+	await context.db.insert(activity).values({
+		...at(event),
+		marketId: id,
+		kind: "bet",
+		account: bettor,
+		side,
+		amount: staked,
+		principal,
+	});
 });
 
 ponder.on("PearnMarkets:Sponsored", async ({ event, context }) => {
