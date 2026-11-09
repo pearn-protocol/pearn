@@ -189,6 +189,13 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0 # blame, so every issue has an author and a date
+      - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          cache: pnpm
+      # The TypeScript analysis follows each tsconfig's `extends` into node_modules.
+      - run: pnpm install --frozen-lockfile
       - name: Scan
         run: |
           api=http://localhost:9000/api
@@ -201,11 +208,13 @@ jobs:
           token=$(curl -sf -u "$auth" -X POST "$api/user_tokens/generate" \
             -d "name=ci&type=PROJECT_ANALYSIS_TOKEN&projectKey=pearn" | jq -r .token)
           echo "::add-mask::$token"
-          docker run --rm --network host -e SONAR_HOST_URL=http://localhost:9000 -e "SONAR_TOKEN=$token" \
-            -v "$PWD:/usr/src" sonarsource/sonar-scanner-cli@sha256:38207bba3d98c8ce6f6c051ea2b9f05a24480da78c9ee5945ceafc3d9de02b88
+          # As the runner's user, so git trusts the checkout (blame, SCM file list).
+          docker run --rm --network host --user "$(id -u):$(id -g)" -e SONAR_USER_HOME=/tmp/sonar \
+            -e SONAR_HOST_URL=http://localhost:9000 -e "SONAR_TOKEN=$token" -v "$PWD:/usr/src" sonarsource/sonar-scanner-cli@sha256:38207bba3d98c8ce6f6c051ea2b9f05a24480da78c9ee5945ceafc3d9de02b88
           until curl -sf -u "$auth" "$api/ce/component?component=pearn" | jq -e '(.queue | length) == 0 and .current.status == "SUCCESS"' >/dev/null; do sleep 3; done
-          issues=$(curl -sf -u "$auth" "$api/issues/search?componentKeys=pearn&resolved=false&ps=500")
-          hotspots=$(curl -sf -u "$auth" "$api/hotspots/search?project=pearn&status=TO_REVIEW&ps=100" | jq .paging.total)
+          issues=$(curl -sf -u "$auth" "$api/issues/search?components=pearn&resolved=false&ps=500")
+          hotspots=$(curl -sf -u "$auth" "$api/measures/component?component=pearn&metricKeys=security_hotspots" \
+            | jq -r '.component.measures[0].value')
           gate=$(curl -sf -u "$auth" "$api/qualitygates/project_status?projectKey=pearn" | jq -r .projectStatus.status)
           echo "$issues" | jq -r '.issues[] | "::error file=\(.component | sub("^pearn:"; "")),line=\(.line // 1)::\(.rule): \(.message)"'
           echo "issues $(echo "$issues" | jq .total), hotspots $hotspots, quality gate $gate"
