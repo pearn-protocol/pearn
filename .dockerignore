@@ -13,3 +13,4 @@ contracts/broadcast
 **/.astro
 neardev
 **/neardev
+**/.ponder
