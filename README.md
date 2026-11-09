@@ -34,6 +34,18 @@ There is no owner, no upgrade path, and no admin access to funds. Design and mat
 
 ## Try it
 
+On the hosted demo (Aurora testnet, nothing to install):
+
+1. Open https://app.pearn.site - see 15 markets with their chance, pot and closing time, and a ticker of open markets at the top.
+2. Open a Polymarket mirror, e.g. https://app.pearn.site/market/?id=8 - see Polymarket's price history in the "Yes over time" chart and the "Mirrored from Polymarket" panel with its resolution rules.
+3. Open https://app.pearn.site/market/?id=2 - see a market that went through bet, sponsor, resolve and claim: settled Yes, pot 0.2 stNEAR, and every step in the activity feed.
+4. To bet yourself: get testnet stNEAR on Aurora ([Testnet stNEAR](#testnet-stnear)), open an open market, connect a wallet on Aurora Testnet and bet - see your position, its principal in NEAR and the projected payout on the market page and under Portfolio.
+5. Read the rate the contracts use straight from NEAR: `cast call 0xA8adEFE2C8f0F71a585a73c1259997f593F9e463 "rate()(uint256)" -r https://testnet.aurora.dev` - see Meta Pool testnet's `get_st_near_price`, about 3.2e24 yoctoNEAR per stNEAR.
+
+What "no-loss" does not cover (a fall in stNEAR's value): https://docs.pearn.site/docs/risks/.
+
+From source:
+
 Requirements: [Foundry](https://getfoundry.sh) 1.8+, Node 24, pnpm 10.
 
 ```sh
