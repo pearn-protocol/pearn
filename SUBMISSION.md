@@ -28,13 +28,18 @@ Live on Aurora testnet, verified on Blockscout: PearnMarkets 0x4659f0d99587D4fA3
 
 ## Demo post draft (the human posts it)
 
-> Pearn is the no-loss prediction market. Bet on real questions, including live Polymarket ones; win or lose, your stake comes back. Winners split the staking yield.
->
-> Built at #NEARHackathon on @NEARProtocol: stNEAR bets on Aurora, with the rate read from Meta Pool on NEAR by a Solidity contract through cross-contract calls. No price feed.
->
-> Try it on testnet: https://app.pearn.site
-> Code: https://github.com/pearn-protocol/pearn
->
-> Which market would you bet your yield on?
+Attach `apps/video/out/pearn-demo.mp4`. The post fits X's 280 characters (links count as 23); the reply carries the NEAR details and the code link.
 
-Attach the demo video: `apps/video/out/pearn-demo.mp4` (render it with `pnpm --filter @pearn/video build`; the same file is on https://pearn.site/pitch/). 89 s, 1920×1230, ElevenLabs voiceover: opening card → pearn.site → bet → resolve → claim (local chain, labelled) → the testnet claim on Blockscout → the oracle → closing card.
+> In most prediction markets the loser loses everything. Pearn is a no-loss one: win or lose, your stake comes back, and winners split the staking yield.
+>
+> Built at NEAR HACKATHON @NEARProtocol #NEARHackathon
+>
+> Try it: https://app.pearn.site
+>
+> What question should we list next?
+
+Reply:
+
+> How NEAR makes it work: bets are stNEAR (Meta Pool's staked NEAR) on Aurora. A Solidity contract reads stNEAR's rate from Meta Pool on NEAR via cross-contract calls, so the yield that pays winners needs no price feed.
+>
+> Code: https://github.com/pearn-protocol/pearn @NearLegion @NearBuilders
