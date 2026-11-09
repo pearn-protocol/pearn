@@ -14,7 +14,7 @@ export function amount(raw: bigint, digits = 4): string {
 /** A typed amount to raw units, or null if it is not a positive number. */
 export function parseAmount(input: string): bigint | null {
 	const s = input.trim();
-	if (!/^\d*\.?\d+$|^\d+\.$/.test(s)) return null;
+	if (!/^(?:\d+(?:\.\d*)?|\.\d+)$/.test(s)) return null;
 	const raw = parseUnits(s, DECIMALS);
 	return raw > 0n ? raw : null;
 }
