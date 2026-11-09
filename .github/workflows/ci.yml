@@ -208,9 +208,11 @@ jobs:
           token=$(curl -sf -u "$auth" -X POST "$api/user_tokens/generate" \
             -d "name=ci&type=PROJECT_ANALYSIS_TOKEN&projectKey=pearn" | jq -r .token)
           echo "::add-mask::$token"
-          # As the runner's user, so git trusts the checkout (blame, SCM file list).
-          docker run --rm --network host --user "$(id -u):$(id -g)" -e SONAR_USER_HOME=/tmp/sonar \
-            -e SONAR_HOST_URL=http://localhost:9000 -e "SONAR_TOKEN=$token" -v "$PWD:/usr/src" sonarsource/sonar-scanner-cli@sha256:38207bba3d98c8ce6f6c051ea2b9f05a24480da78c9ee5945ceafc3d9de02b88
+          # As the runner's user, so git trusts the checkout (blame, SCM file list); a fresh /tmp
+          # because the image's work directory there belongs to its own user.
+          docker run --rm --network host --user "$(id -u):$(id -g)" --tmpfs /tmp:rw,exec,mode=1777 \
+            -e SONAR_USER_HOME=/tmp/sonar -e SONAR_HOST_URL=http://localhost:9000 -e "SONAR_TOKEN=$token" \
+            -v "$PWD:/usr/src" sonarsource/sonar-scanner-cli@sha256:38207bba3d98c8ce6f6c051ea2b9f05a24480da78c9ee5945ceafc3d9de02b88
           until curl -sf -u "$auth" "$api/ce/component?component=pearn" | jq -e '(.queue | length) == 0 and .current.status == "SUCCESS"' >/dev/null; do sleep 3; done
           issues=$(curl -sf -u "$auth" "$api/issues/search?components=pearn&resolved=false&ps=500")
           hotspots=$(curl -sf -u "$auth" "$api/measures/component?component=pearn&metricKeys=security_hotspots" \
