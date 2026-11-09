@@ -48,7 +48,11 @@ const yes = (m) => Number(list(m.outcomePrices)[0]);
 /** The first paragraph of a Polymarket description, up to ~400 characters. */
 function rules(m) {
 	const first = (m.description ?? "").split(/\n+/).map((s) => s.replace(/\s+/g, " ").trim())[0];
-	return first.length > 400 ? `${first.slice(0, 397).replace(/\s+\S*$/, "")}…` : first;
+	if (first.length <= 400) return first;
+	// Cut at the last space before 397 characters, so no word is split.
+	const cut = first.slice(0, 397);
+	const space = cut.lastIndexOf(" ");
+	return `${space > 0 ? cut.slice(0, space) : cut}…`;
 }
 
 /** Downloads, crops to a 112 px square JPEG with sips. */

@@ -14,7 +14,8 @@ test("parseAmount", () => {
 	assert.equal(parseAmount("1.5"), (3n * ONE) / 2n);
 	assert.equal(parseAmount(".5"), ONE / 2n);
 	assert.equal(parseAmount("2."), 2n * ONE);
-	for (const bad of ["", "0", "-1", "1e3", "abc", "1.2.3"]) assert.equal(parseAmount(bad), null);
+	for (const bad of ["", ".", "0", "-1", "1e3", "abc", "1.2.3"])
+		assert.equal(parseAmount(bad), null);
 });
 
 test("duration", () => {

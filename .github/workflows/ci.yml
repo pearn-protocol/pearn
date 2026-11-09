@@ -171,3 +171,53 @@ jobs:
           done
           # The public Aurora RPCs time out now and then; one retry keeps that from blocking deploys.
           forge test -vvv || { echo "::warning::fork tests failed once; retrying"; forge test -vvv; }
+
+  sonar:
+    name: SonarQube (zero issues)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # A throwaway SonarQube server per run: no account or token to manage, and the same check
+    # runs locally (CONTRIBUTING.md). Any issue or hotspot fails the job.
+    services:
+      sonarqube:
+        image: sonarqube@sha256:1ce197471f5f2bac347694a336862fd2c23e9f57c6edb46acebbfbe70f2c7d9c # 26.11 community
+        env:
+          SONAR_ES_BOOTSTRAP_CHECKS_DISABLE: "true"
+        ports:
+          - 9000:9000
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0 # blame, so every issue has an author and a date
+      - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          cache: pnpm
+      # The TypeScript analysis follows each tsconfig's `extends` into node_modules.
+      - run: pnpm install --frozen-lockfile
+      - name: Scan
+        run: |
+          api=http://localhost:9000/api
+          until curl -sf "$api/system/status" | grep -q '"status":"UP"'; do sleep 5; done
+          pass="ci-$(openssl rand -hex 16)A1!"
+          curl -sf -u admin:admin -X POST "$api/users/change_password" \
+            --data-urlencode login=admin --data-urlencode previousPassword=admin --data-urlencode "password=$pass"
+          auth="admin:$pass"
+          curl -sf -u "$auth" -X POST "$api/projects/create" -d "project=pearn&name=Pearn" >/dev/null
+          token=$(curl -sf -u "$auth" -X POST "$api/user_tokens/generate" \
+            -d "name=ci&type=PROJECT_ANALYSIS_TOKEN&projectKey=pearn" | jq -r .token)
+          echo "::add-mask::$token"
+          # As the runner's user, so git trusts the checkout (blame, SCM file list); a fresh /tmp
+          # because the image's work directory there belongs to its own user.
+          docker run --rm --network host --user "$(id -u):$(id -g)" --tmpfs /tmp:rw,exec,mode=1777 \
+            -e SONAR_USER_HOME=/tmp/sonar -e SONAR_HOST_URL=http://localhost:9000 -e "SONAR_TOKEN=$token" \
+            -v "$PWD:/usr/src" sonarsource/sonar-scanner-cli@sha256:38207bba3d98c8ce6f6c051ea2b9f05a24480da78c9ee5945ceafc3d9de02b88
+          until curl -sf -u "$auth" "$api/ce/component?component=pearn" | jq -e '(.queue | length) == 0 and .current.status == "SUCCESS"' >/dev/null; do sleep 3; done
+          issues=$(curl -sf -u "$auth" "$api/issues/search?components=pearn&resolved=false&ps=500")
+          hotspots=$(curl -sf -u "$auth" "$api/measures/component?component=pearn&metricKeys=security_hotspots" \
+            | jq -r '.component.measures[0].value')
+          gate=$(curl -sf -u "$auth" "$api/qualitygates/project_status?projectKey=pearn" | jq -r .projectStatus.status)
+          echo "$issues" | jq -r '.issues[] | "::error file=\(.component | sub("^pearn:"; "")),line=\(.line // 1)::\(.rule): \(.message)"'
+          echo "issues $(echo "$issues" | jq .total), hotspots $hotspots, quality gate $gate"
+          [ "$(echo "$issues" | jq .total)" = 0 ] && [ "$hotspots" = 0 ] && [ "$gate" = OK ]

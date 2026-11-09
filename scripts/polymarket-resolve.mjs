@@ -80,7 +80,9 @@ if (!transactions.length) {
 } else {
 	const run = join(tmpdir(), "pearn-polymarket-resolve.json");
 	writeFileSync(run, JSON.stringify({ transactions }));
-	execFileSync("node", [join(root, "scripts/aurora-submit.mjs"), run], { stdio: "inherit" });
+	execFileSync(process.execPath, [join(root, "scripts/aurora-submit.mjs"), run], {
+		stdio: "inherit",
+	});
 }
 if (failed.length) {
 	console.log(`::error::${failed.length} market(s) failed: ${failed.join(", ")}`);

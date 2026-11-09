@@ -4,7 +4,11 @@ FROM node:24.19.0-slim@sha256:a9f5f7c91a432850b2a8a7797adf5eadb6c733ceed61167806
 ENV HUSKY=0 NODE_ENV=production
 RUN corepack enable
 WORKDIR /repo
-COPY . .
+# Only what the indexer needs: the workspace manifests, its own code, the ABI and the addresses.
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY packages/abi packages/abi
+COPY contracts/deployments contracts/deployments
+COPY apps/indexer apps/indexer
 RUN pnpm install --frozen-lockfile --filter @pearn/indexer... \
 	&& chown -R node:node apps/indexer
 USER node

@@ -19,6 +19,14 @@ pnpm check
 cd contracts && forge fmt --check && forge build --sizes && forge test
 ```
 
+SonarQube must report zero issues and zero hotspots (the `SonarQube` CI job, config in `sonar-project.properties`). To run it locally with Docker:
+
+```sh
+docker run -d --name sonar -p 127.0.0.1:9000:9000 -e SONAR_ES_BOOTSTRAP_CHECKS_DISABLE=true sonarqube:community
+# when http://localhost:9000 is up: log in as admin/admin, set a password, create project "pearn" and an analysis token
+docker run --rm --network host -e SONAR_HOST_URL=http://localhost:9000 -e SONAR_TOKEN=<token> -v "$PWD:/usr/src" sonarsource/sonar-scanner-cli
+```
+
 ## Layout
 
 `contracts/` holds the Solidity contracts (Aurora), `apps/` anything that runs or deploys, `scripts/` repo scripts (deploy through NEAR, fork RPC proxy, ABI). The keeper is `.github/workflows/keeper.yml`.
