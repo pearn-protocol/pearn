@@ -11,3 +11,10 @@ overrides:
   "vite@>=8.3.0 <8.3.3": ^8.3.3
   "glob@>=9.0.0 <14.0.2": ^14.0.2
   "minimatch@>=7.0.0 <11.0.1": ^11.0.1
+  # Tailwind pins lightningcss 1.32, which warns on fumadocs' valid ::highlight() rules.
+  "lightningcss@1.32.0": 1.33.0
+
+# prom-client is deprecated for @prometheus-io/client, but ponder (latest included) still uses it,
+# and the replacement has another API. Drop this once ponder moves.
+allowedDeprecatedVersions:
+  prom-client: 15.1.3
