@@ -98,6 +98,8 @@ Check the XCC oracle yourself: `cast call 0xA8adEFE2C8f0F71a585a73c1259997f593F9
 
 Markets 0 and 1 are still open. Markets 3–14 mirror live Polymarket questions and resolve as Polymarket settles them, reported by the keeper ([docs](https://docs.pearn.site/docs/polymarket/)).
 
+**Demo activity is ours.** On 2026-11-09 six team test wallets placed 41 small bets (0.03–0.13 stNEAR) across markets 0–14, with sides drawn around Polymarket's odds, and the deployer sponsored six mirrors with 0.08 stNEAR each, so the cards, pots and charts show real on-chain state. The stNEAR came from the NEAR testnet faucet, staked at Meta Pool and bridged to Aurora. Wallets: `0x00285a0434829800358004340AcbAf83F047602D`, `0x36Ca9509FdaE0712E3265d63728DA2A976F7e453`, `0x59645E2953a6be78Eb5c4AFe89FdAe355e91D85d`, `0x92ACB53AA70aB01a4c94b8fD100614672461e608`, `0xeDC1C431995bb681c07610BEbFf1F953b0Af7CF9`, `0xcb029C524Dfd78ef9E481da5B721524E9eD90679`. Any other address is a real user.
+
 **Deploying without Aurora ETH.** Forge simulates, then `scripts/aurora-submit.mjs` signs each transaction at gas price 0 and hands it to the Aurora engine's `submit` method on NEAR, so a NEAR account pays NEAR gas. That is how these contracts went live:
 
 ```sh
