@@ -33,9 +33,7 @@ jobs:
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 24
-      - uses: foundry-rs/foundry-toolchain@dba66c27052e63476d886f22216e119ba7e615bf # v1
-        with:
-          version: v1.8.3
+      - uses: ./.github/actions/foundry
       # Its postinstall downloads the binary; it runs before, and without, the keys.
       - name: Install near-cli-rs
         run: npm install -g near-cli-rs@0.30.1 >/dev/null

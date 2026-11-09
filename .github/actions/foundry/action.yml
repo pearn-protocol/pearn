@@ -1,0 +1,21 @@
+name: Foundry
+description: >-
+  Installs a pinned Foundry release, checked against its sha256. Replaces
+  foundry-toolchain, whose installer always fetches `releases/latest`
+  (that URL 504s in GitHub incidents while versioned assets keep working).
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      env:
+        VERSION: v1.8.3
+        # GitHub's digest for foundry_v1.8.3_linux_amd64.tar.gz.
+        SHA256: 7ca48e6ca3cac1bce1403ca67e5bc1dc3bc1fd818199c9957c7165079c228568
+      run: |
+        dir="$RUNNER_TEMP/foundry"
+        mkdir -p "$dir"
+        curl -fsSL --retry 5 --retry-all-errors -o "$dir/f.tgz" \
+          "https://github.com/foundry-rs/foundry/releases/download/$VERSION/foundry_${VERSION}_linux_amd64.tar.gz"
+        echo "$SHA256  $dir/f.tgz" | sha256sum -c -
+        tar xzf "$dir/f.tgz" -C "$dir" forge cast anvil
+        echo "$dir" >> "$GITHUB_PATH"

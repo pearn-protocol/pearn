@@ -48,9 +48,7 @@ jobs:
         with:
           node-version: 24
           cache: pnpm
-      - uses: foundry-rs/foundry-toolchain@dba66c27052e63476d886f22216e119ba7e615bf # v1
-        with:
-          version: v1.8.3
+      - uses: ./.github/actions/foundry
       - run: pnpm install --frozen-lockfile
       - name: Typecheck
         run: pnpm typecheck
@@ -80,9 +78,7 @@ jobs:
         with:
           node-version: 24
           cache: pnpm
-      - uses: foundry-rs/foundry-toolchain@dba66c27052e63476d886f22216e119ba7e615bf # v1
-        with:
-          version: v1.8.3
+      - uses: ./.github/actions/foundry
       - run: pnpm install --frozen-lockfile
       - name: Codegen and typecheck
         run: pnpm codegen && pnpm typecheck
@@ -147,9 +143,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           submodules: true
-      - uses: foundry-rs/foundry-toolchain@dba66c27052e63476d886f22216e119ba7e615bf # v1
-        with:
-          version: v1.8.3
+      - uses: ./.github/actions/foundry
       - name: forge fmt
         run: forge fmt --check
       - name: forge lint
