@@ -53,7 +53,9 @@ const transactions = todo.map((c, i) => {
 });
 const run = join(tmpdir(), "pearn-polymarket-seed.json");
 writeFileSync(run, JSON.stringify({ transactions }));
-execFileSync("node", [join(root, "scripts/aurora-submit.mjs"), run], { stdio: "inherit" });
+execFileSync(process.execPath, [join(root, "scripts/aurora-submit.mjs"), run], {
+	stdio: "inherit",
+});
 
 // Created, and with the ids we wrote down?
 for (const c of todo) {
