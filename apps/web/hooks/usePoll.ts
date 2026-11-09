@@ -18,7 +18,7 @@ export function usePoll(fn: () => unknown, ms: number, key: unknown = null) {
 			}
 			if (live) t = setTimeout(tick, ms);
 		};
-		tick();
+		void tick();
 		return () => {
 			live = false;
 			clearTimeout(t);
