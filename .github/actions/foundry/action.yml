@@ -1,21 +1,30 @@
 name: Foundry
 description: >-
   Installs a pinned Foundry release, checked against its sha256. Replaces
-  foundry-toolchain, whose installer always fetches `releases/latest`
-  (that URL 504s in GitHub incidents while versioned assets keep working).
+  foundry-toolchain, whose installer fetches `releases/latest` anonymously;
+  both 504 during GitHub incidents that throttle anonymous traffic, so this
+  downloads the versioned asset with the workflow's token.
+inputs:
+  token:
+    description: Token for the release download (read-only public data).
+    default: ${{ github.token }}
 runs:
   using: composite
   steps:
     - shell: bash
       env:
+        GH_TOKEN: ${{ inputs.token }}
         VERSION: v1.8.3
         # GitHub's digest for foundry_v1.8.3_linux_amd64.tar.gz.
         SHA256: 7ca48e6ca3cac1bce1403ca67e5bc1dc3bc1fd818199c9957c7165079c228568
       run: |
         dir="$RUNNER_TEMP/foundry"
         mkdir -p "$dir"
-        curl -fsSL --retry 5 --retry-all-errors -o "$dir/f.tgz" \
-          "https://github.com/foundry-rs/foundry/releases/download/$VERSION/foundry_${VERSION}_linux_amd64.tar.gz"
+        for i in 1 2 3 4 5; do
+          gh release download "$VERSION" -R foundry-rs/foundry -p "foundry_${VERSION}_linux_amd64.tar.gz" -O "$dir/f.tgz" --clobber && break
+          [ "$i" = 5 ] && exit 1
+          sleep $((i * 10))
+        done
         echo "$SHA256  $dir/f.tgz" | sha256sum -c -
         tar xzf "$dir/f.tgz" -C "$dir" forge cast anvil
         echo "$dir" >> "$GITHUB_PATH"
