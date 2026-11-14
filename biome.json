@@ -22,7 +22,8 @@
 			"!packages/abi/index.ts",
 			"!apps/indexer/ponder-env.d.ts",
 			"!apps/indexer/generated",
-			"!apps/landing/.astro"
+			"!apps/landing/.astro",
+			"!apps/video/hook/assets"
 		]
 	},
 	"formatter": {
