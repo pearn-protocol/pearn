@@ -28,7 +28,7 @@ Live on Aurora testnet, verified on Blockscout: PearnMarkets 0x4659f0d99587D4fA3
 
 ## Demo post draft (the human posts it)
 
-Attach `apps/video/out/pearn-hook.mp4` (30 s, `apps/video/hook`; the 89 s walkthrough `pearn-demo.mp4` stays on https://pearn.site/pitch/). The post fits X's 280 characters (links count as 23); the reply carries the NEAR details and the code link.
+Attach `apps/video/out/pearn-hook.mp4` (28.5 s, voiced, `apps/video/hook`; the 89 s walkthrough `pearn-demo.mp4` stays on https://pearn.site/pitch/). The post fits X's 280 characters (links count as 23); the reply carries the NEAR details and the code link.
 
 > In most prediction markets the loser loses everything. Pearn is a no-loss one: win or lose, your stake comes back, and winners split the staking yield.
 >
