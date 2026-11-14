@@ -1,0 +1,195 @@
+<!doctype html>
+<html data-resolution="landscape" lang="en" >
+  <head>
+    <meta charset="UTF-8" />
+    <meta content="width=1920, height=1080" name="viewport" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+    <style>
+      :root {
+        --bg: #050505;
+        --surface: #0b0b0a;
+        --line: rgba(255, 255, 255, 0.12);
+        --ink: #deded6;
+        --muted: #a4a69e;
+        --orange: #fe835a;
+        --pink: #f26b8a;
+        --lavender: #9aa4e6;
+        --grad: linear-gradient(100deg, var(--orange), var(--pink) 55%, var(--lavender));
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1920px; height: 1080px; overflow: hidden; background: var(--bg); }
+      #root { position: relative; width: 100%; height: 100%; font-family: "JetBrains Mono", monospace; color: var(--ink); background: var(--bg); }
+      .scene { position: absolute; inset: 0; overflow: hidden; }
+      .center { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+      .big { font-size: 112px; font-weight: 700; letter-spacing: -0.05em; line-height: 1.08; }
+      .grad { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+      .word { display: inline-block; }
+      .kicker { font-size: 34px; color: var(--muted); letter-spacing: -0.02em; margin-bottom: 28px; }
+      .shot { position: absolute; border: 1px solid var(--line); box-shadow: 0 40px 120px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(254, 131, 90, 0.08); }
+      .cap { position: absolute; font-size: 44px; font-weight: 700; letter-spacing: -0.04em; }
+      .chip { display: inline-flex; align-items: center; gap: 14px; padding: 14px 22px; border: 1px solid var(--line); background: var(--surface); font-size: 28px; }
+      .dot { width: 14px; height: 14px; background: var(--orange); }
+
+      /* s2: the old way */
+      #s2-bar { width: 980px; height: 26px; background: #1c1c1b; margin-top: 64px; position: relative; }
+      #s2-fill { position: absolute; inset: 0; background: #8f8f8f; transform-origin: left center; }
+      #s2-label { margin-top: 22px; font-size: 30px; color: var(--muted); width: 980px; display: flex; justify-content: space-between; }
+
+      /* s5: how it works */
+      #s5 .col { position: absolute; top: 400px; width: 420px; text-align: center; }
+      #s5 .stake { height: 220px; display: flex; align-items: center; justify-content: center; font-size: 30px; font-weight: 700; }
+      #s5-yes .stake { background: var(--orange); color: #0b0806; }
+      #s5-no .stake { background: #2a2a28; color: var(--ink); }
+      #s5 .side { font-size: 34px; font-weight: 700; margin-bottom: 18px; }
+      #s5 .result { font-size: 30px; margin-top: 22px; color: var(--ink); white-space: nowrap; }
+      #s5-pool { position: absolute; left: 50%; top: 150px; width: 560px; margin-left: -280px; height: 120px; border: 2px solid var(--line); }
+      #s5-poolfill { position: absolute; inset: 0; background: var(--grad); transform-origin: left center; }
+      #s5-poollabel { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 700; color: #0b0806; }
+      #s5-flow { position: absolute; width: 90px; height: 90px; border-radius: 50%; background: var(--grad); }
+
+      /* s6: end card */
+      #s6-logo { width: 220px; height: 220px; }
+      #s6-word { font-size: 150px; font-weight: 700; letter-spacing: -0.06em; color: var(--orange); }
+      #s6-tag { font-size: 44px; letter-spacing: -0.03em; margin-top: 18px; }
+      #s6-cta { margin-top: 56px; padding: 22px 42px; background: var(--orange); color: #0b0806; font-size: 38px; font-weight: 700; }
+    </style>
+  </head>
+  <body>
+    <div data-composition-id="main" data-duration="30" data-height="1080" data-start="0" data-width="1920" id="root" >
+      <!-- s1: hook -->
+      <div class="scene center clip" data-duration="3.3" data-start="0" data-track-index="0" data-track-kind="graphics" id="s1" >
+        <div class="big">
+          <span class="word" id="s1-w1">What</span> <span class="word" id="s1-w2">if</span> <span class="word" id="s1-w3">losing</span>
+          <span class="word" id="s1-w4">a</span> <span class="word" id="s1-w5">bet</span><br />
+          <span class="word grad" id="s1-w6">cost you nothing?</span>
+        </div>
+      </div>
+
+      <!-- s2: the old way -->
+      <div class="scene center clip" data-duration="3.9" data-start="3.3" data-track-index="0" data-track-kind="graphics" id="s2" >
+        <div class="kicker" id="s2-k">In most prediction markets,</div>
+        <div class="big" id="s2-t">the loser loses <span style="color: var(--muted)">everything.</span></div>
+        <div id="s2-bar"><div id="s2-fill"></div></div>
+        <div id="s2-label"><span>Your stake</span><span id="s2-num">100%</span></div>
+      </div>
+
+      <!-- s3: the product -->
+      <div class="scene clip" data-duration="6.2" data-start="7.2" data-track-index="0" data-track-kind="graphics" id="s3" >
+        <img alt="" class="shot" id="s3-home" src="assets/home-top.png" style="left: 96px; top: 66px; width: 1728px; height: 972px" />
+        <img alt="" class="shot" id="s3-grid" src="assets/grid.png" style="left: 135px; top: 140px; width: 1650px; height: 854px" />
+        <img alt="" class="shot" id="s3-card" src="assets/card-fed.png" style="left: 600px; top: 250px; width: 720px; height: 493px" />
+        <div class="cap" id="s3-cap" style="left: 96px; bottom: 34px"><span class="grad">Real questions.</span> Even live Polymarket ones.</div>
+      </div>
+
+      <!-- s4: a market -->
+      <div class="scene clip" data-duration="5.2" data-start="13.4" data-track-index="0" data-track-kind="graphics" id="s4" >
+        <img alt="" class="shot" id="s4-head" src="assets/m-head.png" style="left: 90px; top: 150px; width: 1080px; height: 546px" />
+        <img alt="" class="shot" id="s4-bet" src="assets/m-bet.png" style="left: 1230px; top: 150px; width: 600px; height: 458px" />
+        <div class="cap" id="s4-cap" style="left: 90px; top: 760px; width: 1740px">
+          You bet with <span class="grad">staked NEAR</span>.<br /><span id="s4-cap2" style="color: var(--muted); display: inline-block">It earns yield while the market runs.</span>
+        </div>
+      </div>
+
+      <!-- s5: how it settles (drawn: the payout has no screen of its own) -->
+      <div class="scene clip" data-duration="5.8" data-start="18.6" data-track-index="0" data-track-kind="graphics" id="s5" >
+        <div id="s5-pool"><div id="s5-poolfill"></div><div id="s5-poollabel">STAKING YIELD</div></div>
+        <div id="s5-flow"></div>
+        <div class="col" id="s5-yes" style="left: 420px">
+          <div class="side" style="color: var(--orange)">WINNERS</div>
+          <div class="stake">STAKE</div>
+          <div class="result" id="s5-yes-r">stake back <b class="grad">+ the yield</b></div>
+        </div>
+        <div class="col" id="s5-no" style="left: 1080px">
+          <div class="side" style="color: var(--muted)">LOSERS</div>
+          <div class="stake">STAKE</div>
+          <div class="result" id="s5-no-r">stake back</div>
+        </div>
+      </div>
+
+      <!-- s6: end card -->
+      <div class="scene center clip" data-duration="5.6" data-start="24.4" data-track-index="0" data-track-kind="graphics" id="s6" >
+        <div style="display: flex; align-items: center; gap: 44px">
+          <img alt="" id="s6-logo" src="assets/logo.png" />
+          <div id="s6-word">Pearn</div>
+        </div>
+        <div id="s6-tag">No-loss prediction markets on <b>NEAR</b></div>
+        <div id="s6-cta">app.pearn.site</div>
+      </div>
+
+      <!-- voice: the clock -->
+      <audio data-duration="2.32" data-start="0.3" data-track-index="5" data-volume="1" id="v1" src="assets/audio/v1.mp3" ></audio>
+      <audio data-duration="3.39" data-start="3.5" data-track-index="6" data-volume="1" id="v2" src="assets/audio/v2.mp3" ></audio>
+      <audio data-duration="5.02" data-start="7.4" data-track-index="5" data-volume="1" id="v3" src="assets/audio/v3.mp3" ></audio>
+      <audio data-duration="4.23" data-start="13.6" data-track-index="6" data-volume="1" id="v4" src="assets/audio/v4.mp3" ></audio>
+      <audio data-duration="4.50" data-start="18.9" data-track-index="5" data-volume="1" id="v5" src="assets/audio/v5.mp3" ></audio>
+      <audio data-duration="3.16" data-start="25.1" data-track-index="6" data-volume="1" id="v6" src="assets/audio/v6.mp3" ></audio>
+      <!-- music opens when the product appears -->
+      <audio data-duration="22" data-fade-in="0.8" data-fade-out="1.6" data-start="7.2" data-track-index="7" data-volume="0.14" id="bed" src="assets/audio/bed.mp3" ></audio>
+      <!-- effects, each on a visible action -->
+      <audio data-duration="0.80" data-start="7.15" data-track-index="8" data-volume="0.5" id="fx-w1" src="assets/audio/whoosh1.mp3" ></audio>
+      <audio data-duration="0.48" data-start="11.35" data-track-index="8" data-volume="2.5" id="fx-pop" src="assets/audio/pop.mp3" ></audio>
+      <audio data-duration="0.68" data-start="13.35" data-track-index="9" data-volume="0.35" id="fx-w2" src="assets/audio/whoosh2.mp3" ></audio>
+      <audio data-duration="0.80" data-start="18.55" data-track-index="8" data-volume="0.4" id="fx-w3" src="assets/audio/whoosh1.mp3" ></audio>
+      <audio data-duration="2.48" data-start="24.6" data-track-index="9" data-volume="0.6" id="fx-hit" src="assets/audio/impact.mp3" ></audio>
+    </div>
+    <script>
+      const tl = gsap.timeline({ paused: true });
+      const E = "power3.out";
+      const rise = (sel, at, d = 0.5, y = 40) =>
+        tl.fromTo(sel, { opacity: 0, y, filter: "blur(6px)" }, { opacity: 1, y: 0, filter: "blur(0px)", duration: d, ease: E }, at);
+
+      // s1: words land on the voice ("What if losing a bet / cost you nothing?")
+      tl.fromTo("#s1 .big", { scale: 1 }, { scale: 1.06, duration: 3.3, ease: "none" }, 0);
+      tl.fromTo("#s1-w6", { scale: 1 }, { scale: 1.08, duration: 0.35, ease: "power2.out", yoyo: true, repeat: 1 }, 1.3);
+
+      // s2: the stake drains on "everything"
+      rise("#s2-k", 3.4, 0.45, 20);
+      rise("#s2-t", 3.7, 0.5);
+      rise("#s2-bar", 4.0, 0.4, 20);
+      rise("#s2-label", 4.0, 0.4, 20);
+      const pct = { v: 100 };
+      tl.fromTo("#s2-fill", { scaleX: 1 }, { scaleX: 0, duration: 1.1, ease: "power2.in" }, 5.4);
+      tl.fromTo(pct, { v: 100 }, { v: 0, duration: 1.1, ease: "power2.in", onUpdate: () => {
+        document.getElementById("s2-num").textContent = `${Math.round(pct.v)}%`;
+      } }, 5.4);
+
+      // s3: workspace -> the market grid -> one real market card
+      tl.fromTo("#s3-home", { opacity: 0, scale: 1.06 }, { opacity: 1, scale: 1, duration: 0.6, ease: E }, 0 + 7.2);
+      tl.fromTo("#s3-home", { scale: 1 }, { scale: 1.03, duration: 2.0, ease: "none", immediateRender: false }, 7.8);
+      tl.fromTo("#s3-grid", { opacity: 0, y: 80, scale: 0.98 }, { opacity: 1, y: 0, scale: 1, duration: 0.55, ease: E }, 9.6);
+      tl.fromTo("#s3-home", { opacity: 1 }, { opacity: 0.15, duration: 0.4, immediateRender: false }, 9.6);
+      tl.fromTo("#s3-grid", { opacity: 1 }, { opacity: 0.2, duration: 0.4, immediateRender: false }, 11.2);
+      tl.fromTo("#s3-card", { opacity: 0, scale: 0.55, x: -460, y: -150 }, { opacity: 1, scale: 1.25, x: 0, y: -40, duration: 0.6, ease: "power3.inOut" }, 11.0);
+      rise("#s3-cap", 9.8, 0.5, 24);
+
+      // s4: the market and the bet panel, Yes highlighted
+      tl.fromTo("#s4-head", { opacity: 0, x: -60 }, { opacity: 1, x: 0, duration: 0.5, ease: E }, 13.4);
+      tl.fromTo("#s4-bet", { opacity: 0, x: 80 }, { opacity: 1, x: 0, duration: 0.5, ease: E }, 13.6);
+      tl.fromTo("#s4-bet", { scale: 1, boxShadow: "0 0 0 0 rgba(254,131,90,0)" }, { scale: 1.06, boxShadow: "0 0 0 6px rgba(254,131,90,0.9)", duration: 0.5, ease: E, immediateRender: false }, 14.7);
+      rise("#s4-cap", 14.0, 0.5, 24);
+      tl.fromTo("#s4-cap2", { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.45, ease: E }, 15.9);
+      tl.fromTo("#s4-head", { scale: 1 }, { scale: 1.05, duration: 3.6, ease: "none", immediateRender: false }, 14.6);
+      tl.fromTo("#s4-bet", { y: 0 }, { y: -14, duration: 2.4, ease: "sine.inOut", immediateRender: false }, 15.8);
+
+      // s5: everyone's stake back, winners take the yield
+      rise("#s5-yes", 18.7, 0.45);
+      rise("#s5-no", 18.85, 0.45);
+      tl.fromTo("#s5-pool", { opacity: 0 }, { opacity: 1, duration: 0.3 }, 19.0);
+      tl.fromTo("#s5-poolfill", { scaleX: 0 }, { scaleX: 1, duration: 1.4, ease: "power1.inOut" }, 19.1);
+      rise("#s5-yes-r", 20.4, 0.4, 16);
+      rise("#s5-no-r", 20.6, 0.4, 16);
+      tl.fromTo("#s5-flow", { opacity: 0, x: 915, y: 170, scale: 0.4 }, { opacity: 1, x: 585, y: 520, scale: 1, duration: 0.9, ease: "power2.in" }, 21.6);
+      tl.fromTo("#s5-flow", { opacity: 1 }, { opacity: 0, duration: 0.2, immediateRender: false }, 22.5);
+      tl.fromTo("#s5-yes .stake", { scale: 1 }, { scale: 1.08, duration: 0.3, ease: "back.out(2)", immediateRender: false }, 22.5);
+
+      // s6: the mark lands with the hit, then the call to action
+      tl.fromTo("#s6-logo", { opacity: 0, scale: 0.6, rotate: -20 }, { opacity: 1, scale: 1, rotate: 0, duration: 0.7, ease: "back.out(1.7)" }, 24.5);
+      tl.fromTo("#s6-word", { opacity: 0, clipPath: "inset(0 100% 0 0)" }, { opacity: 1, clipPath: "inset(0 0% 0 0)", duration: 0.6, ease: E }, 24.9);
+      rise("#s6-tag", 25.5, 0.5, 20);
+      tl.fromTo("#s6-cta", { opacity: 0, y: 20, scale: 0.94 }, { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: "back.out(1.6)" }, 26.6);
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines.main = tl;
+    </script>
+  </body>
+</html>

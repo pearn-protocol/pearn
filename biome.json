@@ -109,6 +109,16 @@
 	},
 	"overrides": [
 		{
+			"includes": ["apps/video/hook/**"],
+			"linter": {
+				"rules": {
+					"a11y": {
+						"useMediaCaption": "off"
+					}
+				}
+			}
+		},
+		{
 			"includes": ["**/*.test.ts", "**/*.test.mjs", "**/scripts/**"],
 			"linter": {
 				"rules": {

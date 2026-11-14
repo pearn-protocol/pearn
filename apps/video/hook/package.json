@@ -1,0 +1,10 @@
+{
+	"name": "@pearn/video-hook",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"preview": "npx --yes hyperframes@0.9.46 preview",
+		"check": "npx --yes hyperframes@0.9.46 check",
+		"render": "npx --yes hyperframes@0.9.46 render --quality high --output ../out/pearn-hook-raw.mp4 && ffmpeg -v error -y -i ../out/pearn-hook-raw.mp4 -c:v copy -af loudnorm=I=-15:TP=-1.5:LRA=11 -c:a aac -b:a 192k ../out/pearn-hook.mp4"
+	}
+}
