@@ -228,14 +228,14 @@
 	<body>
 		<div
 			data-composition-id="main"
-			data-duration="30"
+			data-duration="28.5"
 			data-height="1080"
 			data-start="0"
 			data-width="1920"
 			id="root"
 		>
 			<!-- s1: a real question is typed, Polymarket attaches, the real market answers -->
-			<div class="scene clip" data-duration="7" data-start="0" data-track-index="0" data-track-kind="graphics" id="s1" >
+			<div class="scene clip" data-duration="4.4" data-start="0" data-track-index="0" data-track-kind="graphics" id="s1" >
 				<div class="bar" id="s1-bar" style="top: 470px">
 					<div class="plus">+</div>
 					<div class="field">
@@ -246,16 +246,30 @@
 						</div>
 					</div>
 				</div>
-				<img alt="" class="shot" id="s1-card" src="assets/card-btc.png" style="left: 653px; top: 390px; width: 612px; height: 421px" />
 			</div>
 
 			<!-- s2 -->
-			<div class="scene clip" data-duration="2.6" data-start="7" data-track-index="0" data-track-kind="graphics" id="s2" >
+			<div class="scene clip" data-duration="2.6" data-start="4.4" data-track-index="0" data-track-kind="graphics" id="s2" >
 				<div class="head" id="s2-t"></div>
 			</div>
 
+			<!-- s2b: "like this one": the question comes back and the real market answers -->
+			<div class="scene clip" data-duration="3.2" data-start="7" data-track-index="0" data-track-kind="graphics" id="s2b" >
+				<div class="bar" id="s2b-bar" style="top: 470px">
+					<div class="plus">+</div>
+					<div class="field">
+						<div class="chip"><i></i>Polymarket</div>
+						<div class="row">
+							<span class="text">Will Bitcoin hit $150k by September 30, 2027?</span>
+							<span class="send">↑</span>
+						</div>
+					</div>
+				</div>
+				<img alt="" class="shot" id="s2b-card" src="assets/card-btc.png" style="left: 653px; top: 390px; width: 612px; height: 421px" />
+			</div>
+
 			<!-- s3: the bet is typed -->
-			<div class="scene clip" data-duration="5" data-start="9.6" data-track-index="0" data-track-kind="graphics" id="s3" >
+			<div class="scene clip" data-duration="3.7" data-start="10.2" data-track-index="0" data-track-kind="graphics" id="s3" >
 				<div class="bar" id="s3-bar" style="top: 470px">
 					<div class="plus">+</div>
 					<div class="field">
@@ -270,12 +284,12 @@
 			</div>
 
 			<!-- s4 -->
-			<div class="scene clip" data-duration="2.9" data-start="14.6" data-track-index="0" data-track-kind="graphics" id="s4" >
+			<div class="scene clip" data-duration="1.55" data-start="13.9" data-track-index="0" data-track-kind="graphics" id="s4" >
 				<div class="head" id="s4-t"></div>
 			</div>
 
 			<!-- s5 -->
-			<div class="scene clip" data-duration="4.7" data-start="17.5" data-track-index="0" data-track-kind="graphics" id="s5" >
+			<div class="scene clip" data-duration="4.4" data-start="15.45" data-track-index="0" data-track-kind="graphics" id="s5" >
 				<div class="head" id="s5-t" style="top: 360px"></div>
 				<div class="sub" id="s5-s" style="top: 470px">Winners split the staking yield.</div>
 				<div class="pills" style="top: 620px">
@@ -285,7 +299,7 @@
 			</div>
 
 			<!-- s6: topics roll beside "markets on Pearn" -->
-			<div class="scene clip" data-duration="4.4" data-start="22.2" data-track-index="0" data-track-kind="graphics" id="s6" >
+			<div class="scene clip" data-duration="3.75" data-start="19.85" data-track-index="0" data-track-kind="graphics" id="s6" >
 				<div id="s6-roll">
 					<div id="s6-list">
 						<div><span class="chip"><i></i>Crypto</span></div>
@@ -302,23 +316,32 @@
 			</div>
 
 			<!-- s7: end card -->
-			<div class="scene clip" data-duration="3.4" data-start="26.6" data-track-index="0" data-track-kind="graphics" id="s7" >
+			<div class="scene clip" data-duration="4.9" data-start="23.6" data-track-index="0" data-track-kind="graphics" id="s7" >
 				<img alt="" id="s7-logo" src="assets/logo.png" />
 				<div class="head" id="s7-t" style="top: 490px">No-loss prediction markets.</div>
 				<div class="sub" id="s7-s" style="top: 600px">On NEAR · <b style="color: var(--ink)">app.pearn.site</b></div>
 			</div>
 
-			<!-- music from the first frame; no voice: the type tells it (X autoplays muted) -->
-			<audio data-duration="22" data-fade-in="0.4" data-start="0" data-track-index="5" data-volume="0.42" id="bed-a" src="assets/audio/bed2.mp3" ></audio>
-			<audio data-duration="9" data-fade-in="1" data-fade-out="1.5" data-media-start="6" data-start="21" data-track-index="6" data-volume="0.42" id="bed-b" src="assets/audio/bed2.mp3" ></audio>
-			<audio data-duration="2" data-fade-out="0.2" data-start="0.4" data-track-index="7" data-volume="0.7" id="fx-t1" src="assets/audio/type.mp3" ></audio>
-			<audio data-duration="1.1" data-fade-out="0.2" data-media-start="0.3" data-start="7.2" data-track-index="7" data-volume="0.7" id="fx-t2" src="assets/audio/type.mp3" ></audio>
-			<audio data-duration="1.2" data-fade-out="0.2" data-media-start="0.6" data-start="10.4" data-track-index="7" data-volume="0.7" id="fx-t3" src="assets/audio/type.mp3" ></audio>
-			<audio data-duration="0.9" data-fade-out="0.2" data-media-start="0.2" data-start="14.8" data-track-index="7" data-volume="0.7" id="fx-t4" src="assets/audio/type.mp3" ></audio>
-			<audio data-duration="0.48" data-start="3.0" data-track-index="8" data-volume="2.5" id="fx-pop1" src="assets/audio/pop.mp3" ></audio>
-			<audio data-duration="0.48" data-start="12.5" data-track-index="8" data-volume="2.5" id="fx-pop2" src="assets/audio/pop.mp3" ></audio>
-			<audio data-duration="0.68" data-start="3.6" data-track-index="9" data-volume="0.3" id="fx-w" src="assets/audio/whoosh2.mp3" ></audio>
-			<audio data-duration="2.48" data-start="26.75" data-track-index="9" data-volume="0.5" id="fx-hit" src="assets/audio/impact.mp3" ></audio>
+			<!-- voice is the clock; the type still carries it muted -->
+			<audio data-duration="3.72" data-start="0.3" data-track-index="4" data-volume="1" id="n1" src="assets/audio/n1.mp3" ></audio>
+			<audio data-duration="5.29" data-start="4.5" data-track-index="4" data-volume="1" id="n2" src="assets/audio/n2.mp3" ></audio>
+			<audio data-duration="2.28" data-start="10.4" data-track-index="4" data-volume="1" id="n3" src="assets/audio/n3.mp3" ></audio>
+			<audio data-duration="1.25" data-start="14.0" data-track-index="4" data-volume="1" id="n4" src="assets/audio/n4.mp3" ></audio>
+			<audio data-duration="3.39" data-start="15.6" data-track-index="4" data-volume="1" id="n5" src="assets/audio/n5.mp3" ></audio>
+			<audio data-duration="3.34" data-start="20.0" data-track-index="4" data-volume="1" id="n6" src="assets/audio/n6.mp3" ></audio>
+			<audio data-duration="2.97" data-start="24.0" data-track-index="4" data-volume="1" id="n7" src="assets/audio/n7.mp3" ></audio>
+			<audio data-duration="22" data-fade-in="0.4" data-start="0" data-track-index="5" data-volume="0.16" id="bed-a" src="assets/audio/bed2.mp3" ></audio>
+			<audio data-duration="7.5" data-fade-in="1" data-fade-out="1.5" data-media-start="6" data-start="21" data-track-index="6" data-volume="0.16" id="bed-b" src="assets/audio/bed2.mp3" ></audio>
+			<audio data-duration="2" data-fade-out="0.2" data-start="0.4" data-track-index="7" data-volume="0.45" id="fx-t1" src="assets/audio/type.mp3" ></audio>
+			<audio data-duration="1.1" data-fade-out="0.2" data-media-start="0.3" data-start="4.6" data-track-index="7" data-volume="0.45" id="fx-t2" src="assets/audio/type.mp3" ></audio>
+			<audio data-duration="1.1" data-fade-out="0.2" data-media-start="0.6" data-start="10.7" data-track-index="7" data-volume="0.45" id="fx-t3" src="assets/audio/type.mp3" ></audio>
+			<audio data-duration="0.8" data-fade-out="0.2" data-media-start="0.2" data-start="13.95" data-track-index="7" data-volume="0.45" id="fx-t4" src="assets/audio/type.mp3" ></audio>
+			<audio data-duration="1.0" data-fade-out="0.2" data-media-start="0.9" data-start="15.5" data-track-index="7" data-volume="0.45" id="fx-t5" src="assets/audio/type.mp3" ></audio>
+			<audio data-duration="0.48" data-start="3.7" data-track-index="8" data-volume="2.2" id="fx-pop1" src="assets/audio/pop.mp3" ></audio>
+			<audio data-duration="0.48" data-start="12.1" data-track-index="8" data-volume="2.2" id="fx-pop2" src="assets/audio/pop.mp3" ></audio>
+			<audio data-duration="0.48" data-start="17.7" data-track-index="8" data-volume="2.2" id="fx-pop3" src="assets/audio/pop.mp3" ></audio>
+			<audio data-duration="0.68" data-start="7.05" data-track-index="9" data-volume="0.3" id="fx-w" src="assets/audio/whoosh2.mp3" ></audio>
+			<audio data-duration="2.48" data-start="23.85" data-track-index="9" data-volume="0.45" id="fx-hit" src="assets/audio/impact.mp3" ></audio>
 		</div>
 		<script>
 			const tl = gsap.timeline({ paused: true });
@@ -346,43 +369,45 @@
 			const fadeUp = (sel, at, y = 24) =>
 				tl.fromTo(sel, { opacity: 0, y }, { opacity: 1, y: 0, duration: 0.5, ease: E }, at);
 
-			// s1
-			type("s1-text", "Will Bitcoin hit $150k by September 30, 2027?", 0.4, 2.2);
-			tl.fromTo("#s1-chip", { opacity: 0, height: 0, scale: 0.8 }, { opacity: 1, height: 52, scale: 1, duration: 0.4, ease: "back.out(1.8)" }, 3.0);
-			tl.fromTo("#s1-bar", { y: 0 }, { y: -300, duration: 0.6, ease: "power3.inOut" }, 3.6);
-			tl.fromTo("#s1-card", { opacity: 0, y: 120, scale: 1.15 }, { opacity: 1, y: 40, scale: 1.25, duration: 0.7, ease: E }, 3.8);
+			// s1: typed with the voice
+			type("s1-text", "Will Bitcoin hit $150k by September 30, 2027?", 0.35, 3.0);
+			tl.fromTo("#s1-chip", { opacity: 0, height: 0, scale: 0.8 }, { opacity: 1, height: 52, scale: 1, duration: 0.4, ease: "back.out(1.8)" }, 3.6);
 
 			// s2
-			type("s2-t", "Bet on real questions.", 7.15, 1.0);
+			type("s2-t", "Bet on real questions.", 4.6, 1.0);
+
+			// s2b: "Like this one"
+			tl.fromTo("#s2b-bar", { y: 0 }, { y: -300, duration: 0.6, ease: "power3.inOut" }, 7.05);
+			tl.fromTo("#s2b-card", { opacity: 0, y: 120, scale: 1.15 }, { opacity: 1, y: 40, scale: 1.25, duration: 0.7, ease: E }, 7.25);
 
 			// s3
-			tl.fromTo("#s3-bar", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.4, ease: E }, 9.6);
-			tl.fromTo("#s3-chip", { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 0.35, ease: "back.out(1.8)" }, 9.9);
-			type("s3-text", "Bet Yes · 0.1 stNEAR", 10.4, 1.1);
-			tl.fromTo("#s3-send", { scale: 1 }, { scale: 0.82, duration: 0.12, ease: "power2.in", yoyo: true, repeat: 1 }, 12.0);
-			tl.fromTo("#s3-bar", { y: 0 }, { y: -90, duration: 0.5, ease: "power3.inOut", immediateRender: false }, 12.2);
-			tl.fromTo("#s3-done", { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 0.4, ease: "back.out(2)" }, 12.45);
+			tl.fromTo("#s3-bar", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.4, ease: E }, 10.2);
+			tl.fromTo("#s3-chip", { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 0.35, ease: "back.out(1.8)" }, 10.35);
+			type("s3-text", "Bet Yes · 0.1 stNEAR", 10.7, 1.0);
+			tl.fromTo("#s3-send", { scale: 1 }, { scale: 0.82, duration: 0.12, ease: "power2.in", yoyo: true, repeat: 1 }, 11.75);
+			tl.fromTo("#s3-bar", { y: 0 }, { y: -90, duration: 0.5, ease: "power3.inOut", immediateRender: false }, 11.85);
+			tl.fromTo("#s3-done", { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 0.4, ease: "back.out(2)" }, 12.05);
 
 			// s4
-			type("s4-t", "And if you lose?", 14.8, 0.8);
+			type("s4-t", "And if you lose?", 13.95, 0.7);
 
 			// s5
-			type("s5-t", "You get your stake back.", 17.6, 1.1);
-			fadeUp("#s5-s", 19.0);
-			tl.fromTo("#s5-lose", { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 0.4, ease: "back.out(2)" }, 19.7);
-			tl.fromTo("#s5-win", { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 0.4, ease: "back.out(2)" }, 20.1);
+			type("s5-t", "You get your stake back.", 15.5, 1.0);
+			fadeUp("#s5-s", 17.2);
+			tl.fromTo("#s5-lose", { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 0.4, ease: "back.out(2)" }, 17.65);
+			tl.fromTo("#s5-win", { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 0.4, ease: "back.out(2)" }, 17.9);
 
-			// s6: the list steps one topic every 0.5 s, centred in the mask
-			fadeUp("#s6-on", 22.3, 16);
-			fadeUp("#s6-roll", 22.3, 16);
-			for (let i = 0; i < 7; i++) {
-				tl.fromTo("#s6-list", { y: 168 - i * 84 }, { y: 168 - (i + 1) * 84, duration: 0.32, ease: "power3.inOut", immediateRender: i === 0 }, 22.5 + i * 0.5);
-			}
+			// s6: the list steps on the spoken topics, then runs to "Anything"
+			fadeUp("#s6-on", 19.9, 16);
+			fadeUp("#s6-roll", 19.9, 16);
+			[20.65, 21.3, 21.9, 22.1, 22.3, 22.5, 22.7].forEach((at, i) => {
+				tl.fromTo("#s6-list", { y: 168 - i * 84 }, { y: 168 - (i + 1) * 84, duration: i < 2 ? 0.32 : 0.18, ease: "power3.inOut", immediateRender: i === 0 }, at);
+			});
 
 			// s7
-			pop("#s7-logo", 26.7);
-			fadeUp("#s7-t", 27.0);
-			fadeUp("#s7-s", 27.5, 16);
+			pop("#s7-logo", 23.75);
+			fadeUp("#s7-t", 24.2);
+			fadeUp("#s7-s", 24.9, 16);
 
 			window.__timelines = window.__timelines || {};
 			window.__timelines.main = tl;

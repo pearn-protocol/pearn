@@ -16,7 +16,7 @@ cp apps/video/out/pearn-demo.mp4 apps/landing/src/assets/pitch.mp4   # publish i
 
 ## Hook video (30 s)
 
-`hook/` is a short hook film for the X post, made with [HyperFrames](https://hyperframes.heygen.com) (HTML rendered to MP4), in the style of OpenAI's "Apps in ChatGPT" film: white, one element at a time, everything typed into a prompt bar. A real Polymarket question is typed and the real market card answers; the bet is typed; "And if you lose? You get your stake back."; topics roll beside "markets on Pearn"; end card. No voice: the type carries it, since X autoplays muted. The card in `hook/assets/` is a 2× capture of app.pearn.site on 2026-11-14. Music bed and effects: ElevenLabs sound generation. GSAP is vendored in `hook/assets/` so a render needs no network.
+`hook/` is a short hook film for the X post, made with [HyperFrames](https://hyperframes.heygen.com) (HTML rendered to MP4), in the style of OpenAI's "Apps in ChatGPT" film: white, one element at a time, everything typed into a prompt bar. A real Polymarket question is typed and the real market card answers; the bet is typed; "And if you lose? You get your stake back."; topics roll beside "markets on Pearn"; end card. Voiced by ElevenLabs (George), and every line is also on screen, since X autoplays muted. The card in `hook/assets/` is a 2× capture of app.pearn.site on 2026-11-14. Music bed and effects: ElevenLabs sound generation. GSAP is vendored in `hook/assets/` so a render needs no network.
 
 ```sh
 cd apps/video/hook
