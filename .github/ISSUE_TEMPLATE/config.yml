@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Docs
+    url: https://docs.pearn.site
+    about: How Pearn works, payouts, the oracle, Polymarket mirrors and risks.
+  - name: Report a vulnerability
+    url: https://github.com/pearn-protocol/pearn/security/advisories/new
+    about: Private report to the maintainers.

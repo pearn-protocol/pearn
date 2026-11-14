@@ -8,6 +8,8 @@
 
 **The no-loss prediction market on NEAR.** Bet on real questions; win or lose, your stake comes back.
 
+**[App](https://app.pearn.site)** · [Site](https://pearn.site) · [Docs](https://docs.pearn.site) · [Demo video](https://pearn.site/pitch/) · [Risks](https://docs.pearn.site/docs/risks/) · [Security](SECURITY.md)
+
 You bet stNEAR (staked NEAR) on YES or NO. When the market resolves, everyone gets their principal's NEAR value back, and the winning side splits all the staking yield the market earned, plus any sponsored pot.
 
 ## Problem
