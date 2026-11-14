@@ -1,0 +1,19 @@
+name: Feature request
+description: An idea for Pearn.
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: Who is this for, and what can't they do today?
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: Proposal
+      description: What should Pearn do? Mention any effect on principal safety or payouts.
+    validations:
+      required: true

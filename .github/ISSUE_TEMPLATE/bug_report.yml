@@ -1,0 +1,39 @@
+name: Bug report
+description: Something in the app, the contracts or the docs does not work as described.
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: "Security issue? Do not file it here: use [private vulnerability reporting](https://github.com/pearn-protocol/pearn/security/advisories/new)."
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - App (app.pearn.site)
+        - Landing (pearn.site)
+        - Docs (docs.pearn.site)
+        - Contracts
+        - Indexer
+        - Keeper / scripts
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you did, what you expected, and what you saw instead. Market ids and transaction hashes help.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: "1. Open app.pearn.site/market/?id=8\n2. …"
+  - type: input
+    id: env
+    attributes:
+      label: Browser and wallet
+      placeholder: Chrome 1xx, MetaMask on Aurora Testnet
